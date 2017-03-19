@@ -133,7 +133,7 @@ class StatPoint(object):
     def __repr__(self):
         return "StatPoint({0}, {1})".format(repr(self.time), repr(self.min), repr(self.mean), repr(self.max), repr(self.count))
 
-def unpackProtoStream(desc):
+def unpackProtoStreamDescriptor(desc):
     tags = {}
     for tag in desc.tags:
         tags[tag.key] = tag.value
