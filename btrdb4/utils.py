@@ -29,6 +29,14 @@ from btrdb4 import btrdb_pb2
 import isodate
 import datetime
 
+nanosecond=1
+microsecond=1000*nanosecond
+millisecond=1000*microsecond
+second=1000*millisecond
+minute=60*second
+hour = 60*minute
+day = 24*hour
+
 def date(dst):
     """
     This parses a modified isodate into nanoseconds since the epoch. The date format is:
