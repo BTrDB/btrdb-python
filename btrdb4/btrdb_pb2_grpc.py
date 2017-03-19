@@ -3,7 +3,7 @@ import grpc
 from grpc.framework.common import cardinality
 from grpc.framework.interfaces.face import utilities as face_utilities
 
-import btrdb_pb2 as btrdb__pb2
+from btrdb4 import btrdb_pb2 as btrdb__pb2
 
 
 class BTrDBStub(object):

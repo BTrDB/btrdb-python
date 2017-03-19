@@ -30,8 +30,8 @@ The 'btrdb4' module provides Python bindings to interact with BTrDB.
 """
 
 import grpc
-import btrdb_pb2
-import btrdb_pb2_grpc
+import btrdb4.btrdb_pb2
+import btrdb4.btrdb_pb2_grpc
 
 class ChangedRange(object):
     def __init__(self, start, end):

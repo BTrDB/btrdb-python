@@ -7,10 +7,10 @@ setup(
   author = 'Sam Kumar, Michael P Andersen',
   author_email = 'samkumar99@gmail.com, michael@steelcode.com',
   url = 'https://github.com/SoftwareDefinedBuildings/btrdb4-python',
-  download_url = 'https://github.com/SoftwareDefinedBuildings/btrdb4-python/tarball/1.0',
+  download_url = 'https://github.com/SoftwareDefinedBuildings/btrdb4-python/tarball/0.0.1',
   package_data = { 'btrdb4': ['grpcinterface/btrdb.proto'] },
   include_package_data = False,
-  install_requires = [],
+  install_requires = ["grpcio >= 1.1.3", "grpcio-tools >= 1.1.3"],
   keywords = ['btrdb', 'berkeley', 'timeseries', 'database', 'bindings' 'gRPC'],
   classifiers = []
 )
