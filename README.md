@@ -4,39 +4,39 @@ These are BTrDB Bindings for Python are meant to be used with Python's multithre
 
 Here is an example:
 ```
->>> import uuid
+>>> # This works for both Python 2 and Python 3
+...
 >>> import btrdb4
+>>> import time
+>>> import uuid
 >>>
 >>> # This is the UUID of the stream we are going to interact with
-... u = uuid.UUID('6390e9df-dfcb-4084-8080-8c719ce751ed')
+... uu = uuid.uuid4()
+>>> uu
+UUID('a5fba242-74c8-4e59-ad89-c1565ee3229c')
 >>>
->>> # Set up the BTrDB Connection and Endpoint Handle
-... connection = btrdb4.BTrDBConnection('compound-0.cs.berkeley.edu:4410')
->>> endpoint = connection.newContext()
+>>> # Connect to BTrDB and obtain a BTrDB handle
+... conn = btrdb4.Connection("compound-0.cs.berkeley.edu:4410")
+>>> b = conn.newContext()
+>>>
+>>> # Obtain a stream handle
+... s = b.streamFromUUID(uu)
+>>> s.exists()
+False
 >>>
 >>> # Create the stream
->>> import time
->>> err = endpoint.create(u, "a/b/c", {"created_by": "me"}, {"time": str(time.time())})
->>> print err
-<success>
+... s = b.create(uu, "a/b/c", {"created_by": b"me", "time_created": bytes(str(time.time()), "ascii")})
+>>> s.exists()
+True
 >>>
 >>> # Insert some data
-... # We have to use the "sync" flag because we want the insert to be committed immediately, so that we can query it right away
-... version, err = endpoint.insert(u, ((1, 10), (3, 14), (5, 19), (9, 13)), sync = True)
+... version = s.insert(((1, 10), (3, 14), (5, 19), (9, 13)), sync = True)
 >>> version
-0L
->>> print err
-<success>
->>> # Query some data
-... generator = context.rawValues(u, 0, 7)
->>> for batch in generator:
-...     result, version, err = batch
-...     print result
-...     print version
-...     print err
-...
-[RawPoint(1L, 10.0), RawPoint(3L, 14.0), RawPoint(5L, 19.0)]
-11
-<success>
+0
 >>>
+>>> # Query some data
+... for rawpoint, version in s.rawValues(0, 7):
+...     print("{0}: {1}".format(rawpoint, version))
+...
+>>> 
 ```

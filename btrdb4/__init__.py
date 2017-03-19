@@ -30,260 +30,164 @@ The 'btrdb4' module provides Python bindings to interact with BTrDB.
 """
 
 import grpc
-import btrdb4.btrdb_pb2
-import btrdb4.btrdb_pb2_grpc
 
-class ChangedRange(object):
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
+from btrdb4.endpoint import Endpoint
+from btrdb4.utils import *
 
-    @staticmethod
-    def fromProto(proto):
-        return ChangedRange(proto.start, proto.end)
-
-    @staticmethod
-    def fromProtoList(protoList):
-        crlist = []
-        for proto in protoList:
-            cr = ChangedRange.fromProto(proto)
-            crlist.append(cr)
-        return crlist
-
-    def __getitem__(self, index):
-        if index == 0:
-            return self.start
-        elif index == 1:
-            return self.end
-        else:
-            raise IndexError("ChangedRange index out of range")
-
-    def __repr__(self):
-        return "ChangedRange({0}, {1})".format(repr(self.time), repr(self.value))
-
-class RawPoint(object):
-    def __init__(self, time, value):
-        self.time = time
-        self.value = value
-
-    @staticmethod
-    def fromProto(proto):
-        return RawPoint(proto.time, proto.value)
-
-    @staticmethod
-    def fromProtoList(protoList):
-        rplist = []
-        for proto in protoList:
-            rp = RawPoint.fromProto(proto)
-            rplist.append(rp)
-        return rplist
-
-    def __getitem__(self, index):
-        if index == 0:
-            return self.time
-        elif index == 1:
-            return self.value
-        else:
-            raise IndexError("RawPoint index out of range")
-
-    @staticmethod
-    def toProto(rp):
-        return btrdb_pb2.RawPoint(time = rp[0], value = rp[1])
-
-    @staticmethod
-    def toProtoList(rplist):
-        protoList = []
-        for rp in rplist:
-            proto = RawPoint.toProto(rp)
-            protoList.append(proto)
-        return protoList
-
-    def __repr__(self):
-        return "RawPoint({0}, {1})".format(repr(self.time), repr(self.value))
-
-
-class StatPoint(object):
-    def __init__(self, time, minv, meanv, maxv, count):
-        self.time = time
-        self.min = minv
-        self.mean = meanv
-        self.max = maxv
-        self.count = count
-
-    @staticmethod
-    def fromProto(proto):
-        return StatPoint(proto.time, proto.min, proto.mean, proto.max, proto.count)
-
-    @staticmethod
-    def fromProtoList(protoList):
-        splist = []
-        for proto in protoList:
-            sp = StatPoint.fromProto(proto)
-            splist.append(sp)
-        return splist
-
-    def __getitem__(self, index):
-        if index == 0:
-            return self.time
-        elif index == 1:
-            return self.min
-        elif index == 2:
-            return self.mean
-        elif index == 3:
-            return self.max
-        elif index == 4:
-            return self.count
-        else:
-            raise IndexError("RawPoint index out of range")
-
-    def __repr__(self):
-        return "StatPoint({0}, {1})".format(repr(self.time), repr(self.min), repr(self.mean), repr(self.max), repr(self.count))
-
-class BTrDBError(object):
-    def __init__(self, code, msg, mash):
-        self.code = code
-        self.msg = msg
-        self.mash = mash
-
-    @staticmethod
-    def fromProtoStat(protoStatus):
-        return BTrDBError(protoStatus.code, protoStatus.msg, protoStatus.mash)
-
-    def isError(self):
-        return self.code != 0
-
-    def __repr__(self):
-        return "BTrDBError({0}, {1}, {2})".format(repr(self.code), repr(self.msg), repr(self.mash))
-
-    def __str__(self):
-        if self.isError():
-            return "[{0}] {1}".format(self.code, self.msg)
-        else:
-            return "<success>"
-
-class BTrDBConnection(object):
+class Connection(object):
     def __init__(self, addrportstr):
         self.channel = grpc.insecure_channel(addrportstr)
 
     def newContext(self):
-        return BTrDBEndpoint(self.channel)
+        e = Endpoint(self.channel)
+        return BTrDB(e)
 
+class BTrDB(object):
+    def __init__(self, endpoint):
+        self.ep = endpoint
 
-class BTrDBEndpoint(object):
-    def __init__(self, channel):
-        self.stub = btrdb_pb2_grpc.BTrDBStub(channel)
+    def streamFromUUID(self, uu):
+        return Stream(self, uu)
 
-    def rawValues(self, uu, start, end, version = 0):
-        params = btrdb_pb2.RawValuesParams(uuid = uu.bytes, start = start, end = end, versionMajor = version)
-        for result in self.stub.RawValues(params):
-            yield RawPoint.fromProtoList(result.values), result.versionMajor, BTrDBError.fromProtoStat(result.stat)
+    def create(self, uu, collection, tags = None, annotations = None):
+        if tags is None:
+            tags = {}
+        if annotations is None:
+            annotations = {}
 
-    def alignedWindows(self, uu, start, end, pointwidth, version = 0):
-        params = btrdb_pb2.AlignedWindowsParams(uuid = uu.bytes, start = start, end = end, versionMajor = version, pointWidth = pointwidth)
-        for result in self.stub.AlignedWindows(params):
-            yield StatPoint.fromProtoList(result.values), result.versionMajor, BTrDBError.fromProtoStat(result.stat)
-
-    def windows(self, uu, start, end, width, depth, version = 0):
-        params = btrdb_pb2.WindowsParams(uuid = uu.bytes, start = start, end = end, versionMajor = version, width = width, depth = depth)
-        for result in self.stub.Windows(params):
-            yield StatPoint.fromProtoList(result.values), result.versionMajor, BTrDBError.fromProtoStat(result.stat)
-
-    def streamInfo(self, uu, omitDescriptor, omitVersion):
-        params = btrdb_pb2.StreamInfoParams(uuid = uu.bytes, omitVersion = omitVersion, omitDescriptor = omitDescriptor)
-        result = self.stub.StreamInfo(params)
-        desc = result.descriptor
-        tags = {}
-        for tag in desc.tags:
-            tags[tag.key] = tag.value
-        anns = {}
-        for ann in desc.annotations:
-            anns[ann.key] = ann.value
-        return desc.collection, desc.annotationVersion, tags, anns, result.versionMajor, BTrDBError.fromProtoStat(result.stat)
-
-    def setStreamAnnotations(self, uu, expected, changes):
-        annkvlist = []
-        for k, v in changes.iteritems():
-            if v is None:
-                ov = None
-            else:
-                ov = btrdb_pb2.OptValue(v)
-            kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
-            annkvlist.append(kv)
-        params = btrdb_pb2.SetStreamAnnotationsParams(uuid = uu.bytes, expectedAnnotationVersion = expected, annotations = annkvlist)
-        result = self.stub.SetStreamAnnotations(params)
-        return BTrDBError.fromProtoStat(result.stat)
-
-    def create(self, uu, collection, tags = {}, annotations = {}):
-        tagkvlist = []
-        for k, v in tags.iteritems():
-            kv = btrdb_pb2.KeyValue(key = k, value = v)
-            tagkvlist.append(kv)
-        annkvlist = []
-        for k, v in annotations.iteritems():
-            kv = btrdb_pb2.KeyValue(key = k, value = v)
-            annkvlist.append(kv)
-        params = btrdb_pb2.CreateParams(uuid = uu.bytes, collection = collection, tags = tagkvlist, annotations = annkvlist)
-        result = self.stub.Create(params)
-        return BTrDBError.fromProtoStat(result.stat)
-
-    def listCollections(self, prefix, startingAt, limit):
-        params = btrdb_pb2.ListCollectionsParams(prefix = prefix, startWith = startingAt, limit = limit)
-        result = self.stub.ListCollections(params)
-        return result.collections, BTrDBError.fromProtoStat(result.stat)
-
-    def lookupStreams(self, collection, isCollectionPrefix, tags, annotations):
-        tagkvlist = []
-        for k, v in tags.iteritems():
-            if v is None:
-                ov = None
-            else:
-                ov = btrdb_pb2.OptValue(v)
-            kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
-            tagkvlist.append(kv)
-        annkvlist = []
-        for k, v in annotations.iteritems():
-            if v is None:
-                ov = None
-            else:
-                ov = btrdb_pb2.OptValue(v)
-            kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
-            annkvlist.append(kv)
-        params = btrdb_pb2.LookupStreamsParams(collection = collection, isCollectionPrefix = isCollectionPrefix, tags = tagkvlist, annotations = annkvlist)
-        for result in self.stub.LookupStreams(params):
-            yield result.results, BTrDBError.fromProtoStat(result.stat)
-
-    def nearest(self, uu, time, version, backward):
-        params = btrdb_pb2.NearestParams(uuid = uu.bytes, time = time, versionMajor = version, backward = backward)
-        result = self.stub.Nearest(params)
-        return result.value, result.versionMajor, BTrDBError.fromProtoStat(result.stat)
-
-    def changes(self, uu, fromVersion, toVersion, resolution):
-        params = btrdb_pb2.ChangesParams(uuid = uu.bytes, fromMajor = fromVersion, toMajor = toVersion, resolution = resolution)
-        for result in self.stub.Changes(params):
-            yield ChangedRange.fromProtoList(result.ranges), result.versionMajor, BTrDBError.fromProtoStat(result.stat)
-
-    def insert(self, uu, values, sync = False):
-        protoValues = RawPoint.toProtoList(values)
-        params = btrdb_pb2.InsertParams(uuid = uu.bytes, sync = sync, values = protoValues)
-        result = self.stub.Insert(params)
-        return result.versionMajor, BTrDBError.fromProtoStat(result.stat)
-
-    def deleteRange(self, uu, start, end):
-        params = btrdb_pb2.DeleteParams(uuid = uu.bytes, start = start, end = end)
-        result = self.stub.Delete(params)
-        return result.versionMajor, BTrDBError.fromProtoStat(result.stat)
+        self.ep.create(uu, collection, tags, annotations)
+        return Stream(self, uu, True, collection, tags.copy(), annotations.copy(), 0)
 
     def info(self):
-        params = btrdb_pb2.InfoParams()
-        result = self.stub.Info(params)
-        return result.mash, BTrDBError.fromProtoStat(result.stat)
+        return self.ep.info()
 
-    def faultInject(self, typ, args):
-        params = btrdb_pb2.FaultInjectParams(type = typ, params = args)
-        result = self.stub.FaultInject(params)
-        return result.rv, BTrDBError.fromProtoStat(result.stat)
+    def listCollections(self, prefix):
+        colls = (prefix,)
+        maximum = 10
+        got = maximum
+        while got == maximum:
+            startingAt = colls[-1]
+            colls = self.ep.listCollections(prefix, colls, maximum)
+            for coll in colls:
+                yield coll
+            got = len(colls)
 
-    def flush(self, uu):
-        params = btrdb_pb2.FlushParams(uuid = uu.bytes)
-        result = self.stub.Flush(params)
-        return BTrDBError.fromProtoStat(result.stat)
+    def lookupStreams(self, collection, isCollectionPrefix, tags = None, annotations = None):
+        if tags is None:
+            tags = {}
+        if annotations is None:
+            annotations = {}
+
+        streams = self.ep.lookupStreams(collection, isCollectionPrefix, tags, annotations)
+        for desc in streams:
+            tagsanns = unpackProtoStreamDescriptor(desc)
+            yield Stream(self.b, desc.uuid, True, desc.collection, desc.annotationVersion, *tagsanns)
+
+
+class Stream(object):
+    def __init__(self, btrdb, uuid, knownToExist = False, collection = None, tags = None, annotations = None, annotationVersion = None):
+        self.b = btrdb
+        self.uuid = uuid
+        self.knownToExist = knownToExist
+
+        # Some cacheable attributes
+        self.tags = tags
+        self.annotations = annotations
+        self.annotationVersion = annotationVersion
+        self.collection = collection
+
+    def refreshMeta(self):
+        ep = self.b.ep
+        self.collection, self.annotationVersion, self.tags, self.annotations, _ = ep.streamInfo(self.uuid, False, True)
+        self.knownToExist = True
+
+    def exists(self):
+        if self.knownToExist:
+            return True
+
+        try:
+            self.refreshMeta()
+            return True
+        except BTrDBError as bte:
+            if bte.code == 404:
+                return False
+            raise
+
+    def uuid(self):
+        return self.uuid
+
+    def tags(self):
+        if self.tags is not None:
+            return self.tags
+
+        self.refreshMeta()
+        return self.tags
+
+    def annotations(self):
+        self.refreshMeta()
+        return self.annotations, self.annotationVersion
+
+    def cachedAnnotations(self):
+        if self.annotations is None:
+            self.refeshMeta()
+        return self.annotations, self.annotationVersion
+
+    def collection(self):
+        if self.collection is not None:
+            return self.collection
+
+        self.refreshMeta()
+        return self.collection
+
+    def version(self):
+        ep = self.b.ep
+        _, _, _, _, ver = ep.streamInfo(self.uuid, True, False)
+        return ver
+
+    def insert(self, vals, sync = False):
+        ep = self.b.ep
+        batchsize = 5000
+        i = 0
+        version = 0
+        while i < len(vals):
+            thisBatch = vals[i:i + batchsize]
+            version = ep.insert(self.uuid, thisBatch, sync = sync)
+            i += batchsize
+        return version
+
+    def rawValues(self, start, end, version = 0):
+        ep = self.b.ep
+        rps = ep.rawValues(self.uuid, start, end, version)
+        for rplist, version in rps:
+            for rp in rplist:
+                yield RawPoint.fromProto(rp), version
+
+    def alignedWindows(self, start, end, pointwidth, version = 0):
+        ep = self.b.ep
+        sps = ep.alignedWindows(self.uuid, start, end, pointwidth, version)
+        for splist, version in sps:
+            for sp in splist:
+                yield StatPoint.fromProto(sp), version
+
+    def windows(self, start, end, width, depth = 0, version = 0):
+        ep = self.b.ep
+        sps = ep.windows(self.uuid, start, end, width, depth, version)
+        for splist, version in sps:
+            for sp in splist:
+                yield StatPoint.fromProto(sp), version
+
+    def deleteRange(self, start, end):
+        ep = self.b.ep
+        return ep.deleteRange(self.uuid, start, end)
+
+    def nearest(self, time, version, backward):
+        ep = self.b.ep
+        rp, version = ep.nearest(self.uuid, time, version, backward)
+        return RawPoint.fromProto(rp), version
+
+    def changes(self, fromVersion, toVersion, resolution):
+        ep = self.b.ep
+        crs = ep.changes(self.uuid, fromVersion, toVersion, resolution)
+        for crlist, version in crs:
+            for cr in crlist:
+                yield ChangeRange.fromProto(cr), version
