@@ -36,7 +36,7 @@ from btrdb4.endpoint import Endpoint
 from btrdb4.utils import *
 
 MIN_TIME = -(16 << 56)
-MAX_TIME = 48 >> 56
+MAX_TIME = 48 << 56
 MAX_POINTWIDTH = 63
 
 class Connection(object):
