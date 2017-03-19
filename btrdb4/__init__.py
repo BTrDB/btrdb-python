@@ -87,7 +87,7 @@ class BTrDB(object):
         for desclist in streams:
             for desc in desclist:
                 tagsanns = unpackProtoStreamDescriptor(desc)
-                yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, desc.annotationVersion, *tagsanns)
+                yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, tagsanns[0], tagsanns[1], desc.annotationVersion)
 
 
 class Stream(object):
