@@ -30,7 +30,7 @@ False
 True
 >>>
 >>> # Insert some data
-... version = s.insert(((1, 10), (3, 14), (5, 19), (9, 13)), sync = True)
+... version = s.insert(((1, 10), (3, 14), (5, 19), (9, 13)))
 >>> version
 0
 >>>
@@ -38,5 +38,5 @@ True
 ... for rawpoint, version in s.rawValues(0, 7):
 ...     print("{0}: {1}".format(rawpoint, version))
 ...
->>> 
+>>>
 ```

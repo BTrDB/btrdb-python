@@ -128,9 +128,9 @@ class Endpoint(object):
             BTrDBError.checkProtoStat(result.stat)
             yield result.ranges, result.versionMajor
 
-    def insert(self, uu, values, sync = False):
+    def insert(self, uu, values):
         protoValues = RawPoint.toProtoList(values)
-        params = btrdb_pb2.InsertParams(uuid = uu.bytes, sync = sync, values = protoValues)
+        params = btrdb_pb2.InsertParams(uuid = uu.bytes, sync = False, values = protoValues)
         result = self.stub.Insert(params)
         BTrDBError.checkProtoStat(result.stat)
         return result.versionMajor

@@ -157,7 +157,7 @@ class StatPoint(object):
             raise IndexError("RawPoint index out of range")
 
     def __repr__(self):
-        return "StatPoint({0}, {1})".format(repr(self.time), repr(self.min), repr(self.mean), repr(self.max), repr(self.count))
+        return "StatPoint({0}, {1}, {2}, {3}, {4})".format(repr(self.time), repr(self.min), repr(self.mean), repr(self.max), repr(self.count))
 
 def unpackProtoStreamDescriptor(desc):
     tags = {}
