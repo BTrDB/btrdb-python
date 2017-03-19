@@ -27,6 +27,7 @@
 
 from btrdb4 import btrdb_pb2
 import isodate
+import datetime
 
 def date(dst):
     """
