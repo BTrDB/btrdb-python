@@ -26,6 +26,23 @@
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from btrdb4 import btrdb_pb2
+import isodate
+
+def date(dst):
+    """
+    This parses a modified isodate into nanoseconds since the epoch. The date format is:
+    YYYY-MM-DDTHH:MM:SS.NNNNNNNNN
+    Fields may be omitted right to left, but do not elide leading or trailing zeroes in any field
+    """
+    idate = dst[:26]
+    secs = (isodate.parse_datetime(idate) - datetime.datetime(1970,1,1)).total_seconds()
+    nsecs = int(secs*1000000) * 1000
+    nanoS = dst[26:]
+    if len(nanoS) != 3 and len(nanoS) != 0:
+        raise Exception("Invalid date string!")
+    if len(nanoS) == 3:
+        nsecs += int(nanoS)
+    return nsecs
 
 class ChangedRange(object):
     def __init__(self, start, end):
