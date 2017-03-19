@@ -10,7 +10,7 @@ setup(
   download_url = 'https://github.com/SoftwareDefinedBuildings/btrdb4-python/tarball/0.0.1',
   package_data = { 'btrdb4': ['grpcinterface/btrdb.proto'] },
   include_package_data = False,
-  install_requires = ["grpcio >= 1.1.3", "grpcio-tools >= 1.1.3"],
+  install_requires = ["grpcio >= 1.1.3", "grpcio-tools >= 1.1.3", "isodate >= 0.5.4"],
   keywords = ['btrdb', 'berkeley', 'timeseries', 'database', 'bindings' 'gRPC'],
   classifiers = []
 )

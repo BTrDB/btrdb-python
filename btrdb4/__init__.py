@@ -113,6 +113,7 @@ class Stream(object):
 
         try:
             self.refreshMeta()
+            self.knownToExist = True
             return True
         except BTrDBError as bte:
             if bte.code == 404:
