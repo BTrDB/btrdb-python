@@ -68,8 +68,10 @@ class Endpoint(object):
             if v is None:
                 ov = None
             else:
+                if isinstance(v, str):
+                    v = v.encode("utf-8")
                 ov = btrdb_pb2.OptValue(value = v)
-            kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
             annkvlist.append(kv)
         params = btrdb_pb2.SetStreamAnnotationsParams(uuid = uu.bytes, expectedAnnotationVersion = expected, annotations = annkvlist)
         result = self.stub.SetStreamAnnotations(params)
@@ -100,16 +102,20 @@ class Endpoint(object):
             if v is None:
                 ov = None
             else:
+                if isinstance(v, str):
+                    v = v.encode("utf-8")
                 ov = btrdb_pb2.OptValue(value = v)
-            kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
             tagkvlist.append(kv)
         annkvlist = []
         for k, v in annotations.items():
             if v is None:
                 ov = None
             else:
+                if isinstance(v, str):
+                    v = v.encode("utf-8")
                 ov = btrdb_pb2.OptValue(value = v)
-            kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
             annkvlist.append(kv)
         params = btrdb_pb2.LookupStreamsParams(collection = collection, isCollectionPrefix = isCollectionPrefix, tags = tagkvlist, annotations = annkvlist)
         for result in self.stub.LookupStreams(params):
