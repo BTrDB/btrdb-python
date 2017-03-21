@@ -29,13 +29,13 @@ from btrdb4 import btrdb_pb2
 import isodate
 import datetime
 
-nanosecond=1
-microsecond=1000*nanosecond
-millisecond=1000*microsecond
-second=1000*millisecond
-minute=60*second
-hour = 60*minute
-day = 24*hour
+NANOSECOND = 1
+MICROSECOND = 1000 * NANOSECOND
+MILLISECOND = 1000 * MICROSECOND
+SECOND = 1000 * MILLISECOND
+MINUTE = 60 * SECOND
+HOUR = 60 * MINUTE
+DAY = 24 * HOUR
 
 def date(dst):
     """
