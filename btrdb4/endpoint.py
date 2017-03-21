@@ -68,7 +68,7 @@ class Endpoint(object):
             if v is None:
                 ov = None
             else:
-                ov = btrdb_pb2.OptValue(v)
+                ov = btrdb_pb2.OptValue(value = v)
             kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
             annkvlist.append(kv)
         params = btrdb_pb2.SetStreamAnnotationsParams(uuid = uu.bytes, expectedAnnotationVersion = expected, annotations = annkvlist)
@@ -100,7 +100,7 @@ class Endpoint(object):
             if v is None:
                 ov = None
             else:
-                ov = btrdb_pb2.OptValue(v)
+                ov = btrdb_pb2.OptValue(value = v)
             kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
             tagkvlist.append(kv)
         annkvlist = []
@@ -108,7 +108,7 @@ class Endpoint(object):
             if v is None:
                 ov = None
             else:
-                ov = btrdb_pb2.OptValue(v)
+                ov = btrdb_pb2.OptValue(value = v)
             kv = btrdb_pb2.KeyOptValue(key = k, value = ov)
             annkvlist.append(kv)
         params = btrdb_pb2.LookupStreamsParams(collection = collection, isCollectionPrefix = isCollectionPrefix, tags = tagkvlist, annotations = annkvlist)
