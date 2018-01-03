@@ -1,9 +1,10 @@
 BTrDB Bindings for Python
 =========================
-These are BTrDB Bindings for Python are meant to be used with Python's multithreading library. Documentation can be generated using pydoc.
+These are BTrDB Bindings for Python meant to be used with Python's multithreading library. Documentation can be generated using pydoc.
 
 Here is an example:
-```
+```python
+
 >>> # This works for both Python 2 and Python 3
 ...
 >>> import btrdb4
