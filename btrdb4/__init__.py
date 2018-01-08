@@ -108,6 +108,21 @@ class Stream(object):
         self.knownToExist = True
 
     def exists(self):
+        # type: () -> bool
+        """
+        Check if stream exists
+        
+        Exists returns true if the stream exists. This is essential after using
+        StreamFromUUID as the stream may not exist, causing a 404 error on
+        later stream operations. Any operation that returns a stream from
+        collection and tags will have ensured the stream exists already.
+        
+        Returns
+        -------
+        bool
+            indicates whether stream exists
+        """
+        
         if self.knownToExist:
             return True
 
