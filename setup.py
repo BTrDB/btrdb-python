@@ -6,7 +6,7 @@ setup(
   description = "Bindings to interact with the Berkeley Tree Database using gRPC",
   author = 'Sam Kumar, Michael P Andersen',
   author_email = 'samkumar99@gmail.com, michael@steelcode.com',
-  url = 'https://github.com/SoftwareDefinedBuildings/btrdb4-python',
+  url = 'https://github.com/BTrDB/btrdb4-python',
   download_url = 'https://github.com/SoftwareDefinedBuildings/btrdb4-python/tarball/0.0.1',
   package_data = { 'btrdb4': ['grpcinterface/btrdb.proto'] },
   include_package_data = False,

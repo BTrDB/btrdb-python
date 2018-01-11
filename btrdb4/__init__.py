@@ -44,19 +44,56 @@ class Connection(object):
         self.channel = grpc.insecure_channel(addrportstr)
 
     def newContext(self):
+        # type: () -> BTrDB
         e = Endpoint(self.channel)
         return BTrDB(e)
 
 class BTrDB(object):
     def __init__(self, endpoint):
+        # type: (Endpoint) -> None
         self.ep = endpoint
 
     def streamFromUUID(self, uu):
+        # type: (UUID) -> Stream
+        """
+        Creates a stream handle to the BTrDB stream with the UUID `uu`.
+
+        Creates a stream handle to the BTrDB stream with the UUID `uu`. This method does not check whether a stream with the specified UUID exists. It is always good form to check whether the stream existed using stream.exists().
+
+
+        Parameters
+        ----------
+        uu: UUID
+            the uuid of the requested stream
+
+        Returns
+        -------
+        Stream
+            a Stream class object
+
+        """
+
         return Stream(self, uu)
 
-    def create(self, uu, collection, tags = None, annotations = None):
+    def create(self, uu, collection, tags=None, annotations=None):
+        # type: (UUID, str, Dict[str, str], Dict[str, str]) -> Stream
+        """
+        Tells BTrDB to create a new stream with UUID `uu` in `collection` with specified `tags` and `annotations`.
+
+        Parameters
+        ----------
+        uu: UUID
+            the uuid of the requested stream
+
+        Returns
+        -------
+        Stream
+            a Stream class object
+        """
+
         if tags is None:
             tags = {}
+
         if annotations is None:
             annotations = {}
 
@@ -64,6 +101,11 @@ class BTrDB(object):
         return Stream(self, uu, True, collection, tags.copy(), annotations.copy(), 0)
 
     def info(self):
+        # type: () -> (Mash)
+        """
+        Returns information about the connected BTrDB srerver.
+        """
+
         return self.ep.info()
 
     def listCollections(self, prefix):
@@ -77,9 +119,11 @@ class BTrDB(object):
                 yield coll
             got = len(colls)
 
-    def lookupStreams(self, collection, isCollectionPrefix, tags = None, annotations = None):
+    def lookupStreams(self, collection, isCollectionPrefix, tags=None, annotations=None):
+
         if tags is None:
             tags = {}
+
         if annotations is None:
             annotations = {}
 
@@ -103,6 +147,7 @@ class Stream(object):
         self.cachedCollection = collection
 
     def refreshMeta(self):
+        # type: () -> ()
         ep = self.b.ep
         self.cachedCollection, self.cachedAnnotationVersion, self.cachedTags, self.cachedAnnotations, _ = ep.streamInfo(self.uu, False, True)
         self.knownToExist = True
@@ -135,6 +180,28 @@ class Stream(object):
             raise
 
     def uuid(self):
+        # type: () -> UUID
+        """
+        Returns the stream's UUID. 
+
+        This method returns the stream's UUID. The stream may nor may not exist yet, depending on how the stream object was obtained.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        UUID
+            the UUID of the stream
+
+
+        See Also
+        --------
+        stream.exists()
+
+        """
+
         return self.uu
 
     def tags(self):
@@ -154,6 +221,17 @@ class Stream(object):
         return self.cachedAnnotations, self.cachedAnnotationVersion
 
     def collection(self):
+        # type: () -> str
+        """
+        Returns the collection of the stream. It may require a round trip to the server depending on how the stream was acquired.
+
+        Returns
+        -------
+        str
+            the collection of the stream
+
+        """
+        
         if self.cachedCollection is not None:
             return self.cachedCollection
 
@@ -176,21 +254,107 @@ class Stream(object):
             i += batchsize
         return version
 
-    def rawValues(self, start, end, version = 0):
+    def rawValues(self, start, end, version=0):
+        # type: (int, int, int) -> Tuple(RawPoint, int)
+
+        """
+        Read raw values from BTrDB between time [a, b) in nanoseconds.
+
+        RawValues queries BTrDB for the raw time series data points between `start` and `end` time, both in nanoseconds since the Epoch for the specified stream `version`.
+
+        Parameters
+        ----------
+        start: int
+            the start time in nanoseconds for the range to be retrieved
+        end : int
+            the end time in nanoseconds for the range to be deleted 
+        version: int
+            the version of the stream to be queried
+
+        Yields
+        ------
+        (RawPoint, version) : (RawPoint, int)
+            Returns a tuple containing a RawPoint and the stream version
+
+
+        Notes
+        -----
+        Note that the raw data points are the original values at the sensor's native sampling rate (assuming the time series represents measurements from a sensor). This is the lowest level of data with the finest time granularity. In the tree data structure of BTrDB, this data is stored in the vector nodes.
+
+        """
+
         ep = self.b.ep
         rps = ep.rawValues(self.uu, start, end, version)
         for rplist, version in rps:
             for rp in rplist:
                 yield RawPoint.fromProto(rp), version
 
-    def alignedWindows(self, start, end, pointwidth, version = 0):
+    def alignedWindows(self, start, end, pointwidth, version=0):
+        # type: (int, int, int, int) -> Tuple(StatPoint, int)
+
+        """
+        Read statistical aggregates of windows of data from BTrDB.
+        
+        Query BTrDB for aggregates (or roll ups or windows) of the time series with `version` between time `start` (inclusive) and `end` (exclusive) in nanoseconds. Each point returned is a statistical aggregate of all the raw data within a window of width 2**`pointwidth` nanoseconds. These statistical aggregates currently include the mean, minimum, and maximum of the data and the count of data points composing the window.
+
+        Note that `start` is inclusive, but `end` is exclusive. That is, results will be returned for all windows that start in the interval [start, end). If end < start+2^pointwidth you will not get any results. If start and end are not powers of two, the bottom pointwidth bits will be cleared. Each window will contain statistical summaries of the window. Statistical points with count == 0 will be omitted.
+
+        Parameters
+        ----------
+        start : int
+            the start time in nanoseconds for the range to be queried
+        end : int
+            the end time in nanoseconds for the range to be queried
+        pointwidth : int
+            specify the number of ns between data points (2**pointwidth)
+        version : int
+            version of the stream to query
+
+        Yields
+        ------
+        (StatPoint, int)
+            Returns a tuple containing a StatPoint and the stream version
+
+
+        Notes
+        -----
+        As the window-width is a power-of-two, it aligns with BTrDB internal tree data structure and is faster to execute than `windows()`.
+        """
+
         ep = self.b.ep
         sps = ep.alignedWindows(self.uu, start, end, pointwidth, version)
         for splist, version in sps:
             for sp in splist:
                 yield StatPoint.fromProto(sp), version
 
-    def windows(self, start, end, width, depth = 0, version = 0):
+    def windows(self, start, end, width, depth=0, version=0):
+        # type: (int, int, int, int, int) -> Tuple(StatPoint, int)
+
+        """
+        Read arbitrarily-sized windows of data from BTrDB.
+
+        Windows returns arbitrary precision windows from BTrDB. It is slower than AlignedWindows, but still significantly faster than RawValues. Each returned window will be `width` nanoseconds long. `start` is inclusive, but `end` is exclusive (e.g if end < start+width you will get no results). That is, results will be returned for all windows that start at a time less than the end timestamp. If (`end` - `start`) is not a multiple of width, then end will be decreased to the greatest value less than end such that (end - start) is a multiple of `width` (i.e., we set end = start + width * floordiv(end - start, width). The `depth` parameter is an optimization that can be used to speed up queries on fast queries. Each window will be accurate to 2^depth nanoseconds. If depth is zero, the results are accurate to the nanosecond. On a dense stream for large windows, this accuracy may not be required. For example for a window of a day, +- one second may be appropriate, so a depth of 30 can be specified. This is much faster to execute on the database side.
+        
+
+        Parameters
+        ----------
+        start : int
+            the start time in nanoseconds for the range to be queried
+        end : int
+            the end time in nanoseconds for the range to be queried
+        width : int
+            specify the number of ns between data points
+        depth : int
+
+        version : int
+            version of the stream to query
+
+        Yields
+        ------
+        (StatPoint, int)
+            Returns a tuple containing a StatPoint and the stream version
+        """
+
         ep = self.b.ep
         sps = ep.windows(self.uu, start, end, width, depth, version)
         for splist, version in sps:
@@ -198,10 +362,62 @@ class Stream(object):
                 yield StatPoint.fromProto(sp), version
 
     def deleteRange(self, start, end):
+        # type: (int, int) -> int
+
+        """
+        "Delete" all points between [`start`, `end`)
+
+        "Delete" all points between `start` (inclusive) and `end` (exclusive), both in nanoseconds. As BTrDB has persistent multiversioning, the deleted points will still exist as part of an older version of the stream.
+
+        Parameters
+        ----------
+        start : int
+            the start time in nanoseconds for the range to be deleted
+        end : int
+            the end time in nanoseconds for the range to be deleted 
+
+        Returns
+        -------
+        int
+            the version of the new stream created
+
+        """
         ep = self.b.ep
         return ep.deleteRange(self.uu, start, end)
 
     def nearest(self, time, version, backward):
+        # type: (int, int, bool) -> Tuple[RawPoint, int]
+
+        """
+        Finds the closest point in the stream to a specified time.
+
+        Return the point nearest to the specified `time` in nanoseconds since Epoch in the stream with `version` while specifying whether to search forward or backward in time. If `backward` is false, the returned point will be >= `time`. If backward is true, the returned point will be < `time`. The version of the stream used to satisfy the query is returned.
+
+
+        Parameters
+        ----------
+        time : int
+            The time (in nanoseconds since Epoch) to search near 
+        version : int
+            Version of the stream to use in search
+        backward : boolean
+            True to search backwards from time, else false for forward
+
+        Returns
+        -------
+        RawPoint
+            The point closest to time
+        int
+            Version of the stream used to satisfy the query
+
+
+        Raises
+        ------
+        BTrDBError [401] no such point
+            No point satisfies the query in the direction specified
+
+        """
+
         ep = self.b.ep
         rp, version = ep.nearest(self.uu, time, version, backward)
         return RawPoint.fromProto(rp), version
