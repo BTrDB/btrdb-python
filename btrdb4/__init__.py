@@ -64,12 +64,12 @@ class BTrDB(object):
         Parameters
         ----------
         uu: UUID
-            the uuid of the requested stream
+            The uuid of the requested stream.
 
         Returns
         -------
         Stream
-            a Stream class object
+            A Stream class object.
 
         """
 
@@ -83,7 +83,7 @@ class BTrDB(object):
         Parameters
         ----------
         uu: UUID
-            the uuid of the requested stream
+            The uuid of the requested stream.
 
         Returns
         -------
@@ -108,6 +108,9 @@ class BTrDB(object):
 
         return self.ep.info()
 
+    """
+    This function does not work (1/12/2018) so it is being commented out.
+
     def listCollections(self, prefix):
         colls = (prefix,)
         maximum = 10
@@ -119,7 +122,33 @@ class BTrDB(object):
                 yield coll
             got = len(colls)
 
+    """
+
     def lookupStreams(self, collection, isCollectionPrefix, tags=None, annotations=None):
+        # type: (str, bool, Dict[str, str], Dict[str, str]) -> Stream
+
+        """
+        Search for streams matching given parameters
+
+        This function allows for searching 
+
+        Parameters
+        ----------
+        collection: str
+            The name of the collection to be found, case sensitive.
+        isCollectionPrefix: bool
+            Whether the collection is a prefix.
+        tags: Dict[str, str]
+            The tags to identify the stream.
+        annotations: Dict[str, str]
+            The annotations to identify the stream.
+
+        Yields
+        ------
+        Stream Generator
+            A stream generator that iterates over the search results.
+
+        """
 
         if tags is None:
             tags = {}
@@ -148,6 +177,13 @@ class Stream(object):
 
     def refreshMeta(self):
         # type: () -> ()
+        """
+        Refreshes the locally cached meta data for a stream
+
+        Queries the BTrDB server for all stream metadata including collection, annotation, and tags. This method requires a round trip to the server.
+
+        """
+
         ep = self.b.ep
         self.cachedCollection, self.cachedAnnotationVersion, self.cachedTags, self.cachedAnnotations, _ = ep.streamInfo(self.uu, False, True)
         self.knownToExist = True
@@ -165,7 +201,7 @@ class Stream(object):
         Returns
         -------
         bool
-            indicates whether stream exists
+            Indicates whether stream exists.
         """
         
         if self.knownToExist:
@@ -193,7 +229,7 @@ class Stream(object):
         Returns
         -------
         UUID
-            the UUID of the stream
+            The UUID of the stream.
 
 
         See Also
@@ -205,6 +241,22 @@ class Stream(object):
         return self.uu
 
     def tags(self):
+        # type: () -> Dict[str, str]
+        """
+        Returns the stream's tags.
+
+        Tags returns the tags of the stream. It may require a round trip to the server depending on how the stream was acquired. Do not modify the resulting map as it is a reference to the internal stream state.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        List[Dict[str, str]]
+            A list of dictionaries containing the tags.
+
+        """
         if self.cachedTags is not None:
             return self.cachedTags
 
@@ -212,10 +264,45 @@ class Stream(object):
         return self.cachedTags
 
     def annotations(self):
+        # type: () -> Tuple[Dict[str, str], int]
+        """
+
+        Returns a stream's annotations
+
+        Annotations returns the annotations of the stream (and the annotation version). It will always require a round trip to the server. If you are ok with stale data and want a higher performance version, use Stream.CachedAnnotations().
+
+        Do not modify the resulting map.
+        
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        Tuple[Dict[str, str], int]
+            A tuple containing a dictionary of annotations and an integer representing the version of those annotations.
+
+        """
         self.refreshMeta()
         return self.cachedAnnotations, self.cachedAnnotationVersion
 
     def cachedAnnotations(self):
+        # type: () -> Tuple[Dict[str, str], int]
+        """
+
+        CachedAnnotations returns the annotations of the stream, reusing previous results if available, otherwise fetching from the server.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        Tuple[Dict[str, str], int]
+            A tuple containing a dictionary of annotations and an integer representing the version of those annotations.
+
+        """
         if self.cachedAnnotations is None:
             self.refeshMeta()
         return self.cachedAnnotations, self.cachedAnnotationVersion
@@ -231,7 +318,7 @@ class Stream(object):
             the collection of the stream
 
         """
-        
+
         if self.cachedCollection is not None:
             return self.cachedCollection
 
@@ -239,11 +326,39 @@ class Stream(object):
         return self.cachedCollection
 
     def version(self):
+        # type: () -> int
+        """
+        Returns the current data version of the stream.
+
+        Version returns the current data version of the stream. This is not cached, it queries each time. Take care that you do not intorduce races in your code by assuming this function will always return the same vaue
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        int
+            The version of the stream.
+
+        """
         ep = self.b.ep
         _, _, _, _, ver = ep.streamInfo(self.uu, True, False)
         return ver
 
     def insert(self, vals):
+        # type: List[Tuple[int, float]] -> int
+        """
+        Insert new data in the form (time, value) into the series.
+
+        Inserts a list of new (time, value) tuples into the series. The tuples in the list need not be sorted by time. If the arrays are larger than appropriate, this function will automatically chunk the inserts. As a consequence, the insert is not necessarily atomic, but can be used with a very large array.
+
+        Returns
+        -------
+        version : int
+            The version of the stream after inserting new points.
+
+        """
         ep = self.b.ep
         batchsize = 5000
         i = 0
@@ -255,7 +370,7 @@ class Stream(object):
         return version
 
     def rawValues(self, start, end, version=0):
-        # type: (int, int, int) -> Tuple(RawPoint, int)
+        # type: (int, int, int) -> Tuple[RawPoint, int]
 
         """
         Read raw values from BTrDB between time [a, b) in nanoseconds.
@@ -265,11 +380,11 @@ class Stream(object):
         Parameters
         ----------
         start: int
-            the start time in nanoseconds for the range to be retrieved
+            The start time in nanoseconds for the range to be retrieved
         end : int
-            the end time in nanoseconds for the range to be deleted 
+            The end time in nanoseconds for the range to be deleted 
         version: int
-            the version of the stream to be queried
+            The version of the stream to be queried
 
         Yields
         ------
@@ -290,7 +405,7 @@ class Stream(object):
                 yield RawPoint.fromProto(rp), version
 
     def alignedWindows(self, start, end, pointwidth, version=0):
-        # type: (int, int, int, int) -> Tuple(StatPoint, int)
+        # type: (int, int, int, int) -> Tuple[StatPoint, int]
 
         """
         Read statistical aggregates of windows of data from BTrDB.
@@ -302,13 +417,13 @@ class Stream(object):
         Parameters
         ----------
         start : int
-            the start time in nanoseconds for the range to be queried
+            The start time in nanoseconds for the range to be queried
         end : int
-            the end time in nanoseconds for the range to be queried
+            The end time in nanoseconds for the range to be queried
         pointwidth : int
-            specify the number of ns between data points (2**pointwidth)
+            Specify the number of ns between data points (2**pointwidth)
         version : int
-            version of the stream to query
+            Version of the stream to query
 
         Yields
         ------
@@ -328,7 +443,7 @@ class Stream(object):
                 yield StatPoint.fromProto(sp), version
 
     def windows(self, start, end, width, depth=0, version=0):
-        # type: (int, int, int, int, int) -> Tuple(StatPoint, int)
+        # type: (int, int, int, int, int) -> Tuple[StatPoint, int]
 
         """
         Read arbitrarily-sized windows of data from BTrDB.
@@ -339,15 +454,15 @@ class Stream(object):
         Parameters
         ----------
         start : int
-            the start time in nanoseconds for the range to be queried
+            The start time in nanoseconds for the range to be queried
         end : int
-            the end time in nanoseconds for the range to be queried
+            The end time in nanoseconds for the range to be queried
         width : int
-            specify the number of ns between data points
+            Specify the number of ns between data points
         depth : int
 
         version : int
-            version of the stream to query
+            Version of the stream to query
 
         Yields
         ------
@@ -372,14 +487,14 @@ class Stream(object):
         Parameters
         ----------
         start : int
-            the start time in nanoseconds for the range to be deleted
+            The start time in nanoseconds for the range to be deleted
         end : int
-            the end time in nanoseconds for the range to be deleted 
+            The end time in nanoseconds for the range to be deleted 
 
         Returns
         -------
         int
-            the version of the new stream created
+            The version of the new stream created
 
         """
         ep = self.b.ep
@@ -422,13 +537,21 @@ class Stream(object):
         rp, version = ep.nearest(self.uu, time, version, backward)
         return RawPoint.fromProto(rp), version
 
+    """
+    This function does not work so is getting commented out. 1/12/18
+
     def changes(self, fromVersion, toVersion, resolution):
         ep = self.b.ep
         crs = ep.changes(self.uu, fromVersion, toVersion, resolution)
         for crlist, version in crs:
             for cr in crlist:
                 yield ChangeRange.fromProto(cr), version
+    """
 
     def flush(self):
+        # type: () -> None
+        """
+        Flush writes the stream buffers out to persistent storage.
+        """
         ep = self.b.ep
         ep.flush(self.uu)
