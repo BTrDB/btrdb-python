@@ -26,7 +26,7 @@ UUID('a5fba242-74c8-4e59-ad89-c1565ee3229c')
 False
 >>>
 >>> # Create the stream
-... s = b.create(uu, "a/b/c", {"created_by": b"me", "time_created": bytes(str(time.time()), "ascii")})
+... s = b.create(uu, "a/b/c", {"created_by": b"me", "time_created": bytes(str(time.time()))})
 >>> s.exists()
 True
 >>>
