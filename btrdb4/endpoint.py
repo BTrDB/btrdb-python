@@ -151,7 +151,7 @@ class Endpoint(object):
         params = btrdb_pb2.InfoParams()
         result = self.stub.Info(params)
         BTrDBError.checkProtoStat(result.stat)
-        return result.mash
+        return result
 
     def faultInject(self, typ, args):
         params = btrdb_pb2.FaultInjectParams(type = typ, params = args)

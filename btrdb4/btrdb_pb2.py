@@ -19,9 +19,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='btrdb.proto',
   package='grpcinterface',
   syntax='proto3',
-  serialized_pb=_b('\n\x0b\x62trdb.proto\x12\rgrpcinterface\"Q\n\x0fRawValuesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\"\x8d\x01\n\x11RawValuesResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\'\n\x06values\x18\x04 \x03(\x0b\x32\x17.grpcinterface.RawPoint\"j\n\x14\x41lignedWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\x12\n\npointWidth\x18\x05 \x01(\r\"\x93\x01\n\x16\x41lignedWindowsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12(\n\x06values\x18\x04 \x03(\x0b\x32\x18.grpcinterface.StatPoint\"m\n\rWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\r\n\x05width\x18\x05 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x06 \x01(\r\"\x8c\x01\n\x0fWindowsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12(\n\x06values\x18\x04 \x03(\x0b\x32\x18.grpcinterface.StatPoint\"M\n\x10StreamInfoParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x13\n\x0bomitVersion\x18\x02 \x01(\x08\x12\x16\n\x0eomitDescriptor\x18\x03 \x01(\x08\"\x9a\x01\n\x12StreamInfoResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x33\n\ndescriptor\x18\x04 \x01(\x0b\x32\x1f.grpcinterface.StreamDescriptor\"\xa4\x01\n\x10StreamDescriptor\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12%\n\x04tags\x18\x03 \x03(\x0b\x32\x17.grpcinterface.KeyValue\x12,\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x17.grpcinterface.KeyValue\x12\x19\n\x11\x61nnotationVersion\x18\x05 \x01(\x04\"~\n\x1aSetStreamAnnotationsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12!\n\x19\x65xpectedAnnotationVersion\x18\x02 \x01(\x04\x12/\n\x0b\x61nnotations\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\"C\n\x1cSetStreamAnnotationsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"\x85\x01\n\x0c\x43reateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12%\n\x04tags\x18\x03 \x03(\x0b\x32\x17.grpcinterface.KeyValue\x12,\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x17.grpcinterface.KeyValue\"5\n\x0e\x43reateResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"I\n\x15ListCollectionsParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x11\n\tstartWith\x18\x02 \x01(\t\x12\r\n\x05limit\x18\x03 \x01(\x04\"S\n\x17ListCollectionsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x13\n\x0b\x63ollections\x18\x02 \x03(\t\"\xa0\x01\n\x13LookupStreamsParams\x12\x12\n\ncollection\x18\x01 \x01(\t\x12\x1a\n\x12isCollectionPrefix\x18\x02 \x01(\x08\x12(\n\x04tags\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12/\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\"n\n\x15LookupStreamsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x30\n\x07results\x18\x02 \x03(\x0b\x32\x1f.grpcinterface.StreamDescriptor\"S\n\rNearestParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04time\x18\x02 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x03 \x01(\x04\x12\x10\n\x08\x62\x61\x63kward\x18\x04 \x01(\x08\"\x8a\x01\n\x0fNearestResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12&\n\x05value\x18\x04 \x01(\x0b\x32\x17.grpcinterface.RawPoint\"U\n\rChangesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\tfromMajor\x18\x02 \x01(\x04\x12\x0f\n\x07toMajor\x18\x03 \x01(\x04\x12\x12\n\nresolution\x18\x04 \x01(\r\"\x8f\x01\n\x0f\x43hangesResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12+\n\x06ranges\x18\x04 \x03(\x0b\x32\x1b.grpcinterface.ChangedRange\"S\n\x0cInsertParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04sync\x18\x02 \x01(\x08\x12\'\n\x06values\x18\x03 \x03(\x0b\x32\x17.grpcinterface.RawPoint\"a\n\x0eInsertResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"8\n\x0c\x44\x65leteParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\"a\n\x0e\x44\x65leteResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"\x0c\n\nInfoParams\"\x91\x01\n\x0cInfoResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12!\n\x04mash\x18\x02 \x01(\x0b\x32\x13.grpcinterface.Mash\x12\x14\n\x0cmajorVersion\x18\x03 \x01(\r\x12\x14\n\x0cminorVersion\x18\x04 \x01(\r\x12\r\n\x05\x62uild\x18\x05 \x01(\t\"1\n\x11\x46\x61ultInjectParams\x12\x0c\n\x04type\x18\x01 \x01(\x04\x12\x0e\n\x06params\x18\x02 \x01(\x0c\"F\n\x13\x46\x61ultInjectResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\n\n\x02rv\x18\x02 \x01(\x0c\"\x1b\n\x0b\x46lushParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"4\n\rFlushResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\" \n\x10ObliterateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"9\n\x12ObliterateResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"\'\n\x08RawPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\r\n\x05value\x18\x02 \x01(\x01\"P\n\tStatPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0c\n\x04mean\x18\x03 \x01(\x01\x12\x0b\n\x03max\x18\x04 \x01(\x01\x12\r\n\x05\x63ount\x18\x05 \x01(\x06\"*\n\x0c\x43hangedRange\x12\r\n\x05start\x18\x01 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x10\"F\n\x06Status\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12!\n\x04mash\x18\x03 \x01(\x0b\x32\x13.grpcinterface.Mash\"\xa0\x01\n\x04Mash\x12\x10\n\x08revision\x18\x01 \x01(\x03\x12\x0e\n\x06leader\x18\x02 \x01(\t\x12\x16\n\x0eleaderRevision\x18\x03 \x01(\x03\x12\x13\n\x0btotalWeight\x18\x04 \x01(\x03\x12\x0f\n\x07healthy\x18\x05 \x01(\x08\x12\x10\n\x08unmapped\x18\x06 \x01(\x01\x12&\n\x07members\x18\x07 \x03(\x0b\x32\x15.grpcinterface.Member\"\xc3\x01\n\x06Member\x12\x0c\n\x04hash\x18\x01 \x01(\r\x12\x10\n\x08nodename\x18\x02 \x01(\t\x12\n\n\x02up\x18\x03 \x01(\x08\x12\n\n\x02in\x18\x04 \x01(\x08\x12\x0f\n\x07\x65nabled\x18\x05 \x01(\x08\x12\r\n\x05start\x18\x06 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x07 \x01(\x03\x12\x0e\n\x06weight\x18\x08 \x01(\x03\x12\x16\n\x0ereadPreference\x18\t \x01(\x01\x12\x15\n\rhttpEndpoints\x18\n \x01(\t\x12\x15\n\rgrpcEndpoints\x18\x0b \x01(\t\"@\n\x0bKeyOptValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12$\n\x03val\x18\x02 \x01(\x0b\x32\x17.grpcinterface.OptValue\"\x19\n\x08OptValue\x12\r\n\x05value\x18\x01 \x01(\x0c\"&\n\x08KeyValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c\x32\x93\n\n\x05\x42TrDB\x12O\n\tRawValues\x12\x1e.grpcinterface.RawValuesParams\x1a .grpcinterface.RawValuesResponse0\x01\x12^\n\x0e\x41lignedWindows\x12#.grpcinterface.AlignedWindowsParams\x1a%.grpcinterface.AlignedWindowsResponse0\x01\x12I\n\x07Windows\x12\x1c.grpcinterface.WindowsParams\x1a\x1e.grpcinterface.WindowsResponse0\x01\x12P\n\nStreamInfo\x12\x1f.grpcinterface.StreamInfoParams\x1a!.grpcinterface.StreamInfoResponse\x12n\n\x14SetStreamAnnotations\x12).grpcinterface.SetStreamAnnotationsParams\x1a+.grpcinterface.SetStreamAnnotationsResponse\x12\x44\n\x06\x43reate\x12\x1b.grpcinterface.CreateParams\x1a\x1d.grpcinterface.CreateResponse\x12_\n\x0fListCollections\x12$.grpcinterface.ListCollectionsParams\x1a&.grpcinterface.ListCollectionsResponse\x12[\n\rLookupStreams\x12\".grpcinterface.LookupStreamsParams\x1a$.grpcinterface.LookupStreamsResponse0\x01\x12G\n\x07Nearest\x12\x1c.grpcinterface.NearestParams\x1a\x1e.grpcinterface.NearestResponse\x12I\n\x07\x43hanges\x12\x1c.grpcinterface.ChangesParams\x1a\x1e.grpcinterface.ChangesResponse0\x01\x12\x44\n\x06Insert\x12\x1b.grpcinterface.InsertParams\x1a\x1d.grpcinterface.InsertResponse\x12\x44\n\x06\x44\x65lete\x12\x1b.grpcinterface.DeleteParams\x1a\x1d.grpcinterface.DeleteResponse\x12>\n\x04Info\x12\x19.grpcinterface.InfoParams\x1a\x1b.grpcinterface.InfoResponse\x12S\n\x0b\x46\x61ultInject\x12 .grpcinterface.FaultInjectParams\x1a\".grpcinterface.FaultInjectResponse\x12\x41\n\x05\x46lush\x12\x1a.grpcinterface.FlushParams\x1a\x1c.grpcinterface.FlushResponse\x12P\n\nObliterate\x12\x1f.grpcinterface.ObliterateParams\x1a!.grpcinterface.ObliterateResponseb\x06proto3')
+  serialized_pb=_b('\n\x0b\x62trdb.proto\x12\rgrpcinterface\"Q\n\x0fRawValuesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\"\x8d\x01\n\x11RawValuesResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\'\n\x06values\x18\x04 \x03(\x0b\x32\x17.grpcinterface.RawPoint\"j\n\x14\x41lignedWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\x12\n\npointWidth\x18\x05 \x01(\r\"\x93\x01\n\x16\x41lignedWindowsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12(\n\x06values\x18\x04 \x03(\x0b\x32\x18.grpcinterface.StatPoint\"m\n\rWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\r\n\x05width\x18\x05 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x06 \x01(\r\"\x8c\x01\n\x0fWindowsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12(\n\x06values\x18\x04 \x03(\x0b\x32\x18.grpcinterface.StatPoint\"M\n\x10StreamInfoParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x13\n\x0bomitVersion\x18\x02 \x01(\x08\x12\x16\n\x0eomitDescriptor\x18\x03 \x01(\x08\"\x9a\x01\n\x12StreamInfoResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x33\n\ndescriptor\x18\x04 \x01(\x0b\x32\x1f.grpcinterface.StreamDescriptor\"\xa4\x01\n\x10StreamDescriptor\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12%\n\x04tags\x18\x03 \x03(\x0b\x32\x17.grpcinterface.KeyValue\x12,\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x17.grpcinterface.KeyValue\x12\x19\n\x11\x61nnotationVersion\x18\x05 \x01(\x04\"~\n\x1aSetStreamAnnotationsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12!\n\x19\x65xpectedAnnotationVersion\x18\x02 \x01(\x04\x12/\n\x0b\x61nnotations\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\"C\n\x1cSetStreamAnnotationsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"\x85\x01\n\x0c\x43reateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12%\n\x04tags\x18\x03 \x03(\x0b\x32\x17.grpcinterface.KeyValue\x12,\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x17.grpcinterface.KeyValue\"5\n\x0e\x43reateResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"I\n\x15ListCollectionsParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x11\n\tstartWith\x18\x02 \x01(\t\x12\r\n\x05limit\x18\x03 \x01(\x04\"S\n\x17ListCollectionsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x13\n\x0b\x63ollections\x18\x02 \x03(\t\"\xa0\x01\n\x13LookupStreamsParams\x12\x12\n\ncollection\x18\x01 \x01(\t\x12\x1a\n\x12isCollectionPrefix\x18\x02 \x01(\x08\x12(\n\x04tags\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12/\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\"n\n\x15LookupStreamsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x30\n\x07results\x18\x02 \x03(\x0b\x32\x1f.grpcinterface.StreamDescriptor\"S\n\rNearestParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04time\x18\x02 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x03 \x01(\x04\x12\x10\n\x08\x62\x61\x63kward\x18\x04 \x01(\x08\"\x8a\x01\n\x0fNearestResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12&\n\x05value\x18\x04 \x01(\x0b\x32\x17.grpcinterface.RawPoint\"U\n\rChangesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\tfromMajor\x18\x02 \x01(\x04\x12\x0f\n\x07toMajor\x18\x03 \x01(\x04\x12\x12\n\nresolution\x18\x04 \x01(\r\"\x8f\x01\n\x0f\x43hangesResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12+\n\x06ranges\x18\x04 \x03(\x0b\x32\x1b.grpcinterface.ChangedRange\"S\n\x0cInsertParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04sync\x18\x02 \x01(\x08\x12\'\n\x06values\x18\x03 \x03(\x0b\x32\x17.grpcinterface.RawPoint\"a\n\x0eInsertResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"8\n\x0c\x44\x65leteParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\"a\n\x0e\x44\x65leteResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"\x0c\n\nInfoParams\"\xba\x01\n\x0cInfoResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12!\n\x04mash\x18\x02 \x01(\x0b\x32\x13.grpcinterface.Mash\x12\x14\n\x0cmajorVersion\x18\x03 \x01(\r\x12\x14\n\x0cminorVersion\x18\x04 \x01(\r\x12\r\n\x05\x62uild\x18\x05 \x01(\t\x12\'\n\x05proxy\x18\x06 \x01(\x0b\x32\x18.grpcinterface.ProxyInfo\"#\n\tProxyInfo\x12\x16\n\x0eproxyEndpoints\x18\x01 \x03(\t\"1\n\x11\x46\x61ultInjectParams\x12\x0c\n\x04type\x18\x01 \x01(\x04\x12\x0e\n\x06params\x18\x02 \x01(\x0c\"F\n\x13\x46\x61ultInjectResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\n\n\x02rv\x18\x02 \x01(\x0c\"\x1b\n\x0b\x46lushParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"`\n\rFlushResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\" \n\x10ObliterateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"9\n\x12ObliterateResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"\'\n\x08RawPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\r\n\x05value\x18\x02 \x01(\x01\"P\n\tStatPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0c\n\x04mean\x18\x03 \x01(\x01\x12\x0b\n\x03max\x18\x04 \x01(\x01\x12\r\n\x05\x63ount\x18\x05 \x01(\x06\"*\n\x0c\x43hangedRange\x12\r\n\x05start\x18\x01 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x10\"F\n\x06Status\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12!\n\x04mash\x18\x03 \x01(\x0b\x32\x13.grpcinterface.Mash\"\xa0\x01\n\x04Mash\x12\x10\n\x08revision\x18\x01 \x01(\x03\x12\x0e\n\x06leader\x18\x02 \x01(\t\x12\x16\n\x0eleaderRevision\x18\x03 \x01(\x03\x12\x13\n\x0btotalWeight\x18\x04 \x01(\x03\x12\x0f\n\x07healthy\x18\x05 \x01(\x08\x12\x10\n\x08unmapped\x18\x06 \x01(\x01\x12&\n\x07members\x18\x07 \x03(\x0b\x32\x15.grpcinterface.Member\"\xc3\x01\n\x06Member\x12\x0c\n\x04hash\x18\x01 \x01(\r\x12\x10\n\x08nodename\x18\x02 \x01(\t\x12\n\n\x02up\x18\x03 \x01(\x08\x12\n\n\x02in\x18\x04 \x01(\x08\x12\x0f\n\x07\x65nabled\x18\x05 \x01(\x08\x12\r\n\x05start\x18\x06 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x07 \x01(\x03\x12\x0e\n\x06weight\x18\x08 \x01(\x03\x12\x16\n\x0ereadPreference\x18\t \x01(\x01\x12\x15\n\rhttpEndpoints\x18\n \x01(\t\x12\x15\n\rgrpcEndpoints\x18\x0b \x01(\t\"@\n\x0bKeyOptValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12$\n\x03val\x18\x02 \x01(\x0b\x32\x17.grpcinterface.OptValue\"\x19\n\x08OptValue\x12\r\n\x05value\x18\x01 \x01(\x0c\"&\n\x08KeyValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x0c\x32\x93\n\n\x05\x42TrDB\x12O\n\tRawValues\x12\x1e.grpcinterface.RawValuesParams\x1a .grpcinterface.RawValuesResponse0\x01\x12^\n\x0e\x41lignedWindows\x12#.grpcinterface.AlignedWindowsParams\x1a%.grpcinterface.AlignedWindowsResponse0\x01\x12I\n\x07Windows\x12\x1c.grpcinterface.WindowsParams\x1a\x1e.grpcinterface.WindowsResponse0\x01\x12P\n\nStreamInfo\x12\x1f.grpcinterface.StreamInfoParams\x1a!.grpcinterface.StreamInfoResponse\x12n\n\x14SetStreamAnnotations\x12).grpcinterface.SetStreamAnnotationsParams\x1a+.grpcinterface.SetStreamAnnotationsResponse\x12\x44\n\x06\x43reate\x12\x1b.grpcinterface.CreateParams\x1a\x1d.grpcinterface.CreateResponse\x12_\n\x0fListCollections\x12$.grpcinterface.ListCollectionsParams\x1a&.grpcinterface.ListCollectionsResponse\x12[\n\rLookupStreams\x12\".grpcinterface.LookupStreamsParams\x1a$.grpcinterface.LookupStreamsResponse0\x01\x12G\n\x07Nearest\x12\x1c.grpcinterface.NearestParams\x1a\x1e.grpcinterface.NearestResponse\x12I\n\x07\x43hanges\x12\x1c.grpcinterface.ChangesParams\x1a\x1e.grpcinterface.ChangesResponse0\x01\x12\x44\n\x06Insert\x12\x1b.grpcinterface.InsertParams\x1a\x1d.grpcinterface.InsertResponse\x12\x44\n\x06\x44\x65lete\x12\x1b.grpcinterface.DeleteParams\x1a\x1d.grpcinterface.DeleteResponse\x12>\n\x04Info\x12\x19.grpcinterface.InfoParams\x1a\x1b.grpcinterface.InfoResponse\x12S\n\x0b\x46\x61ultInject\x12 .grpcinterface.FaultInjectParams\x1a\".grpcinterface.FaultInjectResponse\x12\x41\n\x05\x46lush\x12\x1a.grpcinterface.FlushParams\x1a\x1c.grpcinterface.FlushResponse\x12P\n\nObliterate\x12\x1f.grpcinterface.ObliterateParams\x1a!.grpcinterface.ObliterateResponseb\x06proto3')
 )
-_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 
 
@@ -39,28 +38,28 @@ _RAWVALUESPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='start', full_name='grpcinterface.RawValuesParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='end', full_name='grpcinterface.RawValuesParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.RawValuesParams.versionMajor', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -91,28 +90,28 @@ _RAWVALUESRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.RawValuesResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.RawValuesResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='values', full_name='grpcinterface.RawValuesResponse.values', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -143,35 +142,35 @@ _ALIGNEDWINDOWSPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='start', full_name='grpcinterface.AlignedWindowsParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='end', full_name='grpcinterface.AlignedWindowsParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.AlignedWindowsParams.versionMajor', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='pointWidth', full_name='grpcinterface.AlignedWindowsParams.pointWidth', index=4,
       number=5, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -202,28 +201,28 @@ _ALIGNEDWINDOWSRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.AlignedWindowsResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.AlignedWindowsResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='values', full_name='grpcinterface.AlignedWindowsResponse.values', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -254,42 +253,42 @@ _WINDOWSPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='start', full_name='grpcinterface.WindowsParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='end', full_name='grpcinterface.WindowsParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.WindowsParams.versionMajor', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='width', full_name='grpcinterface.WindowsParams.width', index=4,
       number=5, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='depth', full_name='grpcinterface.WindowsParams.depth', index=5,
       number=6, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -320,28 +319,28 @@ _WINDOWSRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.WindowsResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.WindowsResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='values', full_name='grpcinterface.WindowsResponse.values', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -372,21 +371,21 @@ _STREAMINFOPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='omitVersion', full_name='grpcinterface.StreamInfoParams.omitVersion', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='omitDescriptor', full_name='grpcinterface.StreamInfoParams.omitDescriptor', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -417,28 +416,28 @@ _STREAMINFORESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.StreamInfoResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.StreamInfoResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='descriptor', full_name='grpcinterface.StreamInfoResponse.descriptor', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -469,35 +468,35 @@ _STREAMDESCRIPTOR = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='collection', full_name='grpcinterface.StreamDescriptor.collection', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='tags', full_name='grpcinterface.StreamDescriptor.tags', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='annotations', full_name='grpcinterface.StreamDescriptor.annotations', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='annotationVersion', full_name='grpcinterface.StreamDescriptor.annotationVersion', index=4,
       number=5, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -528,21 +527,21 @@ _SETSTREAMANNOTATIONSPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='expectedAnnotationVersion', full_name='grpcinterface.SetStreamAnnotationsParams.expectedAnnotationVersion', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='annotations', full_name='grpcinterface.SetStreamAnnotationsParams.annotations', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -573,7 +572,7 @@ _SETSTREAMANNOTATIONSRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -604,28 +603,28 @@ _CREATEPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='collection', full_name='grpcinterface.CreateParams.collection', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='tags', full_name='grpcinterface.CreateParams.tags', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='annotations', full_name='grpcinterface.CreateParams.annotations', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -656,7 +655,7 @@ _CREATERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -687,21 +686,21 @@ _LISTCOLLECTIONSPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='startWith', full_name='grpcinterface.ListCollectionsParams.startWith', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='limit', full_name='grpcinterface.ListCollectionsParams.limit', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -732,14 +731,14 @@ _LISTCOLLECTIONSRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='collections', full_name='grpcinterface.ListCollectionsResponse.collections', index=1,
       number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -770,28 +769,28 @@ _LOOKUPSTREAMSPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='isCollectionPrefix', full_name='grpcinterface.LookupStreamsParams.isCollectionPrefix', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='tags', full_name='grpcinterface.LookupStreamsParams.tags', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='annotations', full_name='grpcinterface.LookupStreamsParams.annotations', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -822,14 +821,14 @@ _LOOKUPSTREAMSRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='results', full_name='grpcinterface.LookupStreamsResponse.results', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -860,28 +859,28 @@ _NEARESTPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='time', full_name='grpcinterface.NearestParams.time', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.NearestParams.versionMajor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='backward', full_name='grpcinterface.NearestParams.backward', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -912,28 +911,28 @@ _NEARESTRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.NearestResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.NearestResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='grpcinterface.NearestResponse.value', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -964,28 +963,28 @@ _CHANGESPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='fromMajor', full_name='grpcinterface.ChangesParams.fromMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='toMajor', full_name='grpcinterface.ChangesParams.toMajor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='resolution', full_name='grpcinterface.ChangesParams.resolution', index=3,
       number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1016,28 +1015,28 @@ _CHANGESRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.ChangesResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.ChangesResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='ranges', full_name='grpcinterface.ChangesResponse.ranges', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1068,21 +1067,21 @@ _INSERTPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='sync', full_name='grpcinterface.InsertParams.sync', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='values', full_name='grpcinterface.InsertParams.values', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1113,21 +1112,21 @@ _INSERTRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.InsertResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.InsertResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1158,21 +1157,21 @@ _DELETEPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='start', full_name='grpcinterface.DeleteParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='end', full_name='grpcinterface.DeleteParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1203,21 +1202,21 @@ _DELETERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMajor', full_name='grpcinterface.DeleteResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='versionMinor', full_name='grpcinterface.DeleteResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1272,35 +1271,42 @@ _INFORESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='mash', full_name='grpcinterface.InfoResponse.mash', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='majorVersion', full_name='grpcinterface.InfoResponse.majorVersion', index=2,
       number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='minorVersion', full_name='grpcinterface.InfoResponse.minorVersion', index=3,
       number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='build', full_name='grpcinterface.InfoResponse.build', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='proxy', full_name='grpcinterface.InfoResponse.proxy', index=5,
+      number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1314,7 +1320,38 @@ _INFORESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=2810,
-  serialized_end=2955,
+  serialized_end=2996,
+)
+
+
+_PROXYINFO = _descriptor.Descriptor(
+  name='ProxyInfo',
+  full_name='grpcinterface.ProxyInfo',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='proxyEndpoints', full_name='grpcinterface.ProxyInfo.proxyEndpoints', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=2998,
+  serialized_end=3033,
 )
 
 
@@ -1331,14 +1368,14 @@ _FAULTINJECTPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='params', full_name='grpcinterface.FaultInjectParams.params', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1351,8 +1388,8 @@ _FAULTINJECTPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2957,
-  serialized_end=3006,
+  serialized_start=3035,
+  serialized_end=3084,
 )
 
 
@@ -1369,14 +1406,14 @@ _FAULTINJECTRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='rv', full_name='grpcinterface.FaultInjectResponse.rv', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1389,8 +1426,8 @@ _FAULTINJECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3008,
-  serialized_end=3078,
+  serialized_start=3086,
+  serialized_end=3156,
 )
 
 
@@ -1407,7 +1444,7 @@ _FLUSHPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1420,8 +1457,8 @@ _FLUSHPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3080,
-  serialized_end=3107,
+  serialized_start=3158,
+  serialized_end=3185,
 )
 
 
@@ -1438,7 +1475,21 @@ _FLUSHRESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='versionMajor', full_name='grpcinterface.FlushResponse.versionMajor', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='versionMinor', full_name='grpcinterface.FlushResponse.versionMinor', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1451,8 +1502,8 @@ _FLUSHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3109,
-  serialized_end=3161,
+  serialized_start=3187,
+  serialized_end=3283,
 )
 
 
@@ -1469,7 +1520,7 @@ _OBLITERATEPARAMS = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1482,8 +1533,8 @@ _OBLITERATEPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3163,
-  serialized_end=3195,
+  serialized_start=3285,
+  serialized_end=3317,
 )
 
 
@@ -1500,7 +1551,7 @@ _OBLITERATERESPONSE = _descriptor.Descriptor(
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1513,8 +1564,8 @@ _OBLITERATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3197,
-  serialized_end=3254,
+  serialized_start=3319,
+  serialized_end=3376,
 )
 
 
@@ -1531,14 +1582,14 @@ _RAWPOINT = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='grpcinterface.RawPoint.value', index=1,
       number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1551,8 +1602,8 @@ _RAWPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3256,
-  serialized_end=3295,
+  serialized_start=3378,
+  serialized_end=3417,
 )
 
 
@@ -1569,35 +1620,35 @@ _STATPOINT = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='min', full_name='grpcinterface.StatPoint.min', index=1,
       number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='mean', full_name='grpcinterface.StatPoint.mean', index=2,
       number=3, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='max', full_name='grpcinterface.StatPoint.max', index=3,
       number=4, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='count', full_name='grpcinterface.StatPoint.count', index=4,
       number=5, type=6, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1610,8 +1661,8 @@ _STATPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3297,
-  serialized_end=3377,
+  serialized_start=3419,
+  serialized_end=3499,
 )
 
 
@@ -1628,14 +1679,14 @@ _CHANGEDRANGE = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='end', full_name='grpcinterface.ChangedRange.end', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1648,8 +1699,8 @@ _CHANGEDRANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3379,
-  serialized_end=3421,
+  serialized_start=3501,
+  serialized_end=3543,
 )
 
 
@@ -1666,21 +1717,21 @@ _STATUS = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='msg', full_name='grpcinterface.Status.msg', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='mash', full_name='grpcinterface.Status.mash', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1693,8 +1744,8 @@ _STATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3423,
-  serialized_end=3493,
+  serialized_start=3545,
+  serialized_end=3615,
 )
 
 
@@ -1711,49 +1762,49 @@ _MASH = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='leader', full_name='grpcinterface.Mash.leader', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='leaderRevision', full_name='grpcinterface.Mash.leaderRevision', index=2,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='totalWeight', full_name='grpcinterface.Mash.totalWeight', index=3,
       number=4, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='healthy', full_name='grpcinterface.Mash.healthy', index=4,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='unmapped', full_name='grpcinterface.Mash.unmapped', index=5,
       number=6, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='members', full_name='grpcinterface.Mash.members', index=6,
       number=7, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1766,8 +1817,8 @@ _MASH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3496,
-  serialized_end=3656,
+  serialized_start=3618,
+  serialized_end=3778,
 )
 
 
@@ -1784,77 +1835,77 @@ _MEMBER = _descriptor.Descriptor(
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='nodename', full_name='grpcinterface.Member.nodename', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='up', full_name='grpcinterface.Member.up', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='in', full_name='grpcinterface.Member.in', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='enabled', full_name='grpcinterface.Member.enabled', index=4,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='start', full_name='grpcinterface.Member.start', index=5,
       number=6, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='end', full_name='grpcinterface.Member.end', index=6,
       number=7, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='weight', full_name='grpcinterface.Member.weight', index=7,
       number=8, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='readPreference', full_name='grpcinterface.Member.readPreference', index=8,
       number=9, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='httpEndpoints', full_name='grpcinterface.Member.httpEndpoints', index=9,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='grpcEndpoints', full_name='grpcinterface.Member.grpcEndpoints', index=10,
       number=11, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1867,8 +1918,8 @@ _MEMBER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3659,
-  serialized_end=3854,
+  serialized_start=3781,
+  serialized_end=3976,
 )
 
 
@@ -1885,14 +1936,14 @@ _KEYOPTVALUE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='val', full_name='grpcinterface.KeyOptValue.val', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1905,8 +1956,8 @@ _KEYOPTVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3856,
-  serialized_end=3920,
+  serialized_start=3978,
+  serialized_end=4042,
 )
 
 
@@ -1923,7 +1974,7 @@ _OPTVALUE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1936,8 +1987,8 @@ _OPTVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3922,
-  serialized_end=3947,
+  serialized_start=4044,
+  serialized_end=4069,
 )
 
 
@@ -1954,14 +2005,14 @@ _KEYVALUE = _descriptor.Descriptor(
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='value', full_name='grpcinterface.KeyValue.value', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
-      options=None),
+      options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -1974,8 +2025,8 @@ _KEYVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3949,
-  serialized_end=3987,
+  serialized_start=4071,
+  serialized_end=4109,
 )
 
 _RAWVALUESRESPONSE.fields_by_name['stat'].message_type = _STATUS
@@ -2007,6 +2058,7 @@ _INSERTRESPONSE.fields_by_name['stat'].message_type = _STATUS
 _DELETERESPONSE.fields_by_name['stat'].message_type = _STATUS
 _INFORESPONSE.fields_by_name['stat'].message_type = _STATUS
 _INFORESPONSE.fields_by_name['mash'].message_type = _MASH
+_INFORESPONSE.fields_by_name['proxy'].message_type = _PROXYINFO
 _FAULTINJECTRESPONSE.fields_by_name['stat'].message_type = _STATUS
 _FLUSHRESPONSE.fields_by_name['stat'].message_type = _STATUS
 _OBLITERATERESPONSE.fields_by_name['stat'].message_type = _STATUS
@@ -2040,6 +2092,7 @@ DESCRIPTOR.message_types_by_name['DeleteParams'] = _DELETEPARAMS
 DESCRIPTOR.message_types_by_name['DeleteResponse'] = _DELETERESPONSE
 DESCRIPTOR.message_types_by_name['InfoParams'] = _INFOPARAMS
 DESCRIPTOR.message_types_by_name['InfoResponse'] = _INFORESPONSE
+DESCRIPTOR.message_types_by_name['ProxyInfo'] = _PROXYINFO
 DESCRIPTOR.message_types_by_name['FaultInjectParams'] = _FAULTINJECTPARAMS
 DESCRIPTOR.message_types_by_name['FaultInjectResponse'] = _FAULTINJECTRESPONSE
 DESCRIPTOR.message_types_by_name['FlushParams'] = _FLUSHPARAMS
@@ -2055,6 +2108,7 @@ DESCRIPTOR.message_types_by_name['Member'] = _MEMBER
 DESCRIPTOR.message_types_by_name['KeyOptValue'] = _KEYOPTVALUE
 DESCRIPTOR.message_types_by_name['OptValue'] = _OPTVALUE
 DESCRIPTOR.message_types_by_name['KeyValue'] = _KEYVALUE
+_sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 RawValuesParams = _reflection.GeneratedProtocolMessageType('RawValuesParams', (_message.Message,), dict(
   DESCRIPTOR = _RAWVALUESPARAMS,
@@ -2245,6 +2299,13 @@ InfoResponse = _reflection.GeneratedProtocolMessageType('InfoResponse', (_messag
   ))
 _sym_db.RegisterMessage(InfoResponse)
 
+ProxyInfo = _reflection.GeneratedProtocolMessageType('ProxyInfo', (_message.Message,), dict(
+  DESCRIPTOR = _PROXYINFO,
+  __module__ = 'btrdb_pb2'
+  # @@protoc_insertion_point(class_scope:grpcinterface.ProxyInfo)
+  ))
+_sym_db.RegisterMessage(ProxyInfo)
+
 FaultInjectParams = _reflection.GeneratedProtocolMessageType('FaultInjectParams', (_message.Message,), dict(
   DESCRIPTOR = _FAULTINJECTPARAMS,
   __module__ = 'btrdb_pb2'
@@ -2351,494 +2412,163 @@ KeyValue = _reflection.GeneratedProtocolMessageType('KeyValue', (_message.Messag
 _sym_db.RegisterMessage(KeyValue)
 
 
-try:
-  # THESE ELEMENTS WILL BE DEPRECATED.
-  # Please use the generated *_pb2_grpc.py files instead.
-  import grpc
-  from grpc.framework.common import cardinality
-  from grpc.framework.interfaces.face import utilities as face_utilities
-  from grpc.beta import implementations as beta_implementations
-  from grpc.beta import interfaces as beta_interfaces
 
+_BTRDB = _descriptor.ServiceDescriptor(
+  name='BTrDB',
+  full_name='grpcinterface.BTrDB',
+  file=DESCRIPTOR,
+  index=0,
+  options=None,
+  serialized_start=4112,
+  serialized_end=5411,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='RawValues',
+    full_name='grpcinterface.BTrDB.RawValues',
+    index=0,
+    containing_service=None,
+    input_type=_RAWVALUESPARAMS,
+    output_type=_RAWVALUESRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='AlignedWindows',
+    full_name='grpcinterface.BTrDB.AlignedWindows',
+    index=1,
+    containing_service=None,
+    input_type=_ALIGNEDWINDOWSPARAMS,
+    output_type=_ALIGNEDWINDOWSRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Windows',
+    full_name='grpcinterface.BTrDB.Windows',
+    index=2,
+    containing_service=None,
+    input_type=_WINDOWSPARAMS,
+    output_type=_WINDOWSRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='StreamInfo',
+    full_name='grpcinterface.BTrDB.StreamInfo',
+    index=3,
+    containing_service=None,
+    input_type=_STREAMINFOPARAMS,
+    output_type=_STREAMINFORESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='SetStreamAnnotations',
+    full_name='grpcinterface.BTrDB.SetStreamAnnotations',
+    index=4,
+    containing_service=None,
+    input_type=_SETSTREAMANNOTATIONSPARAMS,
+    output_type=_SETSTREAMANNOTATIONSRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Create',
+    full_name='grpcinterface.BTrDB.Create',
+    index=5,
+    containing_service=None,
+    input_type=_CREATEPARAMS,
+    output_type=_CREATERESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='ListCollections',
+    full_name='grpcinterface.BTrDB.ListCollections',
+    index=6,
+    containing_service=None,
+    input_type=_LISTCOLLECTIONSPARAMS,
+    output_type=_LISTCOLLECTIONSRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='LookupStreams',
+    full_name='grpcinterface.BTrDB.LookupStreams',
+    index=7,
+    containing_service=None,
+    input_type=_LOOKUPSTREAMSPARAMS,
+    output_type=_LOOKUPSTREAMSRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Nearest',
+    full_name='grpcinterface.BTrDB.Nearest',
+    index=8,
+    containing_service=None,
+    input_type=_NEARESTPARAMS,
+    output_type=_NEARESTRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Changes',
+    full_name='grpcinterface.BTrDB.Changes',
+    index=9,
+    containing_service=None,
+    input_type=_CHANGESPARAMS,
+    output_type=_CHANGESRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Insert',
+    full_name='grpcinterface.BTrDB.Insert',
+    index=10,
+    containing_service=None,
+    input_type=_INSERTPARAMS,
+    output_type=_INSERTRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Delete',
+    full_name='grpcinterface.BTrDB.Delete',
+    index=11,
+    containing_service=None,
+    input_type=_DELETEPARAMS,
+    output_type=_DELETERESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Info',
+    full_name='grpcinterface.BTrDB.Info',
+    index=12,
+    containing_service=None,
+    input_type=_INFOPARAMS,
+    output_type=_INFORESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='FaultInject',
+    full_name='grpcinterface.BTrDB.FaultInject',
+    index=13,
+    containing_service=None,
+    input_type=_FAULTINJECTPARAMS,
+    output_type=_FAULTINJECTRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Flush',
+    full_name='grpcinterface.BTrDB.Flush',
+    index=14,
+    containing_service=None,
+    input_type=_FLUSHPARAMS,
+    output_type=_FLUSHRESPONSE,
+    options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='Obliterate',
+    full_name='grpcinterface.BTrDB.Obliterate',
+    index=15,
+    containing_service=None,
+    input_type=_OBLITERATEPARAMS,
+    output_type=_OBLITERATERESPONSE,
+    options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_BTRDB)
 
-  class BTrDBStub(object):
+DESCRIPTOR.services_by_name['BTrDB'] = _BTRDB
 
-    def __init__(self, channel):
-      """Constructor.
-
-      Args:
-        channel: A grpc.Channel.
-      """
-      self.RawValues = channel.unary_stream(
-          '/grpcinterface.BTrDB/RawValues',
-          request_serializer=RawValuesParams.SerializeToString,
-          response_deserializer=RawValuesResponse.FromString,
-          )
-      self.AlignedWindows = channel.unary_stream(
-          '/grpcinterface.BTrDB/AlignedWindows',
-          request_serializer=AlignedWindowsParams.SerializeToString,
-          response_deserializer=AlignedWindowsResponse.FromString,
-          )
-      self.Windows = channel.unary_stream(
-          '/grpcinterface.BTrDB/Windows',
-          request_serializer=WindowsParams.SerializeToString,
-          response_deserializer=WindowsResponse.FromString,
-          )
-      self.StreamInfo = channel.unary_unary(
-          '/grpcinterface.BTrDB/StreamInfo',
-          request_serializer=StreamInfoParams.SerializeToString,
-          response_deserializer=StreamInfoResponse.FromString,
-          )
-      self.SetStreamAnnotations = channel.unary_unary(
-          '/grpcinterface.BTrDB/SetStreamAnnotations',
-          request_serializer=SetStreamAnnotationsParams.SerializeToString,
-          response_deserializer=SetStreamAnnotationsResponse.FromString,
-          )
-      self.Create = channel.unary_unary(
-          '/grpcinterface.BTrDB/Create',
-          request_serializer=CreateParams.SerializeToString,
-          response_deserializer=CreateResponse.FromString,
-          )
-      self.ListCollections = channel.unary_unary(
-          '/grpcinterface.BTrDB/ListCollections',
-          request_serializer=ListCollectionsParams.SerializeToString,
-          response_deserializer=ListCollectionsResponse.FromString,
-          )
-      self.LookupStreams = channel.unary_stream(
-          '/grpcinterface.BTrDB/LookupStreams',
-          request_serializer=LookupStreamsParams.SerializeToString,
-          response_deserializer=LookupStreamsResponse.FromString,
-          )
-      self.Nearest = channel.unary_unary(
-          '/grpcinterface.BTrDB/Nearest',
-          request_serializer=NearestParams.SerializeToString,
-          response_deserializer=NearestResponse.FromString,
-          )
-      self.Changes = channel.unary_stream(
-          '/grpcinterface.BTrDB/Changes',
-          request_serializer=ChangesParams.SerializeToString,
-          response_deserializer=ChangesResponse.FromString,
-          )
-      self.Insert = channel.unary_unary(
-          '/grpcinterface.BTrDB/Insert',
-          request_serializer=InsertParams.SerializeToString,
-          response_deserializer=InsertResponse.FromString,
-          )
-      self.Delete = channel.unary_unary(
-          '/grpcinterface.BTrDB/Delete',
-          request_serializer=DeleteParams.SerializeToString,
-          response_deserializer=DeleteResponse.FromString,
-          )
-      self.Info = channel.unary_unary(
-          '/grpcinterface.BTrDB/Info',
-          request_serializer=InfoParams.SerializeToString,
-          response_deserializer=InfoResponse.FromString,
-          )
-      self.FaultInject = channel.unary_unary(
-          '/grpcinterface.BTrDB/FaultInject',
-          request_serializer=FaultInjectParams.SerializeToString,
-          response_deserializer=FaultInjectResponse.FromString,
-          )
-      self.Flush = channel.unary_unary(
-          '/grpcinterface.BTrDB/Flush',
-          request_serializer=FlushParams.SerializeToString,
-          response_deserializer=FlushResponse.FromString,
-          )
-      self.Obliterate = channel.unary_unary(
-          '/grpcinterface.BTrDB/Obliterate',
-          request_serializer=ObliterateParams.SerializeToString,
-          response_deserializer=ObliterateResponse.FromString,
-          )
-
-
-  class BTrDBServicer(object):
-
-    def RawValues(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def AlignedWindows(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Windows(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def StreamInfo(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def SetStreamAnnotations(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Create(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def ListCollections(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def LookupStreams(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Nearest(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Changes(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Insert(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Delete(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Info(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def FaultInject(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Flush(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-    def Obliterate(self, request, context):
-      context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-      context.set_details('Method not implemented!')
-      raise NotImplementedError('Method not implemented!')
-
-
-  def add_BTrDBServicer_to_server(servicer, server):
-    rpc_method_handlers = {
-        'RawValues': grpc.unary_stream_rpc_method_handler(
-            servicer.RawValues,
-            request_deserializer=RawValuesParams.FromString,
-            response_serializer=RawValuesResponse.SerializeToString,
-        ),
-        'AlignedWindows': grpc.unary_stream_rpc_method_handler(
-            servicer.AlignedWindows,
-            request_deserializer=AlignedWindowsParams.FromString,
-            response_serializer=AlignedWindowsResponse.SerializeToString,
-        ),
-        'Windows': grpc.unary_stream_rpc_method_handler(
-            servicer.Windows,
-            request_deserializer=WindowsParams.FromString,
-            response_serializer=WindowsResponse.SerializeToString,
-        ),
-        'StreamInfo': grpc.unary_unary_rpc_method_handler(
-            servicer.StreamInfo,
-            request_deserializer=StreamInfoParams.FromString,
-            response_serializer=StreamInfoResponse.SerializeToString,
-        ),
-        'SetStreamAnnotations': grpc.unary_unary_rpc_method_handler(
-            servicer.SetStreamAnnotations,
-            request_deserializer=SetStreamAnnotationsParams.FromString,
-            response_serializer=SetStreamAnnotationsResponse.SerializeToString,
-        ),
-        'Create': grpc.unary_unary_rpc_method_handler(
-            servicer.Create,
-            request_deserializer=CreateParams.FromString,
-            response_serializer=CreateResponse.SerializeToString,
-        ),
-        'ListCollections': grpc.unary_unary_rpc_method_handler(
-            servicer.ListCollections,
-            request_deserializer=ListCollectionsParams.FromString,
-            response_serializer=ListCollectionsResponse.SerializeToString,
-        ),
-        'LookupStreams': grpc.unary_stream_rpc_method_handler(
-            servicer.LookupStreams,
-            request_deserializer=LookupStreamsParams.FromString,
-            response_serializer=LookupStreamsResponse.SerializeToString,
-        ),
-        'Nearest': grpc.unary_unary_rpc_method_handler(
-            servicer.Nearest,
-            request_deserializer=NearestParams.FromString,
-            response_serializer=NearestResponse.SerializeToString,
-        ),
-        'Changes': grpc.unary_stream_rpc_method_handler(
-            servicer.Changes,
-            request_deserializer=ChangesParams.FromString,
-            response_serializer=ChangesResponse.SerializeToString,
-        ),
-        'Insert': grpc.unary_unary_rpc_method_handler(
-            servicer.Insert,
-            request_deserializer=InsertParams.FromString,
-            response_serializer=InsertResponse.SerializeToString,
-        ),
-        'Delete': grpc.unary_unary_rpc_method_handler(
-            servicer.Delete,
-            request_deserializer=DeleteParams.FromString,
-            response_serializer=DeleteResponse.SerializeToString,
-        ),
-        'Info': grpc.unary_unary_rpc_method_handler(
-            servicer.Info,
-            request_deserializer=InfoParams.FromString,
-            response_serializer=InfoResponse.SerializeToString,
-        ),
-        'FaultInject': grpc.unary_unary_rpc_method_handler(
-            servicer.FaultInject,
-            request_deserializer=FaultInjectParams.FromString,
-            response_serializer=FaultInjectResponse.SerializeToString,
-        ),
-        'Flush': grpc.unary_unary_rpc_method_handler(
-            servicer.Flush,
-            request_deserializer=FlushParams.FromString,
-            response_serializer=FlushResponse.SerializeToString,
-        ),
-        'Obliterate': grpc.unary_unary_rpc_method_handler(
-            servicer.Obliterate,
-            request_deserializer=ObliterateParams.FromString,
-            response_serializer=ObliterateResponse.SerializeToString,
-        ),
-    }
-    generic_handler = grpc.method_handlers_generic_handler(
-        'grpcinterface.BTrDB', rpc_method_handlers)
-    server.add_generic_rpc_handlers((generic_handler,))
-
-
-  class BetaBTrDBServicer(object):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This class was generated
-    only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
-    def RawValues(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def AlignedWindows(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Windows(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def StreamInfo(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def SetStreamAnnotations(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Create(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def ListCollections(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def LookupStreams(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Nearest(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Changes(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Insert(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Delete(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Info(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def FaultInject(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Flush(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-    def Obliterate(self, request, context):
-      context.code(beta_interfaces.StatusCode.UNIMPLEMENTED)
-
-
-  class BetaBTrDBStub(object):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This class was generated
-    only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0."""
-    def RawValues(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    def AlignedWindows(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    def Windows(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    def StreamInfo(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    StreamInfo.future = None
-    def SetStreamAnnotations(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    SetStreamAnnotations.future = None
-    def Create(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    Create.future = None
-    def ListCollections(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    ListCollections.future = None
-    def LookupStreams(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    def Nearest(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    Nearest.future = None
-    def Changes(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    def Insert(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    Insert.future = None
-    def Delete(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    Delete.future = None
-    def Info(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    Info.future = None
-    def FaultInject(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    FaultInject.future = None
-    def Flush(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    Flush.future = None
-    def Obliterate(self, request, timeout, metadata=None, with_call=False, protocol_options=None):
-      raise NotImplementedError()
-    Obliterate.future = None
-
-
-  def beta_create_BTrDB_server(servicer, pool=None, pool_size=None, default_timeout=None, maximum_timeout=None):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This function was
-    generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
-    request_deserializers = {
-      ('grpcinterface.BTrDB', 'AlignedWindows'): AlignedWindowsParams.FromString,
-      ('grpcinterface.BTrDB', 'Changes'): ChangesParams.FromString,
-      ('grpcinterface.BTrDB', 'Create'): CreateParams.FromString,
-      ('grpcinterface.BTrDB', 'Delete'): DeleteParams.FromString,
-      ('grpcinterface.BTrDB', 'FaultInject'): FaultInjectParams.FromString,
-      ('grpcinterface.BTrDB', 'Flush'): FlushParams.FromString,
-      ('grpcinterface.BTrDB', 'Info'): InfoParams.FromString,
-      ('grpcinterface.BTrDB', 'Insert'): InsertParams.FromString,
-      ('grpcinterface.BTrDB', 'ListCollections'): ListCollectionsParams.FromString,
-      ('grpcinterface.BTrDB', 'LookupStreams'): LookupStreamsParams.FromString,
-      ('grpcinterface.BTrDB', 'Nearest'): NearestParams.FromString,
-      ('grpcinterface.BTrDB', 'Obliterate'): ObliterateParams.FromString,
-      ('grpcinterface.BTrDB', 'RawValues'): RawValuesParams.FromString,
-      ('grpcinterface.BTrDB', 'SetStreamAnnotations'): SetStreamAnnotationsParams.FromString,
-      ('grpcinterface.BTrDB', 'StreamInfo'): StreamInfoParams.FromString,
-      ('grpcinterface.BTrDB', 'Windows'): WindowsParams.FromString,
-    }
-    response_serializers = {
-      ('grpcinterface.BTrDB', 'AlignedWindows'): AlignedWindowsResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Changes'): ChangesResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Create'): CreateResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Delete'): DeleteResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'FaultInject'): FaultInjectResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Flush'): FlushResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Info'): InfoResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Insert'): InsertResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'ListCollections'): ListCollectionsResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'LookupStreams'): LookupStreamsResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Nearest'): NearestResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Obliterate'): ObliterateResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'RawValues'): RawValuesResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'SetStreamAnnotations'): SetStreamAnnotationsResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'StreamInfo'): StreamInfoResponse.SerializeToString,
-      ('grpcinterface.BTrDB', 'Windows'): WindowsResponse.SerializeToString,
-    }
-    method_implementations = {
-      ('grpcinterface.BTrDB', 'AlignedWindows'): face_utilities.unary_stream_inline(servicer.AlignedWindows),
-      ('grpcinterface.BTrDB', 'Changes'): face_utilities.unary_stream_inline(servicer.Changes),
-      ('grpcinterface.BTrDB', 'Create'): face_utilities.unary_unary_inline(servicer.Create),
-      ('grpcinterface.BTrDB', 'Delete'): face_utilities.unary_unary_inline(servicer.Delete),
-      ('grpcinterface.BTrDB', 'FaultInject'): face_utilities.unary_unary_inline(servicer.FaultInject),
-      ('grpcinterface.BTrDB', 'Flush'): face_utilities.unary_unary_inline(servicer.Flush),
-      ('grpcinterface.BTrDB', 'Info'): face_utilities.unary_unary_inline(servicer.Info),
-      ('grpcinterface.BTrDB', 'Insert'): face_utilities.unary_unary_inline(servicer.Insert),
-      ('grpcinterface.BTrDB', 'ListCollections'): face_utilities.unary_unary_inline(servicer.ListCollections),
-      ('grpcinterface.BTrDB', 'LookupStreams'): face_utilities.unary_stream_inline(servicer.LookupStreams),
-      ('grpcinterface.BTrDB', 'Nearest'): face_utilities.unary_unary_inline(servicer.Nearest),
-      ('grpcinterface.BTrDB', 'Obliterate'): face_utilities.unary_unary_inline(servicer.Obliterate),
-      ('grpcinterface.BTrDB', 'RawValues'): face_utilities.unary_stream_inline(servicer.RawValues),
-      ('grpcinterface.BTrDB', 'SetStreamAnnotations'): face_utilities.unary_unary_inline(servicer.SetStreamAnnotations),
-      ('grpcinterface.BTrDB', 'StreamInfo'): face_utilities.unary_unary_inline(servicer.StreamInfo),
-      ('grpcinterface.BTrDB', 'Windows'): face_utilities.unary_stream_inline(servicer.Windows),
-    }
-    server_options = beta_implementations.server_options(request_deserializers=request_deserializers, response_serializers=response_serializers, thread_pool=pool, thread_pool_size=pool_size, default_timeout=default_timeout, maximum_timeout=maximum_timeout)
-    return beta_implementations.server(method_implementations, options=server_options)
-
-
-  def beta_create_BTrDB_stub(channel, host=None, metadata_transformer=None, pool=None, pool_size=None):
-    """The Beta API is deprecated for 0.15.0 and later.
-
-    It is recommended to use the GA API (classes and functions in this
-    file not marked beta) for all further purposes. This function was
-    generated only to ease transition from grpcio<0.15.0 to grpcio>=0.15.0"""
-    request_serializers = {
-      ('grpcinterface.BTrDB', 'AlignedWindows'): AlignedWindowsParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Changes'): ChangesParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Create'): CreateParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Delete'): DeleteParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'FaultInject'): FaultInjectParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Flush'): FlushParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Info'): InfoParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Insert'): InsertParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'ListCollections'): ListCollectionsParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'LookupStreams'): LookupStreamsParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Nearest'): NearestParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Obliterate'): ObliterateParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'RawValues'): RawValuesParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'SetStreamAnnotations'): SetStreamAnnotationsParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'StreamInfo'): StreamInfoParams.SerializeToString,
-      ('grpcinterface.BTrDB', 'Windows'): WindowsParams.SerializeToString,
-    }
-    response_deserializers = {
-      ('grpcinterface.BTrDB', 'AlignedWindows'): AlignedWindowsResponse.FromString,
-      ('grpcinterface.BTrDB', 'Changes'): ChangesResponse.FromString,
-      ('grpcinterface.BTrDB', 'Create'): CreateResponse.FromString,
-      ('grpcinterface.BTrDB', 'Delete'): DeleteResponse.FromString,
-      ('grpcinterface.BTrDB', 'FaultInject'): FaultInjectResponse.FromString,
-      ('grpcinterface.BTrDB', 'Flush'): FlushResponse.FromString,
-      ('grpcinterface.BTrDB', 'Info'): InfoResponse.FromString,
-      ('grpcinterface.BTrDB', 'Insert'): InsertResponse.FromString,
-      ('grpcinterface.BTrDB', 'ListCollections'): ListCollectionsResponse.FromString,
-      ('grpcinterface.BTrDB', 'LookupStreams'): LookupStreamsResponse.FromString,
-      ('grpcinterface.BTrDB', 'Nearest'): NearestResponse.FromString,
-      ('grpcinterface.BTrDB', 'Obliterate'): ObliterateResponse.FromString,
-      ('grpcinterface.BTrDB', 'RawValues'): RawValuesResponse.FromString,
-      ('grpcinterface.BTrDB', 'SetStreamAnnotations'): SetStreamAnnotationsResponse.FromString,
-      ('grpcinterface.BTrDB', 'StreamInfo'): StreamInfoResponse.FromString,
-      ('grpcinterface.BTrDB', 'Windows'): WindowsResponse.FromString,
-    }
-    cardinalities = {
-      'AlignedWindows': cardinality.Cardinality.UNARY_STREAM,
-      'Changes': cardinality.Cardinality.UNARY_STREAM,
-      'Create': cardinality.Cardinality.UNARY_UNARY,
-      'Delete': cardinality.Cardinality.UNARY_UNARY,
-      'FaultInject': cardinality.Cardinality.UNARY_UNARY,
-      'Flush': cardinality.Cardinality.UNARY_UNARY,
-      'Info': cardinality.Cardinality.UNARY_UNARY,
-      'Insert': cardinality.Cardinality.UNARY_UNARY,
-      'ListCollections': cardinality.Cardinality.UNARY_UNARY,
-      'LookupStreams': cardinality.Cardinality.UNARY_STREAM,
-      'Nearest': cardinality.Cardinality.UNARY_UNARY,
-      'Obliterate': cardinality.Cardinality.UNARY_UNARY,
-      'RawValues': cardinality.Cardinality.UNARY_STREAM,
-      'SetStreamAnnotations': cardinality.Cardinality.UNARY_UNARY,
-      'StreamInfo': cardinality.Cardinality.UNARY_UNARY,
-      'Windows': cardinality.Cardinality.UNARY_STREAM,
-    }
-    stub_options = beta_implementations.stub_options(host=host, metadata_transformer=metadata_transformer, request_serializers=request_serializers, response_deserializers=response_deserializers, thread_pool=pool, thread_pool_size=pool_size)
-    return beta_implementations.dynamic_stub(channel, 'grpcinterface.BTrDB', cardinalities, options=stub_options)
-except ImportError:
-  pass
 # @@protoc_insertion_point(module_scope)
