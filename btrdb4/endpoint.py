@@ -163,3 +163,26 @@ class Endpoint(object):
         params = btrdb_pb2.FlushParams(uuid = uu.bytes)
         result = self.stub.Flush(params)
         BTrDBError.checkProtoStat(result.stat)
+
+    def getMetadataUsage(self, prefix):
+        params = btrdb_pb2.GetMetadataUsageParams(prefix = prefix)
+        result = self.stub.GetMetadataUsageParams(params)
+        BTrDBError.checkProtoStat(result.stat)
+        return result.tags, result.annotations
+
+    def generateCSV(self, queryType, start, end, width, depth, includeVersions, *streams):
+        protoStreams = [btrdb_pb2.StreamCSVConfig(version = stream[0], 
+                                                  label = stream[1],
+                                                  uuid = label[2]) 
+                        for stream in streams]
+        params = btrdb_pb2.GenerateCSVParams(queryType = queryType.toProto(),
+                                             startTime = start,
+                                             endTime = end,
+                                             windowSize = width,
+                                             depth = depth,
+                                             includeVersions = includeVersions,
+                                             streams = protostreams)
+        result = self.stub.GenerateCSV(params)
+        for result in self.stub.GenerateCSV(params):
+            BTrDBError.checkProtoStat(result.stat)
+            yield result.row

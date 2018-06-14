@@ -162,6 +162,36 @@ class BTrDB(object):
                 tagsanns = unpackProtoStreamDescriptor(desc)
                 yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, tagsanns[0], tagsanns[1], desc.annotationVersion)
 
+    def writeCsv(self, csvWriter, queryType, start, end, width, depth, includeVersions, *streams):
+        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID])
+
+        """
+        Writes streams to a csv writer using the provided configuration.
+
+        Parameters
+        ----------
+        csvWriter: csv.writer
+            The csv writer where rows will be written
+        queryType: btrdb4.utils.QueryType
+            The type of query for the streams
+        start: int
+            The start time in nanoseconds for the queries
+        end: int
+            The end time in nanoseconds
+        width: int
+            The width of the stat points (This is only used for windows queries)
+        depth: int
+            The depth of the queries
+        includeVersions: bool
+            Include the stream versions in the header labels
+        streams: *Tuple[int, str, UUID]
+            The version, label and uuid for the streams to be queried.
+        """
+
+        rows = self.ep.generateCSV(queryType, start, end, width, depth, includeVersions, *streams)
+        for row in rows:
+            csvWriter.writerow(row)
+
 
 class Stream(object):
     def __init__(self, btrdb, uuid, knownToExist = False, collection = None, tags = None, annotations = None, annotationVersion = None):
