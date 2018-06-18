@@ -165,8 +165,8 @@ class Endpoint(object):
         BTrDBError.checkProtoStat(result.stat)
 
     def getMetadataUsage(self, prefix):
-        params = btrdb_pb2.GetMetadataUsageParams(prefix = prefix)
-        result = self.stub.GetMetadataUsageParams(params)
+        params = btrdb_pb2.MetadataUsageParams(prefix = prefix)
+        result = self.stub.GetMetadataUsage(params)
         BTrDBError.checkProtoStat(result.stat)
         return result.tags, result.annotations
 

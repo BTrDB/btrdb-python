@@ -162,6 +162,11 @@ class BTrDB(object):
                 tagsanns = unpackProtoStreamDescriptor(desc)
                 yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, tagsanns[0], tagsanns[1], desc.annotationVersion)
 
+    def getMetadataUsage(self, prefix):
+        ep = self.ep
+        tags, annotations = ep.getMetadataUsage(prefix)
+        return tags, annotations
+
     def writeCsv(self, csvWriter, queryType, start, end, width, depth, includeVersions, *streams):
         # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID])
 
