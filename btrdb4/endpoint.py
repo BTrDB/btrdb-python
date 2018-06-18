@@ -173,7 +173,7 @@ class Endpoint(object):
     def generateCSV(self, queryType, start, end, width, depth, includeVersions, *streams):
         protoStreams = [btrdb_pb2.StreamCSVConfig(version = stream[0], 
                                                   label = stream[1],
-                                                  uuid = label[2]) 
+                                                  uuid = stream[2].bytes) 
                         for stream in streams]
         params = btrdb_pb2.GenerateCSVParams(queryType = queryType.toProto(),
                                              startTime = start,
@@ -181,7 +181,7 @@ class Endpoint(object):
                                              windowSize = width,
                                              depth = depth,
                                              includeVersions = includeVersions,
-                                             streams = protostreams)
+                                             streams = protoStreams)
         result = self.stub.GenerateCSV(params)
         for result in self.stub.GenerateCSV(params):
             BTrDBError.checkProtoStat(result.stat)

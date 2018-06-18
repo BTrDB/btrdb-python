@@ -209,8 +209,8 @@ class QueryType(object):
     def RAW_QUERY():
         return QueryType(btrdb_pb2.GenerateCSVParams.RAW_QUERY)
     
-    def __init__(self, proto_enum):
-        self.enum = enum
+    def __init__(self, protoEnum):
+        self.enum = protoEnum
 
     def toProto(self):
         return self.enum
