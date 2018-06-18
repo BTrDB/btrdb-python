@@ -163,12 +163,24 @@ class BTrDB(object):
                 yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, tagsanns[0], tagsanns[1], desc.annotationVersion)
 
     def getMetadataUsage(self, prefix):
+        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> Tuple[Dict[str, int], Dict[str, int]]
+        """
+        Gives statistics about metadata for collections that match a 
+        prefix.
+
+        Parameters
+        ----------
+        prefix: str
+            A prefix of the collection names to look at
+        """
         ep = self.ep
         tags, annotations = ep.getMetadataUsage(prefix)
-        return tags, annotations
+        pyTags = {tag.key: tag.count for tag in tags}
+        pyAnn = {ann.key: ann.count for ann in annotations}
+        return pyTags, pyAnn
 
     def writeCsv(self, csvWriter, queryType, start, end, width, depth, includeVersions, *streams):
-        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID])
+        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
 
         """
         Writes streams to a csv writer using the provided configuration.
