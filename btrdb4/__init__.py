@@ -31,6 +31,7 @@ The 'btrdb4' module provides Python bindings to interact with BTrDB.
 
 import grpc
 import uuid
+import utils
 
 from btrdb4.endpoint import Endpoint
 from btrdb4.utils import *
@@ -179,9 +180,90 @@ class BTrDB(object):
         pyAnn = {ann.key: ann.count for ann in annotations}
         return pyTags, pyAnn
 
-    def writeCsv(self, csvWriter, queryType, start, end, width, depth, includeVersions, *streams):
-        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
+    def windowsToCsv(self, csvFile, start, end, width, depth, includeVersions, *streams):
+        # type: (File, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
+        """
+        Writes windows streams to a csv file using the provided
+        configuration.
 
+        Parameters
+        ----------
+        csvFile: File
+            The csv file where rows will be written
+        start: int
+            The start time in nanoseconds for the queries
+        end: int
+            The end time in nanoseconds
+        width: int
+            The width of the stat points
+        depth: int
+            The depth of the queries
+        includeVersions: bool
+            Include the stream versions in the header labels
+        streams: *Tuple[int, str, UUID]
+            The version, label and uuid for the streams to be queried.
+        """
+        csvWriter = csv.reader(csvFile)
+        return self.writeCSV(
+            self, csvWriter, utils.QueryType.WINDOWS_QUERY(), 
+            start, end, width, depth, includeVersions, *streams):
+
+    def alignedWindowsToCSV(self, csvFile, start, end, depth, includeVersions, *streams):
+        # type: (File, int, int, int, bool, *Tuple[int, str, UUID]) -> None
+        """
+        Writes aligned windows streams to a csv file using the 
+        provided configuration.
+
+        Parameters
+        ----------
+        csvFile: File
+            The csv file where rows will be written
+        start: int
+            The start time in nanoseconds for the queries
+        end: int
+            The end time in nanoseconds
+        depth: int
+            The depth of the queries
+        includeVersions: bool
+            Include the stream versions in the header labels
+        streams: *Tuple[int, str, UUID]
+            The version, label and uuid for the streams to be queried.
+        """
+        csvWriter = csv.reader(csvFile)
+        return self.writeCSV(
+            self, csvWriter, utils.QueryType.ALIGNED_WINDOWS_QUERY(),
+            start, end, width, depth, includeVersions, *streams):
+
+    def rawValuesToCSV(self, csvFile, start, end, width, depth, includeVersions, *streams):
+        # type: (File, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
+        """
+        Writes raw values streams to a csv file using the provided
+        configuration.
+
+        Parameters
+        ----------
+        csvFile: File
+            The csv file where rows will be written
+        start: int
+            The start time in nanoseconds for the queries
+        end: int
+            The end time in nanoseconds
+        width: int
+            The width of the stat points
+        depth: int
+            The depth of the queries
+        includeVersions: bool
+            Include the stream versions in the header labels
+        streams: *Tuple[int, str, UUID]
+            The version, label and uuid for the streams to be queried.
+        """
+        csvWriter = csv.reader(csvFile)
+        return self.writeCSV(
+            self, csvWriter, utils.QueryType.RAW_QUERY(), 
+            start, end, width, depth, includeVersions, *streams)
+
+    def writeCSV(self, csvWriter, queryType, start, end, width, depth, includeVersions, *streams):
+        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
         """
         Writes streams to a csv writer using the provided configuration.
 
