@@ -31,7 +31,7 @@ The 'btrdb4' module provides Python bindings to interact with BTrDB.
 
 import grpc
 import uuid
-import utils
+import os
 
 from btrdb4.endpoint import Endpoint
 from btrdb4.utils import *
@@ -41,8 +41,44 @@ MAX_TIME = 48 << 56
 MAX_POINTWIDTH = 63
 
 class Connection(object):
-    def __init__(self, addrportstr):
-        self.channel = grpc.insecure_channel(addrportstr)
+    def __init__(self, addrportstr, apikey=None):
+        # type: (str, str) -> Connection
+        """
+        Connects to a BTrDB server
+
+        Parameters
+        ----------
+        addrportstr: str
+            The address of the cluster to connect to, e.g 123.123.123:4411
+        apikey: str
+            The option API key to authenticate requests
+
+        Returns
+        -------
+        Connection
+            A Connection class object.
+        """
+        addrport = addrportstr.split(":", 2)
+        if len(addrport) != 2:
+            raise ValueError("expecting address:port")
+        if addrport[1] == "4411":
+            # grpc bundles its own CA certs which will work for all normal SSL
+            # certificates but will fail for custom CA certs. Allow the user
+            # to specify a CA bundle via env var to overcome this
+            ca_bundle = os.getenv("BTRDB_CA_BUNDLE","")
+            if ca_bundle != "":
+                with open(ca_bundle, "rb") as f:
+                    contents = f.read()
+            else:
+                contents = None
+            if apikey is None:
+                self.channel = grpc.secure_channel(addrportstr, grpc.ssl_channel_credentials(contents))
+            else:
+                self.channel = grpc.secure_channel(addrportstr, grpc.composite_channel_credentials(grpc.ssl_channel_credentials(contents), grpc.access_token_call_credentials(apikey)))
+        else:
+            if apikey is not None:
+                raise ValueError("cannot use an API key with an insecure (port 4410) BTrDB API. Try port 4411")
+            self.channel = grpc.insecure_channel(addrportstr)
 
     def newContext(self):
         # type: () -> BTrDB
@@ -131,7 +167,7 @@ class BTrDB(object):
         """
         Search for streams matching given parameters
 
-        This function allows for searching 
+        This function allows for searching
 
         Parameters
         ----------
@@ -164,9 +200,9 @@ class BTrDB(object):
                 yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, tagsanns[0], tagsanns[1], desc.annotationVersion)
 
     def getMetadataUsage(self, prefix):
-        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> Tuple[Dict[str, int], Dict[str, int]]
+        # type: (csv.writer, QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> Tuple[Dict[str, int], Dict[str, int]]
         """
-        Gives statistics about metadata for collections that match a 
+        Gives statistics about metadata for collections that match a
         prefix.
 
         Parameters
@@ -205,13 +241,12 @@ class BTrDB(object):
         """
         csvWriter = csv.reader(csvFile)
         return self.writeCSV(
-            self, csvWriter, utils.QueryType.WINDOWS_QUERY(), 
-            start, end, width, depth, includeVersions, *streams):
+            self, csvWriter, QueryType.WINDOWS_QUERY(), start, end, width, depth, includeVersions, *streams)
 
     def alignedWindowsToCSV(self, csvFile, start, end, depth, includeVersions, *streams):
         # type: (File, int, int, int, bool, *Tuple[int, str, UUID]) -> None
         """
-        Writes aligned windows streams to a csv file using the 
+        Writes aligned windows streams to a csv file using the
         provided configuration.
 
         Parameters
@@ -231,8 +266,8 @@ class BTrDB(object):
         """
         csvWriter = csv.reader(csvFile)
         return self.writeCSV(
-            self, csvWriter, utils.QueryType.ALIGNED_WINDOWS_QUERY(),
-            start, end, width, depth, includeVersions, *streams):
+            self, csvWriter, QueryType.ALIGNED_WINDOWS_QUERY(),
+            start, end, width, depth, includeVersions, *streams)
 
     def rawValuesToCSV(self, csvFile, start, end, width, depth, includeVersions, *streams):
         # type: (File, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
@@ -259,11 +294,11 @@ class BTrDB(object):
         """
         csvWriter = csv.reader(csvFile)
         return self.writeCSV(
-            self, csvWriter, utils.QueryType.RAW_QUERY(), 
+            self, csvWriter, QueryType.RAW_QUERY(),
             start, end, width, depth, includeVersions, *streams)
 
     def writeCSV(self, csvWriter, queryType, start, end, width, depth, includeVersions, *streams):
-        # type: (csv.writer, btrdb4.utils.QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
+        # type: (csv.writer, QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> None
         """
         Writes streams to a csv writer using the provided configuration.
 
@@ -271,7 +306,7 @@ class BTrDB(object):
         ----------
         csvWriter: csv.writer
             The csv writer where rows will be written
-        queryType: btrdb4.utils.QueryType
+        queryType: QueryType
             The type of query for the streams
         start: int
             The start time in nanoseconds for the queries
@@ -321,18 +356,18 @@ class Stream(object):
         # type: () -> bool
         """
         Check if stream exists
-        
+
         Exists returns true if the stream exists. This is essential after using
         StreamFromUUID as the stream may not exist, causing a 404 error on
         later stream operations. Any operation that returns a stream from
         collection and tags will have ensured the stream exists already.
-        
+
         Returns
         -------
         bool
             Indicates whether stream exists.
         """
-        
+
         if self.knownToExist:
             return True
 
@@ -347,7 +382,7 @@ class Stream(object):
     def uuid(self):
         # type: () -> UUID
         """
-        Returns the stream's UUID. 
+        Returns the stream's UUID.
 
         This method returns the stream's UUID. The stream may nor may not exist yet, depending on how the stream object was obtained.
 
@@ -401,7 +436,7 @@ class Stream(object):
         Annotations returns the annotations of the stream (and the annotation version). It will always require a round trip to the server. If you are ok with stale data and want a higher performance version, use Stream.CachedAnnotations().
 
         Do not modify the resulting map.
-        
+
 
         Parameters
         ----------
@@ -511,7 +546,7 @@ class Stream(object):
         start: int
             The start time in nanoseconds for the range to be retrieved
         end : int
-            The end time in nanoseconds for the range to be deleted 
+            The end time in nanoseconds for the range to be deleted
         version: int
             The version of the stream to be queried
 
@@ -538,7 +573,7 @@ class Stream(object):
 
         """
         Read statistical aggregates of windows of data from BTrDB.
-        
+
         Query BTrDB for aggregates (or roll ups or windows) of the time series with `version` between time `start` (inclusive) and `end` (exclusive) in nanoseconds. Each point returned is a statistical aggregate of all the raw data within a window of width 2**`pointwidth` nanoseconds. These statistical aggregates currently include the mean, minimum, and maximum of the data and the count of data points composing the window.
 
         Note that `start` is inclusive, but `end` is exclusive. That is, results will be returned for all windows that start in the interval [start, end). If end < start+2^pointwidth you will not get any results. If start and end are not powers of two, the bottom pointwidth bits will be cleared. Each window will contain statistical summaries of the window. Statistical points with count == 0 will be omitted.
@@ -578,7 +613,7 @@ class Stream(object):
         Read arbitrarily-sized windows of data from BTrDB.
 
         Windows returns arbitrary precision windows from BTrDB. It is slower than AlignedWindows, but still significantly faster than RawValues. Each returned window will be `width` nanoseconds long. `start` is inclusive, but `end` is exclusive (e.g if end < start+width you will get no results). That is, results will be returned for all windows that start at a time less than the end timestamp. If (`end` - `start`) is not a multiple of width, then end will be decreased to the greatest value less than end such that (end - start) is a multiple of `width` (i.e., we set end = start + width * floordiv(end - start, width). The `depth` parameter is an optimization that can be used to speed up queries on fast queries. Each window will be accurate to 2^depth nanoseconds. If depth is zero, the results are accurate to the nanosecond. On a dense stream for large windows, this accuracy may not be required. For example for a window of a day, +- one second may be appropriate, so a depth of 30 can be specified. This is much faster to execute on the database side.
-        
+
 
         Parameters
         ----------
@@ -618,7 +653,7 @@ class Stream(object):
         start : int
             The start time in nanoseconds for the range to be deleted
         end : int
-            The end time in nanoseconds for the range to be deleted 
+            The end time in nanoseconds for the range to be deleted
 
         Returns
         -------
@@ -641,7 +676,7 @@ class Stream(object):
         Parameters
         ----------
         time : int
-            The time (in nanoseconds since Epoch) to search near 
+            The time (in nanoseconds since Epoch) to search near
         version : int
             Version of the stream to use in search
         backward : boolean

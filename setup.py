@@ -2,7 +2,7 @@ from setuptools import setup
 setup(
   name = 'btrdb4',
   packages = ['btrdb4'],
-  version = '4.9.4',
+  version = '4.11.1',
   description = "Bindings to interact with the Berkeley Tree Database using gRPC",
   author = 'Sam Kumar, Michael P Andersen',
   author_email = 'samkumar99@gmail.com, michael@steelcode.com',
