@@ -17,7 +17,9 @@ Here is an example:
 UUID('a5fba242-74c8-4e59-ad89-c1565ee3229c')
 >>>
 >>> # Connect to BTrDB and obtain a BTrDB handle
-... conn = btrdb4.Connection("compound-0.cs.berkeley.edu:4410")
+... conn = btrdb4.Connection("my.server:4410")
+>>> # Connection with an API key. Note port 4411, the secure API
+... conn = btrdb4.Connection("my.server:4411", apikey="255C59A06BB698681E3580D2")
 >>> b = conn.newContext()
 >>>
 >>> # Obtain a stream handle
