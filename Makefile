@@ -28,14 +28,17 @@ clean:
 test:
 	# python setup.py test
 	pytest tests/
-	
+
 # Publish to gh-pages
 publish:
 	git subtree push --prefix=deploy origin gh-pages
 
-# Draw UML diagrams
-uml:
-	pyreverse -ASmy -k -o png -p $(PROJECT) $(LOCALPATH)
+# Autogenerate GRPC/PB files
+grpc:
+	python -m grpc_tools.protoc -Ibtrdb4/grpcinterface --python_out=btrdb4 --grpc_python_out=btrdb4 btrdb4/grpcinterface/btrdb.proto
+	python -m grpc_tools.protoc -Ibtrdb/grpcinterface --python_out=btrdb/grpcinterface --grpc_python_out=btrdb/grpcinterface btrdb/grpcinterface/btrdb.proto
+	@echo
+	@echo **Please edit the 'btrdb_pb2_grpc.py' files to fix the import statements**
 
 # Build the universal wheel and source distribution
 build:
