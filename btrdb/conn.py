@@ -32,10 +32,12 @@ The 'btrdb' module provides Python bindings to interact with BTrDB.
 import grpc
 import uuid
 import os
+import csv
 
 from btrdb.endpoint import Endpoint
 from btrdb.stream import Stream
 from btrdb.utils.general import unpack_stream_descriptor
+from btrdb.utils.query import QueryType
 
 MIN_TIME = -(16 << 56)
 MAX_TIME = 48 << 56
@@ -245,7 +247,7 @@ class BTrDB(object):
         return self.writeCSV(
             self, csvWriter, QueryType.WINDOWS_QUERY(), start, end, width, depth, includeVersions, *streams)
 
-    def alignedWindowsToCSV(self, csvFile, start, end, depth, includeVersions, *streams):
+    def alignedWindowsToCSV(self, csvFile, start, end, width, depth, includeVersions, *streams):
         # type: (File, int, int, int, bool, *Tuple[int, str, UUID]) -> None
         """
         Writes aligned windows streams to a csv file using the
@@ -259,6 +261,8 @@ class BTrDB(object):
             The start time in nanoseconds for the queries
         end: int
             The end time in nanoseconds
+        width: int
+            The width of the stat points
         depth: int
             The depth of the queries
         includeVersions: bool
