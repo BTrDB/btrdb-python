@@ -1,4 +1,4 @@
-# tests
+# tests.test_base
 # Testing package for the btrdb library.
 #
 # Author:   Allen Leis <allen@pingthings.io>
@@ -7,7 +7,7 @@
 # Copyright (C) 2018 PingThings LLC
 # For license information, see LICENSE.txt
 #
-# ID: __init__.py [] allen@pingthings.io $
+# ID: test_base.py [] allen@pingthings.io $
 
 """
 Testing package for the btrdb database library.
@@ -17,25 +17,36 @@ Testing package for the btrdb database library.
 ## Imports
 ##########################################################################
 
-import os
-from btrdb.conn import Connection
-from btrdb.exceptions import ConnectionError
+import pytest
+
+##########################################################################
+## Test Constants
+##########################################################################
+
+EXPECTED_VERSION = "4.0"
 
 
 ##########################################################################
-## Module Variables
+## Initialization Tests
 ##########################################################################
 
-__version__ = "4.0"
+class TestBasic(object):
 
-##########################################################################
-## Functions
-##########################################################################
+    def test_sanity(self):
+        """
+        Test that tests work by confirming 7-3 = 4
+        """
+        assert 7-3 == 4, "The world went wrong!!"
 
-def connect(conn_str=None):
-    if not conn_str:
-        conn_str = os.environ.get("BTRDB_ENDPOINTS", None)
-        if not env:
-            raise ConnectionError("Connection string not supplied and no ENV variable found.")
+    def test_import(self):
+        """
+        Assert that the btrdb package can be imported.
+        """
+        import btrdb
 
-    return Connection(conn_str)
+    def test_version(self):
+        """
+        Assert that the test version matches the library version.
+        """
+        import btrdb
+        assert btrdb.__version__ == EXPECTED_VERSION

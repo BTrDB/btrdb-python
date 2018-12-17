@@ -12,5 +12,7 @@ setup(
   include_package_data = False,
   install_requires = ["grpcio >= 1.1.3", "grpcio-tools >= 1.1.3", "isodate >= 0.5.4"],
   keywords = ['btrdb', 'berkeley', 'timeseries', 'database', 'bindings' 'gRPC'],
-  classifiers = []
+  classifiers = [],
+  setup_requires = ["pytest-runner"],
+  tests_require = ["pytest"]
 )
