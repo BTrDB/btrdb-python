@@ -29,6 +29,7 @@ import grpc
 
 from btrdb.grpcinterface import btrdb_pb2
 from btrdb.grpcinterface import btrdb_pb2_grpc
+from btrdb.stream import RawPoint
 from btrdb.exceptions import BTrDBError
 from btrdb.utils.general import unpack_stream_descriptor
 
