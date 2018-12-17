@@ -25,8 +25,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import grpc
-
 from btrdb.grpcinterface import btrdb_pb2
 from btrdb.grpcinterface import btrdb_pb2_grpc
 from btrdb.stream import RawPoint

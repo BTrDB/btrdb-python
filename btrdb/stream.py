@@ -1,3 +1,4 @@
+from btrdb.exceptions import BTrDBError
 
 class Stream(object):
     def __init__(self, btrdb, uuid, knownToExist = False, collection = None, tags = None, annotations = None, annotationVersion = None):
@@ -420,7 +421,7 @@ class RawPoint(object):
 
     @staticmethod
     def toProto(rp):
-        return btrdb_pb2.RawPoint(time = rp[0], value = rp[1])
+        return RawPoint(time = rp[0], value = rp[1])
 
     @staticmethod
     def toProtoList(rplist):
