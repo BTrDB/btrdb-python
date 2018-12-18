@@ -12,7 +12,6 @@ LOCALPATH := $(CURDIR)/$(PROJECT)
 clean:
 	find . -name "*.pyc" -print0 | xargs -0 rm -rf
 	find . -name "__pycache__" -print0 | xargs -0 rm -rf
-	find . -name "*-failed-diff.png" -print0 | xargs -0 rm -rf
 	-rm -rf htmlcov
 	-rm -rf .coverage
 	-rm -rf build
@@ -20,14 +19,12 @@ clean:
 	-rm -rf $(PROJECT).egg-info
 	-rm -rf .eggs
 	-rm -rf site
-	-rm -rf classes_$(PROJECT).png
-	-rm -rf packages_$(PROJECT).png
 	-rm -rf docs/_build
 
 # Targets for testing
 test:
 	# python setup.py test
-	pytest --cov=btrdb --flakes 
+	pytest --cov=btrdb --flakes
 
 # Publish to gh-pages
 publish:
@@ -35,10 +32,14 @@ publish:
 
 # Autogenerate GRPC/PB files
 grpc:
+	@echo Generating files:
 	python -m grpc_tools.protoc -Ibtrdb4/grpcinterface --python_out=btrdb4 --grpc_python_out=btrdb4 btrdb4/grpcinterface/btrdb.proto
 	python -m grpc_tools.protoc -Ibtrdb/grpcinterface --python_out=btrdb/grpcinterface --grpc_python_out=btrdb/grpcinterface btrdb/grpcinterface/btrdb.proto
 	@echo
-	@echo **Please edit the 'btrdb_pb2_grpc.py' files to fix the import statements**
+	@echo Fixing import statements:
+	sed -i '' 's/btrdb_pb2 as btrdb__pb2/btrdb.grpcinterface.btrdb_pb2 as btrdb__pb2/' btrdb/grpcinterface/btrdb_pb2_grpc.py
+	sed -i '' 's/btrdb_pb2 as btrdb__pb2/btrdb4.btrdb_pb2 as btrdb__pb2/' btrdb4/btrdb_pb2_grpc.py
+
 
 # Build the universal wheel and source distribution
 build:
