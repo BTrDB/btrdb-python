@@ -34,10 +34,10 @@ import uuid
 import os
 import csv
 
-from btrdb.endpoint import Endpoint
 from btrdb.stream import Stream
 from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.query import QueryType
+from btrdb.utils.conversion import to_uuid
 
 MIN_TIME = -(16 << 56)
 MAX_TIME = 48 << 56
@@ -84,7 +84,6 @@ class Connection(object):
                 raise ValueError("cannot use an API key with an insecure (port 4410) BTrDB API. Try port 4411")
             self.channel = grpc.insecure_channel(addrportstr)
 
-        return BTrDB(Endpoint(self.channel))
 
 
 class BTrDB(object):
@@ -92,12 +91,13 @@ class BTrDB(object):
         # type: (Endpoint) -> None
         self.ep = endpoint
 
-    def streamFromUUID(self, uu):
-        # type: (UUID) -> Stream
+    def stream_from_uuid(self, uu):
+        # type: (UUID or str or bytes) -> Stream
         """
-        Creates a stream handle to the BTrDB stream with the UUID `uu`.
-
-        Creates a stream handle to the BTrDB stream with the UUID `uu`. This method does not check whether a stream with the specified UUID exists. It is always good form to check whether the stream existed using stream.exists().
+        Creates a stream handle to the BTrDB stream with the UUID `uu`. This
+        method does not check whether a stream with the specified UUID exists.
+        It is always good form to check whether the stream existed using
+        `stream.exists()`.
 
 
         Parameters
@@ -111,8 +111,7 @@ class BTrDB(object):
             A Stream class object.
 
         """
-
-        return Stream(self, uu)
+        return Stream(self, to_uuid(uu))
 
     def create(self, uu, collection, tags=None, annotations=None):
         # type: (UUID, str, Dict[str, str], Dict[str, str]) -> Stream
@@ -163,7 +162,7 @@ class BTrDB(object):
 
     """
 
-    def lookupStreams(self, collection, isCollectionPrefix, tags=None, annotations=None):
+    def streams_in_collection(self, collection, isCollectionPrefix=True, tags=None, annotations=None):
         # type: (str, bool, Dict[str, str], Dict[str, str]) -> Stream
 
         """
