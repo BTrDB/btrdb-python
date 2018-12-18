@@ -46,7 +46,7 @@ MAX_POINTWIDTH = 63
 
 class Connection(object):
     def __init__(self, addrportstr, apikey=None):
-        # type: (str, str) -> Connection
+        # type: () -> BTrDB
         """
         Connects to a BTrDB server
 
@@ -84,10 +84,8 @@ class Connection(object):
                 raise ValueError("cannot use an API key with an insecure (port 4410) BTrDB API. Try port 4411")
             self.channel = grpc.insecure_channel(addrportstr)
 
-    def newContext(self):
-        # type: () -> BTrDB
-        e = Endpoint(self.channel)
-        return BTrDB(e)
+        return BTrDB(Endpoint(self.channel))
+
 
 class BTrDB(object):
     def __init__(self, endpoint):
