@@ -18,7 +18,8 @@ Testing package for the btrdb database library.
 ##########################################################################
 
 import os
-from btrdb.conn import Connection
+from btrdb.conn import Connection, BTrDB
+from btrdb.endpoint import Endpoint
 from btrdb.exceptions import ConnectionError
 
 
@@ -39,4 +40,4 @@ def connect(conn_str=None):
     if not conn_str:
         raise ConnectionError("Connection string not supplied and no ENV variable found.")
 
-    return Connection(conn_str)
+    return  BTrDB(Endpoint(Connection(conn_str).channel))
