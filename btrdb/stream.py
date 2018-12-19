@@ -234,6 +234,17 @@ class Stream(object):
         Note that the raw data points are the original values at the sensor's native sampling rate (assuming the time series represents measurements from a sensor). This is the lowest level of data with the finest time granularity. In the tree data structure of BTrDB, this data is stored in the vector nodes.
 
         """
+        if isinstance(start, float):
+            if start.is_integer():
+                start = int(start)
+            else:
+                raise Exception("start argument must be a whole number")
+
+        if isinstance(end, float):
+            if end.is_integer():
+                end = int(end)
+            else:
+                raise Exception("end argument must be a whole number")
 
         ep = self.b.ep
         rps = ep.rawValues(self.uu, start, end, version)
