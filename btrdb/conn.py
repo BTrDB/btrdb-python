@@ -200,7 +200,7 @@ class BTrDB(object):
                 tagsanns = unpack_stream_descriptor(desc)
                 yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, tagsanns[0], tagsanns[1], desc.annotationVersion)
 
-    def getMetadataUsage(self, prefix):
+    def collection_metadata(self, prefix):
         # type: (csv.writer, QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> Tuple[Dict[str, int], Dict[str, int]]
         """
         Gives statistics about metadata for collections that match a

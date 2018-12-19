@@ -21,8 +21,6 @@ import sys
 sys.path.insert(0, os.path.abspath('_themes'))
 sys.path.insert(0, os.path.abspath('../..'))
 
-import btrdb
-
 # -- Project information -----------------------------------------------------
 
 project = 'btrdb-python'

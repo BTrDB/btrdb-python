@@ -1,7 +1,7 @@
 from btrdb.exceptions import BTrDBError
 
 class Stream(object):
-    def __init__(self, btrdb, uuid, knownToExist = False, collection = None, tags = None, annotations = None, annotationVersion = None):
+    def __init__(self, btrdb, uuid, knownToExist=False, collection=None, tags=None, annotations=None, annotationVersion=None):
         self.b = btrdb
         self.uu = uuid
         self.knownToExist = knownToExist
@@ -12,12 +12,13 @@ class Stream(object):
         self.cachedAnnotationVersion = annotationVersion
         self.cachedCollection = collection
 
-    def refreshMeta(self):
+    def refresh_metadata(self):
         # type: () -> ()
         """
         Refreshes the locally cached meta data for a stream
 
-        Queries the BTrDB server for all stream metadata including collection, annotation, and tags. This method requires a round trip to the server.
+        Queries the BTrDB server for all stream metadata including collection,
+        annotation, and tags. This method requires a round trip to the server.
 
         """
 
@@ -45,7 +46,7 @@ class Stream(object):
             return True
 
         try:
-            self.refreshMeta()
+            self.refresh_metadata()
             return True
         except BTrDBError as bte:
             if bte.code == 404:
@@ -57,7 +58,8 @@ class Stream(object):
         """
         Returns the stream's UUID.
 
-        This method returns the stream's UUID. The stream may nor may not exist yet, depending on how the stream object was obtained.
+        This method returns the stream's UUID. The stream may nor may not exist
+        yet, depending on how the stream object was obtained.
 
         Parameters
         ----------
@@ -82,7 +84,9 @@ class Stream(object):
         """
         Returns the stream's tags.
 
-        Tags returns the tags of the stream. It may require a round trip to the server depending on how the stream was acquired. Do not modify the resulting map as it is a reference to the internal stream state.
+        Tags returns the tags of the stream. It may require a round trip to the
+        server depending on how the stream was acquired. Do not modify the
+        resulting map as it is a reference to the internal stream state.
 
         Parameters
         ----------
@@ -97,7 +101,7 @@ class Stream(object):
         if self.cachedTags is not None:
             return self.cachedTags
 
-        self.refreshMeta()
+        self.refresh_metadata()
         return self.cachedTags
 
     def annotations(self):
@@ -106,7 +110,10 @@ class Stream(object):
 
         Returns a stream's annotations
 
-        Annotations returns the annotations of the stream (and the annotation version). It will always require a round trip to the server. If you are ok with stale data and want a higher performance version, use Stream.CachedAnnotations().
+        Annotations returns the annotations of the stream (and the annotation
+        version). It will always require a round trip to the server. If you are
+        ok with stale data and want a higher performance version, use
+        Stream.CachedAnnotations().
 
         Do not modify the resulting map.
 
@@ -118,17 +125,19 @@ class Stream(object):
         Returns
         -------
         Tuple[Dict[str, str], int]
-            A tuple containing a dictionary of annotations and an integer representing the version of those annotations.
+            A tuple containing a dictionary of annotations and an integer representing
+            the version of those annotations.
 
         """
-        self.refreshMeta()
+        self.refresh_metadata()
         return self.cachedAnnotations, self.cachedAnnotationVersion
 
     def cachedAnnotations(self):
         # type: () -> Tuple[Dict[str, str], int]
         """
 
-        CachedAnnotations returns the annotations of the stream, reusing previous results if available, otherwise fetching from the server.
+        CachedAnnotations returns the annotations of the stream, reusing previous
+        results if available, otherwise fetching from the server.
 
         Parameters
         ----------
@@ -137,17 +146,19 @@ class Stream(object):
         Returns
         -------
         Tuple[Dict[str, str], int]
-            A tuple containing a dictionary of annotations and an integer representing the version of those annotations.
+            A tuple containing a dictionary of annotations and an integer
+            representing the version of those annotations.
 
         """
         if self.cachedAnnotations is None:
-            self.refeshMeta()
+            self.refresh_metadata()
         return self.cachedAnnotations, self.cachedAnnotationVersion
 
     def collection(self):
         # type: () -> str
         """
-        Returns the collection of the stream. It may require a round trip to the server depending on how the stream was acquired.
+        Returns the collection of the stream. It may require a round trip to the
+        server depending on how the stream was acquired.
 
         Returns
         -------
@@ -159,7 +170,7 @@ class Stream(object):
         if self.cachedCollection is not None:
             return self.cachedCollection
 
-        self.refreshMeta()
+        self.refresh_metadata()
         return self.cachedCollection
 
     def version(self):
@@ -167,7 +178,9 @@ class Stream(object):
         """
         Returns the current data version of the stream.
 
-        Version returns the current data version of the stream. This is not cached, it queries each time. Take care that you do not intorduce races in your code by assuming this function will always return the same vaue
+        Version returns the current data version of the stream. This is not
+        cached, it queries each time. Take care that you do not intorduce races
+        in your code by assuming this function will always return the same vaue
 
         Parameters
         ----------
@@ -188,7 +201,11 @@ class Stream(object):
         """
         Insert new data in the form (time, value) into the series.
 
-        Inserts a list of new (time, value) tuples into the series. The tuples in the list need not be sorted by time. If the arrays are larger than appropriate, this function will automatically chunk the inserts. As a consequence, the insert is not necessarily atomic, but can be used with a very large array.
+        Inserts a list of new (time, value) tuples into the series. The tuples
+        in the list need not be sorted by time. If the arrays are larger than
+        appropriate, this function will automatically chunk the inserts. As a
+        consequence, the insert is not necessarily atomic, but can be used with
+        a very large array.
 
         Returns
         -------
@@ -206,13 +223,15 @@ class Stream(object):
             i += batchsize
         return version
 
-    def rawValues(self, start, end, version=0):
+    def values(self, start, end, version=0):
         # type: (int, int, int) -> Tuple[RawPoint, int]
 
         """
         Read raw values from BTrDB between time [a, b) in nanoseconds.
 
-        RawValues queries BTrDB for the raw time series data points between `start` and `end` time, both in nanoseconds since the Epoch for the specified stream `version`.
+        RawValues queries BTrDB for the raw time series data points between
+        `start` and `end` time, both in nanoseconds since the Epoch for the
+        specified stream `version`.
 
         Parameters
         ----------
@@ -231,7 +250,11 @@ class Stream(object):
 
         Notes
         -----
-        Note that the raw data points are the original values at the sensor's native sampling rate (assuming the time series represents measurements from a sensor). This is the lowest level of data with the finest time granularity. In the tree data structure of BTrDB, this data is stored in the vector nodes.
+        Note that the raw data points are the original values at the sensor's
+        native sampling rate (assuming the time series represents measurements
+        from a sensor). This is the lowest level of data with the finest time
+        granularity. In the tree data structure of BTrDB, this data is stored in
+        the vector nodes.
 
         """
         if isinstance(start, float):
@@ -252,15 +275,25 @@ class Stream(object):
             for rp in rplist:
                 yield RawPoint.fromProto(rp), version
 
-    def alignedWindows(self, start, end, pointwidth, version=0):
+    def aligned_windows(self, start, end, pointwidth, version=0):
         # type: (int, int, int, int) -> Tuple[StatPoint, int]
 
         """
         Read statistical aggregates of windows of data from BTrDB.
 
-        Query BTrDB for aggregates (or roll ups or windows) of the time series with `version` between time `start` (inclusive) and `end` (exclusive) in nanoseconds. Each point returned is a statistical aggregate of all the raw data within a window of width 2**`pointwidth` nanoseconds. These statistical aggregates currently include the mean, minimum, and maximum of the data and the count of data points composing the window.
+        Query BTrDB for aggregates (or roll ups or windows) of the time series
+        with `version` between time `start` (inclusive) and `end` (exclusive) in
+        nanoseconds. Each point returned is a statistical aggregate of all the
+        raw data within a window of width 2**`pointwidth` nanoseconds. These
+        statistical aggregates currently include the mean, minimum, and maximum
+        of the data and the count of data points composing the window.
 
-        Note that `start` is inclusive, but `end` is exclusive. That is, results will be returned for all windows that start in the interval [start, end). If end < start+2^pointwidth you will not get any results. If start and end are not powers of two, the bottom pointwidth bits will be cleared. Each window will contain statistical summaries of the window. Statistical points with count == 0 will be omitted.
+        Note that `start` is inclusive, but `end` is exclusive. That is, results
+        will be returned for all windows that start in the interval [start, end).
+        If end < start+2^pointwidth you will not get any results. If start and
+        end are not powers of two, the bottom pointwidth bits will be cleared.
+        Each window will contain statistical summaries of the window.
+        Statistical points with count == 0 will be omitted.
 
         Parameters
         ----------
@@ -281,7 +314,8 @@ class Stream(object):
 
         Notes
         -----
-        As the window-width is a power-of-two, it aligns with BTrDB internal tree data structure and is faster to execute than `windows()`.
+        As the window-width is a power-of-two, it aligns with BTrDB internal
+        tree data structure and is faster to execute than `windows()`.
         """
 
         ep = self.b.ep
@@ -296,7 +330,22 @@ class Stream(object):
         """
         Read arbitrarily-sized windows of data from BTrDB.
 
-        Windows returns arbitrary precision windows from BTrDB. It is slower than AlignedWindows, but still significantly faster than RawValues. Each returned window will be `width` nanoseconds long. `start` is inclusive, but `end` is exclusive (e.g if end < start+width you will get no results). That is, results will be returned for all windows that start at a time less than the end timestamp. If (`end` - `start`) is not a multiple of width, then end will be decreased to the greatest value less than end such that (end - start) is a multiple of `width` (i.e., we set end = start + width * floordiv(end - start, width). The `depth` parameter is an optimization that can be used to speed up queries on fast queries. Each window will be accurate to 2^depth nanoseconds. If depth is zero, the results are accurate to the nanosecond. On a dense stream for large windows, this accuracy may not be required. For example for a window of a day, +- one second may be appropriate, so a depth of 30 can be specified. This is much faster to execute on the database side.
+        Windows returns arbitrary precision windows from BTrDB. It is slower
+        than AlignedWindows, but still significantly faster than RawValues. Each
+        returned window will be `width` nanoseconds long. `start` is inclusive,
+        but `end` is exclusive (e.g if end < start+width you will get no
+        results). That is, results will be returned for all windows that start
+        at a time less than the end timestamp. If (`end` - `start`) is not a
+        multiple of width, then end will be decreased to the greatest value less
+        than end such that (end - start) is a multiple of `width` (i.e., we set
+        end = start + width * floordiv(end - start, width). The `depth`
+        parameter is an optimization that can be used to speed up queries on
+        fast queries. Each window will be accurate to 2^depth nanoseconds. If
+        depth is zero, the results are accurate to the nanosecond. On a dense
+        stream for large windows, this accuracy may not be required. For example
+        for a window of a day, +- one second may be appropriate, so a depth of
+        30 can be specified. This is much faster to execute on the database
+        side.
 
 
         Parameters
@@ -324,13 +373,16 @@ class Stream(object):
             for sp in splist:
                 yield StatPoint.fromProto(sp), version
 
-    def deleteRange(self, start, end):
+    def delete_range(self, start, end):
         # type: (int, int) -> int
 
         """
         "Delete" all points between [`start`, `end`)
 
-        "Delete" all points between `start` (inclusive) and `end` (exclusive), both in nanoseconds. As BTrDB has persistent multiversioning, the deleted points will still exist as part of an older version of the stream.
+        "Delete" all points between `start` (inclusive) and `end` (exclusive),
+        both in nanoseconds. As BTrDB has persistent multiversioning, the
+        deleted points will still exist as part of an older version of the
+        stream.
 
         Parameters
         ----------
@@ -354,7 +406,11 @@ class Stream(object):
         """
         Finds the closest point in the stream to a specified time.
 
-        Return the point nearest to the specified `time` in nanoseconds since Epoch in the stream with `version` while specifying whether to search forward or backward in time. If `backward` is false, the returned point will be >= `time`. If backward is true, the returned point will be < `time`. The version of the stream used to satisfy the query is returned.
+        Return the point nearest to the specified `time` in nanoseconds since
+        Epoch in the stream with `version` while specifying whether to search
+        forward or backward in time. If `backward` is false, the returned point
+        will be >= `time`. If backward is true, the returned point will be <
+        `time`. The version of the stream used to satisfy the query is returned.
 
 
         Parameters
@@ -481,4 +537,10 @@ class StatPoint(object):
             raise IndexError("RawPoint index out of range")
 
     def __repr__(self):
-        return "StatPoint({0}, {1}, {2}, {3}, {4})".format(repr(self.time), repr(self.min), repr(self.mean), repr(self.max), repr(self.count))
+        return "StatPoint({0}, {1}, {2}, {3}, {4})".format(
+            repr(self.time),
+            repr(self.min),
+            repr(self.mean),
+            repr(self.max),
+            repr(self.count)
+        )
