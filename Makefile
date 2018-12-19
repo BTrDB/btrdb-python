@@ -5,6 +5,13 @@ SHELL := /bin/bash
 PROJECT := btrdb
 LOCALPATH := $(CURDIR)/$(PROJECT)
 
+
+# Sphinx configuration
+SPHINXOPTS    	=
+SPHINXBUILD   	= sphinx-build
+SPHINXBUILDDIR  = docs/build
+SPHINXSOURCEDIR = docs/source
+
 # Export targets not associated with files
 .PHONY: test coverage pip clean publish uml build deploy install
 
@@ -12,6 +19,8 @@ LOCALPATH := $(CURDIR)/$(PROJECT)
 clean:
 	find . -name "*.pyc" -print0 | xargs -0 rm -rf
 	find . -name "__pycache__" -print0 | xargs -0 rm -rf
+	find . -name ".DS_Store" -print0 | xargs -0 rm -rf
+	-rm -rf docs/build
 	-rm -rf htmlcov
 	-rm -rf .coverage
 	-rm -rf build
@@ -53,3 +62,9 @@ install:
 deploy:
 	python setup.py register
 	twine upload dist/*
+
+
+html:
+	$(SPHINXBUILD) -b html $(SPHINXOPTS) $(SPHINXSOURCEDIR) $(SPHINXBUILDDIR)
+	@echo
+	@echo "Build finished. The HTML pages are in $(SPHINXBUILDDIR)/html."
