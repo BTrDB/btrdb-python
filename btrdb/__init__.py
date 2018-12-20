@@ -33,11 +33,11 @@ __version__ = "4.0"
 ## Functions
 ##########################################################################
 
-def connect(conn_str=None):
+def connect(conn_str=None, apikey=None):
     if not conn_str:
         conn_str = os.environ.get("BTRDB_ENDPOINTS", None)
 
     if not conn_str:
         raise ConnectionError("Connection string not supplied and no ENV variable found.")
 
-    return  BTrDB(Endpoint(Connection(conn_str).channel))
+    return  BTrDB(Endpoint(Connection(conn_str, apikey=apikey).channel))
