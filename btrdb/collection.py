@@ -18,7 +18,6 @@ Stream collection objects
 ##########################################################################
 
 from copy import deepcopy
-import collections
 from collections import defaultdict
 
 from btrdb.stream import RawPoint
@@ -60,8 +59,6 @@ class PointBuffer(defaultdict):
         Returns bool indicating whether a given key has all points from active
         (at the time) streams.
         """
-        values = self[key]
-
         # check each stream value to see if its valid/ready
         for idx, latest_time in enumerate(self.last_known_time):
 
@@ -82,7 +79,7 @@ class PointBuffer(defaultdict):
 
 
 
-class StreamCollectionBase(object):
+class StreamSetBase(object):
 
     """
     A lighweight wrapper around a list of stream objects
@@ -101,9 +98,8 @@ class StreamCollectionBase(object):
     def allow_window(self):
         return self.point_width or self.width or self.depth
 
-
     def _latest_versions(self):
-        return {versions[s.uuid()]: s.version() for s in self._streams}
+        return {s.uuid(): s.version() for s in self._streams}
 
 
     def pin_versions(self, versions=None):
@@ -134,11 +130,21 @@ class StreamCollectionBase(object):
         pass
 
     def filter(self, start=None, end=None):
-        # collection = deepcopy(self)
-        # collection.filters.append(StreamFilter(start, end))
-        # return collection
-        self.filters.append(StreamFilter(start, end))
-        return self
+        obj = self.clone()
+        obj.filters.append(StreamFilter(start, end))
+        return obj
+
+    def clone(self):
+        """
+        Returns a deep copy of the object.  Attributes that cannot be copied
+        will be referenced to both objects.
+        """
+        protected = ('_streams', )
+        clone = self.__class__(self._streams)
+        for attr, val in self.__dict__.items():
+            if attr not in protected:
+                setattr(clone, attr, deepcopy(val))
+        return clone
 
     def windows(self, width, depth):
         if not self.allow_window:
@@ -220,10 +226,10 @@ class StreamCollectionBase(object):
         return result
 
 
-# class StreamSet
-class StreamCollection(StreamCollectionBase, StreamTransformer):
+# class
+class StreamSet(StreamSetBase, StreamTransformer):
     """
-
+    Public class for a collection of streams
     """
     pass
 

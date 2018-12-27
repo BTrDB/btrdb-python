@@ -32,22 +32,17 @@ The 'btrdb' module provides Python bindings to interact with BTrDB.
 import grpc
 import uuid
 import os
-import csv
 
 from grpc._cython.cygrpc import CompressionAlgorithm
-from grpc._cython.cygrpc import CompressionLevel
 
 from btrdb.stream import Stream
-from btrdb.collection import StreamCollection
-
+from btrdb.collection import StreamSet
 from btrdb.utils.general import unpack_stream_descriptor
-from btrdb.utils.query import QueryType
 from btrdb.utils.conversion import to_uuid
 
 MIN_TIME = -(16 << 56)
 MAX_TIME = 48 << 56
 MAX_POINTWIDTH = 63
-
 
 
 class Connection(object):
@@ -84,7 +79,7 @@ class Connection(object):
                     contents = f.read()
             else:
                 contents = None
-                
+
             if apikey is None:
                 self.channel = grpc.secure_channel(
                     addrportstr,
@@ -116,7 +111,7 @@ class BTrDB(object):
 
     def streams(self, *identifiers, versions=None):
         """
-        Returns a StreamCollection object contain BTrDB streams from the supplied
+        Returns a StreamSet object with BTrDB streams from the supplied
         identifiers.  If any streams cannot be found matching the identifier
         than StreamNotFoundError will be returned.
 
@@ -134,7 +129,7 @@ class BTrDB(object):
 
         streams = [self.stream_from_uuid(ident) for ident in identifiers]
 
-        return StreamCollection(streams)
+        return StreamSet(streams)
 
     def stream_from_uuid(self, uu):
         # type: (UUID or str or bytes) -> Stream
