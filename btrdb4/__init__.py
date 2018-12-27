@@ -39,6 +39,38 @@ from btrdb4.utils import *
 MIN_TIME = -(16 << 56)
 MAX_TIME = 48 << 56
 MAX_POINTWIDTH = 63
+BTRDB_ENDPOINTS = "BTRDB_ENDPOINTS"
+BTRDB_API_KEY = "BTRDB_API_KEY"
+
+
+def connect(addrportstr=None, apikey=None):
+    """
+    Connect to a BTrDB server.
+
+    Parameters
+    ----------
+    addrportstr: str, default=None
+        The address and port of the cluster to connect to, e.g. 192.168.1.1:4411.
+        If set to None will look up the string from the environment variable
+        $BTRDB_ENDPOINTS (recommended).
+
+    apikey: str, default=None
+        The API key use to authenticate requests (optional). If None, the key
+        is looked up from the environment variable $BTRDB_API_KEY.
+
+    Returns
+    -------
+    conn : Connection
+        An instance of the Connection class, used to manage BTrDB interactions.
+    """
+    if addrportstr is None:
+        addrportstr = os.environ.get(BTRDB_ENDPOINTS, default="")
+
+    if apikey is None:
+        apikey = os.environ.get(BTRDB_API_KEY, default=None)
+
+    return Connection(addrportstr, apikey)
+
 
 class Connection(object):
     def __init__(self, addrportstr, apikey=None):

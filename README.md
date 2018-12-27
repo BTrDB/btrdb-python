@@ -20,6 +20,8 @@ UUID('a5fba242-74c8-4e59-ad89-c1565ee3229c')
 ... conn = btrdb4.Connection("my.server:4410")
 >>> # Connection with an API key. Note port 4411, the secure API
 ... conn = btrdb4.Connection("my.server:4411", apikey="255C59A06BB698681E3580D2")
+>>> # Connect using environment variables $BTRDB_ENDPOINTS and $BTRDB_API_KEY
+>>> conn = btrdb4.connect()
 >>> b = conn.newContext()
 >>>
 >>> # Obtain a stream handle
