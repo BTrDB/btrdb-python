@@ -60,8 +60,8 @@ def connect(addrportstr=None, apikey=None):
 
     Returns
     -------
-    conn : Connection
-        An instance of the Connection class, used to manage BTrDB interactions.
+    db : BTrDB
+        An instance of the BTrDB context to directly interact with the database.
     """
     if addrportstr is None:
         addrportstr = os.environ.get(BTRDB_ENDPOINTS, default="")
@@ -69,7 +69,7 @@ def connect(addrportstr=None, apikey=None):
     if apikey is None:
         apikey = os.environ.get(BTRDB_API_KEY, default=None)
 
-    return Connection(addrportstr, apikey)
+    return Connection(addrportstr, apikey).newContext()
 
 
 class Connection(object):
