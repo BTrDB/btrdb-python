@@ -22,6 +22,10 @@ UUID('a5fba242-74c8-4e59-ad89-c1565ee3229c')
 ... conn = btrdb4.Connection("my.server:4411", apikey="255C59A06BB698681E3580D2")
 >>> b = conn.newContext()
 >>>
+>>> # Connect using environment variables $BTRDB_ENDPOINTS and $BTRDB_API_KEY
+>>> # Note that this returns a context directly rather than a connection.
+>>> b = btrdb4.connect()
+>>>
 >>> # Obtain a stream handle
 ... s = b.streamFromUUID(uu)
 >>> s.exists()
