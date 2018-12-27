@@ -39,12 +39,17 @@ class BTrDBStub(object):
         request_serializer=btrdb__pb2.SetStreamAnnotationsParams.SerializeToString,
         response_deserializer=btrdb__pb2.SetStreamAnnotationsResponse.FromString,
         )
+    self.SetStreamTags = channel.unary_unary(
+        '/grpcinterface.BTrDB/SetStreamTags',
+        request_serializer=btrdb__pb2.SetStreamTagsParams.SerializeToString,
+        response_deserializer=btrdb__pb2.SetStreamTagsResponse.FromString,
+        )
     self.Create = channel.unary_unary(
         '/grpcinterface.BTrDB/Create',
         request_serializer=btrdb__pb2.CreateParams.SerializeToString,
         response_deserializer=btrdb__pb2.CreateResponse.FromString,
         )
-    self.ListCollections = channel.unary_unary(
+    self.ListCollections = channel.unary_stream(
         '/grpcinterface.BTrDB/ListCollections',
         request_serializer=btrdb__pb2.ListCollectionsParams.SerializeToString,
         response_deserializer=btrdb__pb2.ListCollectionsResponse.FromString,
@@ -104,6 +109,11 @@ class BTrDBStub(object):
         request_serializer=btrdb__pb2.GenerateCSVParams.SerializeToString,
         response_deserializer=btrdb__pb2.GenerateCSVResponse.FromString,
         )
+    self.SQLQuery = channel.unary_stream(
+        '/grpcinterface.BTrDB/SQLQuery',
+        request_serializer=btrdb__pb2.SQLQueryParams.SerializeToString,
+        response_deserializer=btrdb__pb2.SQLQueryResponse.FromString,
+        )
 
 
 class BTrDBServicer(object):
@@ -139,6 +149,13 @@ class BTrDBServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def SetStreamAnnotations(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
+  def SetStreamTags(self, request, context):
     # missing associated documentation comment in .proto file
     pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -236,6 +253,13 @@ class BTrDBServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def SQLQuery(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_BTrDBServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -264,12 +288,17 @@ def add_BTrDBServicer_to_server(servicer, server):
           request_deserializer=btrdb__pb2.SetStreamAnnotationsParams.FromString,
           response_serializer=btrdb__pb2.SetStreamAnnotationsResponse.SerializeToString,
       ),
+      'SetStreamTags': grpc.unary_unary_rpc_method_handler(
+          servicer.SetStreamTags,
+          request_deserializer=btrdb__pb2.SetStreamTagsParams.FromString,
+          response_serializer=btrdb__pb2.SetStreamTagsResponse.SerializeToString,
+      ),
       'Create': grpc.unary_unary_rpc_method_handler(
           servicer.Create,
           request_deserializer=btrdb__pb2.CreateParams.FromString,
           response_serializer=btrdb__pb2.CreateResponse.SerializeToString,
       ),
-      'ListCollections': grpc.unary_unary_rpc_method_handler(
+      'ListCollections': grpc.unary_stream_rpc_method_handler(
           servicer.ListCollections,
           request_deserializer=btrdb__pb2.ListCollectionsParams.FromString,
           response_serializer=btrdb__pb2.ListCollectionsResponse.SerializeToString,
@@ -328,6 +357,11 @@ def add_BTrDBServicer_to_server(servicer, server):
           servicer.GenerateCSV,
           request_deserializer=btrdb__pb2.GenerateCSVParams.FromString,
           response_serializer=btrdb__pb2.GenerateCSVResponse.SerializeToString,
+      ),
+      'SQLQuery': grpc.unary_stream_rpc_method_handler(
+          servicer.SQLQuery,
+          request_deserializer=btrdb__pb2.SQLQueryParams.FromString,
+          response_serializer=btrdb__pb2.SQLQueryResponse.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
