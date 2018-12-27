@@ -29,10 +29,10 @@ def _get_time_from_row(row):
     raise Exception("Row contains no data")
 
 
-def _stream_names(collection):
+def _stream_names(stream_set):
     return tuple(
         s.collection() + "/" +  s.tags()["name"] \
-        for s in collection._streams
+        for s in stream_set._streams
     )
 
 
@@ -40,7 +40,7 @@ def _stream_names(collection):
 ## Transform Functions
 ##########################################################################
 
-def to_series(collection):
+def to_series(stream_set):
     """
     Returns a list of Pandas series objects
     """
@@ -50,7 +50,7 @@ def to_series(collection):
         raise Exception("Please install Pandas to use this transformation function.")
 
     result = []
-    for output in collection.values:
+    for output in stream_set.values:
         result.append(
             pd.Series([
                 {"time": item.time, "value": item.value}
@@ -59,7 +59,7 @@ def to_series(collection):
         )
     return result
 
-def to_dataframe(collection, columns=None):
+def to_dataframe(stream_set, columns=None):
     """
     Returns a Pandas DataFrame object.
 
@@ -70,12 +70,12 @@ def to_dataframe(collection, columns=None):
     except ModuleNotFoundError:
         raise Exception("Please install Pandas to use this transformation function.")
 
-    stream_names = _stream_names(collection)
+    stream_names = _stream_names(stream_set)
     columns = columns if columns else ["time"] + list(stream_names)
-    return pd.DataFrame(to_dict(collection), columns=columns)
+    return pd.DataFrame(to_dict(stream_set), columns=columns)
 
 
-def to_array(collection):
+def to_array(stream_set):
     """
     Returns a tuple of Numpy arrays
     """
@@ -84,15 +84,15 @@ def to_array(collection):
     except ModuleNotFoundError:
         raise Exception("...")
 
-    return tuple([np.array(output) for output in collection.values])
+    return tuple([np.array(output) for output in stream_set.values])
 
 
-def to_dict(collection):
+def to_dict(stream_set):
     """
     Returns a generator that yields dictionary objects for each time code
     """
-    stream_names = _stream_names(collection)
-    for row in collection.rows():
+    stream_names = _stream_names(stream_set)
+    for row in stream_set.rows():
         item = {
             "time": _get_time_from_row(row),
         }
@@ -101,22 +101,22 @@ def to_dict(collection):
         yield item
 
 
-def to_csv(collection, path, dialect=None, headers=None):
+def to_csv(stream_set, path, dialect=None, headers=None):
     """
     Saves stream data as csv
     """
     with open(path, "w") as csvfile:
-        stream_names = _stream_names(collection)
+        stream_names = _stream_names(stream_set)
         headers = headers if headers else ["time"] + list(stream_names)
 
         writer = csv.DictWriter(csvfile, fieldnames=headers, dialect=dialect)
         writer.writeheader()
 
-        for item in to_dict(collection):
+        for item in to_dict(stream_set):
             writer.writerow(item)
 
 
-def to_table(collection):
+def to_table(stream_set):
     """
     Returns string of table
     """
@@ -125,7 +125,7 @@ def to_table(collection):
     except ModuleNotFoundError:
         raise Exception("...")
 
-    return tabulate(collection.to_dict(), headers="keys")
+    return tabulate(stream_set.to_dict(), headers="keys")
 
 
 ##########################################################################
@@ -134,7 +134,7 @@ def to_table(collection):
 
 class StreamTransformer(object):
     """
-    Base class for StreamCollection or Stream transformations
+    Base class for StreamSet or Stream transformations
     """
     to_dict = to_dict
     to_array = to_array
