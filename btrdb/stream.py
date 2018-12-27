@@ -2,7 +2,7 @@ from btrdb.exceptions import BTrDBError
 from btrdb.grpcinterface import btrdb_pb2
 
 class Stream(object):
-    def __init__(self, btrdb, uuid, knownToExist=False, collection=None, tags=None, annotations=None, annotationVersion=None):
+    def __init__(self, btrdb, uuid, knownToExist=False, collection=None, tags=None, annotations=None, propertyVersion=None):
         self.b = btrdb
         self.uu = uuid
         self.knownToExist = knownToExist
@@ -10,7 +10,7 @@ class Stream(object):
         # Some cacheable attributes
         self.cachedTags = tags
         self.cachedAnnotations = annotations
-        self.cachedAnnotationVersion = annotationVersion
+        self.cachedAnnotationVersion = propertyVersion
         self.cachedCollection = collection
 
     def refresh_metadata(self):
@@ -504,16 +504,17 @@ class RawPoint(object):
 
 
 class StatPoint(object):
-    def __init__(self, time, minv, meanv, maxv, count):
+    def __init__(self, time, minv, meanv, maxv, count, stddev):
         self.time = time
         self.min = minv
         self.mean = meanv
         self.max = maxv
         self.count = count
+        self.stddev = stddev
 
     @staticmethod
     def fromProto(proto):
-        return StatPoint(proto.time, proto.min, proto.mean, proto.max, proto.count)
+        return StatPoint(proto.time, proto.min, proto.mean, proto.max, proto.count, proto.stddev)
 
     @staticmethod
     def fromProtoList(protoList):
@@ -534,6 +535,8 @@ class StatPoint(object):
             return self.max
         elif index == 4:
             return self.count
+        elif index == 5:
+            return self.stddev
         else:
             raise IndexError("RawPoint index out of range")
 
@@ -543,5 +546,6 @@ class StatPoint(object):
             repr(self.min),
             repr(self.mean),
             repr(self.max),
-            repr(self.count)
+            repr(self.count),
+            repr(self.stddev)
         )

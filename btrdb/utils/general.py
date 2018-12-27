@@ -5,8 +5,8 @@ def unpack_stream_descriptor(desc):
     """
     tags = {}
     for tag in desc.tags:
-        tags[tag.key] = tag.value
+        tags[tag.key] = tag.val.value
     anns = {}
     for ann in desc.annotations:
-        anns[ann.key] = ann.value
+        anns[ann.key] = ann.val.value
     return tags, anns
