@@ -59,7 +59,7 @@ class Endpoint(object):
         desc = result.descriptor
         BTrDBError.checkProtoStat(result.stat)
         tagsanns = unpack_stream_descriptor(desc)
-        return desc.collection, desc.annotationVersion, tagsanns[0], tagsanns[1], result.versionMajor
+        return desc.collection, desc.propertyVersion, tagsanns[0], tagsanns[1], result.versionMajor
 
     def setStreamAnnotations(self, uu, expected, changes):
         annkvlist = []
@@ -79,11 +79,11 @@ class Endpoint(object):
     def create(self, uu, collection, tags, annotations):
         tagkvlist = []
         for k, v in tags.items():
-            kv = btrdb_pb2.KeyValue(key = k, value = v)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = btrdb_pb2.OptValue(value=v))
             tagkvlist.append(kv)
         annkvlist = []
         for k, v in annotations.items():
-            kv = btrdb_pb2.KeyValue(key = k, value = v)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = btrdb_pb2.OptValue(value=v))
             annkvlist.append(kv)
         params = btrdb_pb2.CreateParams(uuid = uu.bytes, collection = collection, tags = tagkvlist, annotations = annkvlist)
         result = self.stub.Create(params)
