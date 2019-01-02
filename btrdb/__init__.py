@@ -19,13 +19,14 @@ import os
 from btrdb.conn import Connection, BTrDB
 from btrdb.endpoint import Endpoint
 from btrdb.exceptions import ConnectionError
+from btrdb.version import get_version
 
 
 ##########################################################################
 ## Module Variables
 ##########################################################################
 
-__version__ = "5.0"
+__version__ = get_version()
 
 BTRDB_ENDPOINTS = "BTRDB_ENDPOINTS"
 BTRDB_API_KEY = "BTRDB_API_KEY"
