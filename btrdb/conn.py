@@ -35,8 +35,7 @@ import os
 
 from grpc._cython.cygrpc import CompressionAlgorithm
 
-from btrdb.stream import Stream
-from btrdb.collection import StreamSet
+from btrdb.stream import Stream, StreamSet
 from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.conversion import to_uuid
 

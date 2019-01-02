@@ -15,11 +15,18 @@ Module for Stream and related classes
 ## Imports
 ##########################################################################
 
+import time
+from copy import deepcopy
+
+from btrdb.point import RawPoint, StatPoint
+from btrdb.transformers import StreamTransformer
+from btrdb.utils.buffer import PointBuffer
+from btrdb.utils.timez import currently_as_ns
 from btrdb.exceptions import BTrDBError
-from btrdb.grpcinterface import btrdb_pb2
+
 
 ##########################################################################
-## Classes
+## Stream Classes
 ##########################################################################
 
 class Stream(object):
@@ -483,90 +490,203 @@ class Stream(object):
         ep.flush(self.uu)
 
 
-class RawPoint(object):
-    def __init__(self, time, value):
-        self.time = time
-        self.value = value
+##########################################################################
+## StreamSet  Classes
+##########################################################################
 
-    @staticmethod
-    def fromProto(proto):
-        return RawPoint(proto.time, proto.value)
+class StreamSetBase(object):
 
-    @staticmethod
-    def fromProtoList(protoList):
-        rplist = []
-        for proto in protoList:
-            rp = RawPoint.fromProto(proto)
-            rplist.append(rp)
-        return rplist
+    """
+    A lighweight wrapper around a list of stream objects
+    """
 
-    def __getitem__(self, index):
-        if index == 0:
-            return self.time
-        elif index == 1:
-            return self.value
-        else:
-            raise IndexError("RawPoint index out of range")
+    def __init__(self, streams):
+        self._streams = streams
+        self._pinned_versions = None
 
-    @staticmethod
-    def toProto(rp):
-        return btrdb_pb2.RawPoint(time = rp[0], value = rp[1])
+        self.filters = []
+        self.point_width = None
+        self.width = None
+        self.depth = None
 
-    @staticmethod
-    def toProtoList(rplist):
-        protoList = []
-        for rp in rplist:
-            proto = RawPoint.toProto(rp)
-            protoList.append(proto)
-        return protoList
+    @property
+    def allow_window(self):
+        return self.point_width or self.width or self.depth
 
-    def __repr__(self):
-        return "RawPoint({0}, {1})".format(repr(self.time), repr(self.value))
+    def _latest_versions(self):
+        return {s.uuid(): s.version() for s in self._streams}
 
 
-class StatPoint(object):
-    def __init__(self, time, minv, meanv, maxv, count, stddev):
-        self.time = time
-        self.min = minv
-        self.mean = meanv
-        self.max = maxv
-        self.count = count
-        self.stddev = stddev
+    def pin_versions(self, versions=None):
+        """
+        Saves the stream versions that future materializations should use.  If
+        no pin is requested then the first materialization will automatically
+        pin the return versions.  Versions can also be supplied through a dict
+        object with key:UUID, value:stream.version().
+        """
+        self._pinned_versions = self._latest_versions() if not versions else versions
+        return self
 
-    @staticmethod
-    def fromProto(proto):
-        return StatPoint(proto.time, proto.min, proto.mean, proto.max, proto.count, proto.stddev)
+    def versions(self):
+        """
+        """
+        return self._pinned_versions if self._pinned_versions else self._latest_versions()
 
-    @staticmethod
-    def fromProtoList(protoList):
-        splist = []
-        for proto in protoList:
-            sp = StatPoint.fromProto(proto)
-            splist.append(sp)
-        return splist
+    def earliest(self):
+        """
+        Returns earliest timestamp (ns) of data in streams using available
+        filters.
+        """
+        earliest = None
+        params = self._params_from_filters()
+        start = params.get("start", 0)
 
-    def __getitem__(self, index):
-        if index == 0:
-            return self.time
-        elif index == 1:
-            return self.min
-        elif index == 2:
-            return self.mean
-        elif index == 3:
-            return self.max
-        elif index == 4:
-            return self.count
-        elif index == 5:
-            return self.stddev
-        else:
-            raise IndexError("RawPoint index out of range")
+        for s in self._streams:
+            version = self.versions()[s.uuid()]
+            try:
+                s_start = s.nearest(start, version=version, backward=False)
+            except Exception:
+                continue
+            if earliest is None or s_start[0].time < earliest:
+                earliest = s_start[0].time
 
-    def __repr__(self):
-        return "StatPoint({0}, {1}, {2}, {3}, {4})".format(
-            repr(self.time),
-            repr(self.min),
-            repr(self.mean),
-            repr(self.max),
-            repr(self.count),
-            repr(self.stddev)
-        )
+        return earliest
+
+    def latest(self):
+        """
+        Returns latest timestamp (ns) of data in streams using available
+        filters.  Note that this method will return None if no
+        end filter is provided and point cannot be found that is less than the
+        current date/time.
+        """
+        latest = None
+        params = self._params_from_filters()
+        start = params.get("end", currently_as_ns())
+
+        for s in self._streams:
+            version = self.versions()[s.uuid()]
+            try:
+                s_latest = s.nearest(start, version=version, backward=True)
+            except Exception:
+                continue
+            if latest is None or s_latest[0].time > latest:
+                latest = s_latest[0].time
+
+        return latest
+
+    def filter(self, start=None, end=None):
+        obj = self.clone()
+        obj.filters.append(StreamFilter(start, end))
+        return obj
+
+    def clone(self):
+        """
+        Returns a deep copy of the object.  Attributes that cannot be copied
+        will be referenced to both objects.
+        """
+        protected = ('_streams', )
+        clone = self.__class__(self._streams)
+        for attr, val in self.__dict__.items():
+            if attr not in protected:
+                setattr(clone, attr, deepcopy(val))
+        return clone
+
+    def windows(self, width, depth):
+        if not self.allow_window:
+            raise Exception("A window operation is already requested")
+
+        self.allow_window = False
+        self.width = width
+        self.depth = depth
+        return self
+
+    def aligned_windows(self, pointwidth):
+        if not self.allow_window:
+            raise Exception("A window operation is already requested")
+
+        self.allow_window = False
+        self.pointwidth = pointwidth
+        return self
+
+    def rows(self):
+        """
+        Return iterator of tuples containing stream values at each time
+        """
+        params = self._params_from_filters()
+        result_iterables = [s.values(**params) for s in self._streams]
+
+
+        buffer = PointBuffer(len(self._streams))
+
+        while True:
+            streams_empty = True
+
+            # add next values from streams into buffer
+            for stream_idx, data in enumerate(result_iterables):
+                if buffer.active[stream_idx]:
+                    try:
+                        point, _ = next(data)
+                        buffer.add_point(stream_idx, point)
+                        streams_empty = False
+                    except StopIteration:
+                        buffer.deactivate(stream_idx)
+                        continue
+
+            key = buffer.next_key_ready()
+            if key:
+                yield tuple(buffer.pop(key))
+
+            if streams_empty and len(buffer.keys()) == 0:
+                break
+
+
+    def _params_from_filters(self):
+        params = {}
+        for filter in self.filters:
+            if filter.start is not None:
+                params["start"] = filter.start
+            if filter.end is not None:
+                params["end"] = filter.end
+        return params
+
+    @property
+    def values_iterator(self):
+        """
+        Must return context object which would then close server cursor on __exit__
+        """
+        raise NotImplementedError()
+
+    @property
+    def values(self):
+        """
+        Returns a fully materialized list of lists for the stream values/points
+        """
+        result = []
+        params = self._params_from_filters()
+        stream_output_iterables = [s.values(**params) for s in self._streams]
+
+        for stream_output in stream_output_iterables:
+            result.append([point[0] for point in stream_output])
+
+        return result
+
+
+class StreamSet(StreamSetBase, StreamTransformer):
+    """
+    Public class for a collection of streams
+    """
+    pass
+
+
+##########################################################################
+## Utility Classes
+##########################################################################
+
+class StreamFilter(object):
+    """
+    Placeholder for future filtering options? tags? annotations?
+    """
+    def __init__(self, start=None, end=None):
+        self.start = start
+        self.end = end
+        return
