@@ -104,8 +104,11 @@ class Connection(object):
 
 
 class BTrDB(object):
+    """
+
+    """
+
     def __init__(self, endpoint):
-        # type: (Endpoint) -> None
         self.ep = endpoint
 
 

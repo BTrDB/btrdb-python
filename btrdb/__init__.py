@@ -1,12 +1,10 @@
 # btrdb
 # Package for the btrdb database library.
 #
-# Author:   Allen Leis <allen@pingthings.io>
+# Author:   PingThings
 # Created:  Mon Dec 17 15:23:25 2018 -0500
 #
-# Copyright (C) 2018 PingThings LLC
 # For license information, see LICENSE.txt
-#
 # ID: __init__.py [] allen@pingthings.io $
 
 """

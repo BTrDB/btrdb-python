@@ -1,12 +1,10 @@
 # btrdb.transformers
 # Value transformation utilities
 #
-# Author:   Allen Leis <allen@pingthings.io>
+# Author:   PingThings
 # Created:  Fri Dec 21 14:57:30 2018 -0500
 #
-# Copyright (C) 2018 PingThings LLC
 # For license information, see LICENSE.txt
-#
 # ID: transformers.py [] allen@pingthings.io $
 
 """
@@ -47,7 +45,7 @@ def to_series(stream_set):
     try:
         import pandas as pd
     except ModuleNotFoundError:
-        raise Exception("Please install Pandas to use this transformation function.")
+        raise ModuleNotFoundError("Please install Pandas to use this transformation function.")
 
     result = []
     for output in stream_set.values:

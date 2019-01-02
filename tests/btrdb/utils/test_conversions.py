@@ -1,12 +1,10 @@
 # tests.utils.test_conversions
 # Testing for btrdb convertion utilities
 #
-# Author:   Allen Leis <allen@pingthings.io>
+# Author:   PingThings
 # Created:  Mon Dec 17 15:23:25 2018 -0500
 #
-# Copyright (C) 2018 PingThings LLC
 # For license information, see LICENSE.txt
-#
 # ID: test_conversions.py [] allen@pingthings.io $
 
 """
