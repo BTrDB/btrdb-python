@@ -15,7 +15,6 @@ Module for Stream and related classes
 ## Imports
 ##########################################################################
 
-import time
 from copy import deepcopy
 
 from btrdb.point import RawPoint, StatPoint

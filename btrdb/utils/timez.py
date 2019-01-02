@@ -17,7 +17,6 @@ Time related utilities
 ## Imports
 ##########################################################################
 
-import time
 import datetime
 
 import pytz

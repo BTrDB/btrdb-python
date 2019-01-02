@@ -60,12 +60,15 @@ class PointBuffer(defaultdict):
         for idx, latest_time in enumerate(self.last_known_time):
 
             # return False if stream is active and we are waiting on val
-            if self.active[idx] and key > latest_time:
+            if self.active[idx] and (latest_time is None or key > latest_time):
                 return False
 
         return True
 
     def next_key_ready(self):
+        """
+
+        """
         keys = list(self.keys())
         keys.sort()
         for key in keys:
