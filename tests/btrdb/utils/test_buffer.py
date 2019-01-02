@@ -17,6 +17,7 @@ Testing for the btrdb.collection module
 
 import pytest
 from btrdb.utils.buffer import PointBuffer
+from btrdb.point import RawPoint
 
 ##########################################################################
 ## Test Constants
@@ -55,20 +56,19 @@ class TestPointBuffer(object):
         Assert next_key_ready returns correct key
         """
         buffer = PointBuffer(3)
-        buffer[1000][0] = "zebra"
-        buffer[1000][1] = "leopard"
-        buffer[1000][2] = "giraffe"
-        buffer[2000][0] = "horse"
-        buffer[3000][0] = "pig"
+        buffer.add_point(0, RawPoint(time=1000, value="zebra"))
+        buffer.add_point(1, RawPoint(time=1000, value="leopard"))
+        buffer.add_point(2, RawPoint(time=1000, value="giraffe"))
+        buffer.add_point(0, RawPoint(time=2000, value="horse"))
+        buffer.add_point(0, RawPoint(time=3000, value="pig"))
         assert buffer.next_key_ready() == 1000
 
-        buffer = PointBuffer(3)
-        buffer[1000][0] = "horse"
-        buffer[2000][0] = "zebra"
-        buffer[2000][1] = "leopard"
-        buffer[2000][2] = "giraffe"
-        buffer[3000][0] = "pig"
-        assert buffer.next_key_ready() == 2000
+        buffer = PointBuffer(2)
+        buffer.add_point(0, RawPoint(time=1000, value="horse"))
+        buffer.add_point(0, RawPoint(time=2000, value="zebra"))
+        buffer.add_point(0, RawPoint(time=3000, value="pig"))
+        buffer.add_point(1, RawPoint(time=2000, value="leopard"))
+        assert buffer.next_key_ready() == 1000
 
     def test_next_key_ready_if_none_are(self):
         """
@@ -77,10 +77,10 @@ class TestPointBuffer(object):
         buffer = PointBuffer(3)
         assert buffer.next_key_ready() == None
 
-        buffer[1000][0] = "zebra"
-        buffer[1000][2] = "giraffe"
-        buffer[2000][0] = "horse"
-        buffer[3000][0] = "pig"
+        buffer.add_point(0, RawPoint(time=1000, value="leopard"))
+        buffer.add_point(2, RawPoint(time=1000, value="giraffe"))
+        buffer.add_point(0, RawPoint(time=2000, value="horse"))
+        buffer.add_point(0, RawPoint(time=3000, value="pig"))
         assert buffer.next_key_ready() == None
 
     def test_deactivate(self):
@@ -96,9 +96,10 @@ class TestPointBuffer(object):
         Assert is_ready returns correct value
         """
         buffer = PointBuffer(2)
-        buffer[1000][0] = "zebra"
-        buffer[1000][1] = "giraffe"
-        buffer[2000][0] = "giraffe"
+        buffer.add_point(0, RawPoint(time=1000, value="zebra"))
+        buffer.add_point(1, RawPoint(time=1000, value="giraffe"))
+        buffer.add_point(0, RawPoint(time=2000, value="horse"))
+
         assert buffer.is_ready(1000) == True
         assert buffer.is_ready(2000) == False
 
@@ -108,12 +109,20 @@ class TestPointBuffer(object):
 
     def test_next_key_ready_with_inactive(self):
         """
-        Assert next_key_ready returns correct key
+        Assert next_key_ready returns correct key with inactive stream
         """
         buffer = PointBuffer(3)
         buffer.deactivate(1)
-        buffer[500][0] = "zebra"
-        buffer[1000][0] = "zebra"
-        buffer[1000][2] = "giraffe"
-        buffer[2000][0] = "zebra"
+        buffer.add_point(0, RawPoint(time=1000, value="leopard"))
+        buffer.add_point(2, RawPoint(time=1000, value="leopard"))
+        buffer.add_point(0, RawPoint(time=2000, value="leopard"))
         assert buffer.next_key_ready() == 1000
+
+
+        # assert first key is 500 even though it was exhausted
+        buffer = PointBuffer(3)
+        buffer.add_point(1, RawPoint(time=500, value="leopard"))
+        buffer.deactivate(1)
+        buffer.add_point(0, RawPoint(time=1000, value="leopard"))
+        buffer.add_point(2, RawPoint(time=1000, value="leopard"))
+        assert buffer.next_key_ready() == 500
