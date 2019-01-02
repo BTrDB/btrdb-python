@@ -1,5 +1,26 @@
+# btrdb.stream
+# Module for Stream and related classes
+#
+# Author:   PingThings
+# Created:  Fri Dec 21 14:57:30 2018 -0500
+#
+# For license information, see LICENSE.txt
+# ID: stream.py [] allen@pingthings.io $
+
+"""
+Module for Stream and related classes
+"""
+
+##########################################################################
+## Imports
+##########################################################################
+
 from btrdb.exceptions import BTrDBError
 from btrdb.grpcinterface import btrdb_pb2
+
+##########################################################################
+## Classes
+##########################################################################
 
 class Stream(object):
     def __init__(self, btrdb, uuid, knownToExist=False, collection=None, tags=None, annotations=None, propertyVersion=None):

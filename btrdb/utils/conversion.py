@@ -1,7 +1,7 @@
 # btrdb.utils.conversion
 # Conversion utilities for btrdb
 #
-# Author:   Allen Leis <allen@pingthings.io>
+# Author:   PingThings
 # Created:  Tue Dec 18 14:50:05 2018 -0500
 #
 # Copyright (C) 2018 PingThings LLC

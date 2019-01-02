@@ -1,3 +1,15 @@
+# btrdb.exceptions
+# Module for custom exceptions
+#
+# Author:   PingThings
+# Created:  Tue Dec 18 14:50:05 2018 -0500
+#
+# For license information, see LICENSE.txt
+# ID: exceptions.py [] allen@pingthings.io $
+
+"""
+Module for custom exceptions
+"""
 
 
 class BTrDBError(Exception):
@@ -33,6 +45,32 @@ class BTrDBError(Exception):
 
 
 class ConnectionError(BTrDBError):
+    """
+    A problem interacting with the BTrDB server.
+    """
+    pass
+
+class InvalidOperation(BTrDBError):
+    """
+    A problem interacting with the BTrDB server.
+    """
+    pass
+
+class NotFound(BTrDBError):
+    """
+    A problem interacting with the BTrDB server.
+    """
+    pass
+
+
+
+class BTRDBValueError(ValueError):
+    """
+    A problem interacting with the BTrDB server.
+    """
+    pass
+
+class BTRDBTypeError(TypeError):
     """
     A problem interacting with the BTrDB server.
     """

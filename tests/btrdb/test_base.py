@@ -1,12 +1,10 @@
 # tests.test_base
 # Testing package for the btrdb library.
 #
-# Author:   Allen Leis <allen@pingthings.io>
+# Author:   PingThings
 # Created:  Mon Dec 17 15:23:25 2018 -0500
 #
-# Copyright (C) 2018 PingThings LLC
 # For license information, see LICENSE.txt
-#
 # ID: test_base.py [] allen@pingthings.io $
 
 """
