@@ -62,6 +62,8 @@ class RawPoint(object):
     def __repr__(self):
         return "RawPoint({0}, {1})".format(repr(self.time), repr(self.value))
 
+    def __eq__(self, other):
+        return self.time == other.time and self.value == other.value
 
 class StatPoint(object):
     def __init__(self, time, minv, meanv, maxv, count, stddev):

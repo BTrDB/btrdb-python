@@ -15,6 +15,7 @@ Module for Stream and related classes
 ## Imports
 ##########################################################################
 
+import uuid
 from copy import deepcopy
 
 from btrdb.point import RawPoint, StatPoint
@@ -504,13 +505,13 @@ class StreamSetBase(object):
         self._pinned_versions = None
 
         self.filters = []
-        self.point_width = None
+        self.pointwidth = None
         self.width = None
         self.depth = None
 
     @property
     def allow_window(self):
-        return self.point_width or self.width or self.depth
+        return not bool(self.pointwidth or self.width or self.depth)
 
     def _latest_versions(self):
         return {s.uuid(): s.version() for s in self._streams}
@@ -523,11 +524,21 @@ class StreamSetBase(object):
         pin the return versions.  Versions can also be supplied through a dict
         object with key:UUID, value:stream.version().
         """
+        if versions is not None:
+            if not isinstance(versions, dict):
+                raise TypeError("`versions` argument must be dict")
+
+            for key in versions.keys():
+                if not isinstance(key, uuid.UUID):
+                    raise TypeError("version keys must be type UUID")
+
+
         self._pinned_versions = self._latest_versions() if not versions else versions
         return self
 
     def versions(self):
         """
+        Returns
         """
         return self._pinned_versions if self._pinned_versions else self._latest_versions()
 
@@ -543,11 +554,12 @@ class StreamSetBase(object):
         for s in self._streams:
             version = self.versions()[s.uuid()]
             try:
-                s_start = s.nearest(start, version=version, backward=False)
+                s_start, _ = s.nearest(start, version=version, backward=False)
             except Exception:
+                # TODO: figure out proper exception type
                 continue
-            if earliest is None or s_start[0].time < earliest:
-                earliest = s_start[0].time
+            if earliest is None or s_start.time < earliest:
+                earliest = s_start.time
 
         return earliest
 
@@ -565,15 +577,18 @@ class StreamSetBase(object):
         for s in self._streams:
             version = self.versions()[s.uuid()]
             try:
-                s_latest = s.nearest(start, version=version, backward=True)
+                s_latest, _ = s.nearest(start, version=version, backward=True)
             except Exception:
                 continue
-            if latest is None or s_latest[0].time > latest:
-                latest = s_latest[0].time
+            if latest is None or s_latest.time > latest:
+                latest = s_latest.time
 
         return latest
 
     def filter(self, start=None, end=None):
+        if start is None and end is None:
+            raise ValueError("A valid `start` or `end` must be supplied")
+
         obj = self.clone()
         obj.filters.append(StreamFilter(start, end))
         return obj
@@ -594,17 +609,16 @@ class StreamSetBase(object):
         if not self.allow_window:
             raise Exception("A window operation is already requested")
 
-        self.allow_window = False
-        self.width = width
-        self.depth = depth
+        # TODO: refactor keeping in mind how exception is raised
+        self.width = int(width)
+        self.depth = int(depth)
         return self
 
     def aligned_windows(self, pointwidth):
         if not self.allow_window:
             raise Exception("A window operation is already requested")
 
-        self.allow_window = False
-        self.pointwidth = pointwidth
+        self.pointwidth = int(pointwidth)
         return self
 
     def rows(self):
@@ -613,8 +627,6 @@ class StreamSetBase(object):
         """
         params = self._params_from_filters()
         result_iterables = [s.values(**params) for s in self._streams]
-
-
         buffer = PointBuffer(len(self._streams))
 
         while True:
@@ -686,6 +698,14 @@ class StreamFilter(object):
     Placeholder for future filtering options? tags? annotations?
     """
     def __init__(self, start=None, end=None):
-        self.start = start
-        self.end = end
-        return
+        self.start = int(start) if start else None
+        self.end = int(end) if end else None
+
+        if self.start is not None and self.end is not None and self.start >= self.end:
+            raise ValueError("`start` must be strictly less than `end` argument")
+
+        # if not isinstance(self.start, int) and self.start is not None:
+        #     raise ValueError("`start` must be int, float, or None")
+        #
+        # if not isinstance(self.end, int) and self.end is not None:
+        #     raise ValueError("`end` must be int, float, or None")
