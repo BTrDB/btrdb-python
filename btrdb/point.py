@@ -28,14 +28,14 @@ class RawPoint(object):
         self.value = value
 
     @staticmethod
-    def fromProto(proto):
+    def from_proto(proto):
         return RawPoint(proto.time, proto.value)
 
     @staticmethod
-    def fromProtoList(protoList):
+    def from_proto_list(protoList):
         rplist = []
         for proto in protoList:
-            rp = RawPoint.fromProto(proto)
+            rp = RawPoint.from_proto(proto)
             rplist.append(rp)
         return rplist
 
@@ -75,14 +75,14 @@ class StatPoint(object):
         self.stddev = stddev
 
     @staticmethod
-    def fromProto(proto):
+    def from_proto(proto):
         return StatPoint(proto.time, proto.min, proto.mean, proto.max, proto.count, proto.stddev)
 
     @staticmethod
-    def fromProtoList(protoList):
+    def from_proto_list(protoList):
         splist = []
         for proto in protoList:
-            sp = StatPoint.fromProto(proto)
+            sp = StatPoint.from_proto(proto)
             splist.append(sp)
         return splist
 

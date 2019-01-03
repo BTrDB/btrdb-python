@@ -302,7 +302,7 @@ class Stream(object):
         rps = ep.rawValues(self.uu, start, end, version)
         for rplist, version in rps:
             for rp in rplist:
-                yield RawPoint.fromProto(rp), version
+                yield RawPoint.from_proto(rp), version
 
     def aligned_windows(self, start, end, pointwidth, version=0):
         # type: (int, int, int, int) -> Tuple[StatPoint, int]
@@ -351,7 +351,7 @@ class Stream(object):
         sps = ep.alignedWindows(self.uu, start, end, pointwidth, version)
         for splist, version in sps:
             for sp in splist:
-                yield StatPoint.fromProto(sp), version
+                yield StatPoint.from_proto(sp), version
 
     def windows(self, start, end, width, depth=0, version=0):
         # type: (int, int, int, int, int) -> Tuple[StatPoint, int]
@@ -400,7 +400,7 @@ class Stream(object):
         sps = ep.windows(self.uu, start, end, width, depth, version)
         for splist, version in sps:
             for sp in splist:
-                yield StatPoint.fromProto(sp), version
+                yield StatPoint.from_proto(sp), version
 
     def delete_range(self, start, end):
         # type: (int, int) -> int
@@ -468,7 +468,7 @@ class Stream(object):
 
         ep = self.b.ep
         rp, version = ep.nearest(self.uu, time, version, backward)
-        return RawPoint.fromProto(rp), version
+        return RawPoint.from_proto(rp), version
 
     """
     This function does not work so is getting commented out. 1/12/18
@@ -478,7 +478,7 @@ class Stream(object):
         crs = ep.changes(self.uu, fromVersion, toVersion, resolution)
         for crlist, version in crs:
             for cr in crlist:
-                yield ChangeRange.fromProto(cr), version
+                yield ChangeRange.from_proto(cr), version
     """
 
     def flush(self):
