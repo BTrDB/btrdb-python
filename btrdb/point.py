@@ -27,13 +27,13 @@ class RawPoint(object):
         self.time = time
         self.value = value
 
-    @staticmethod
-    def from_proto(proto):
-        return RawPoint(proto.time, proto.value)
+    @classmethod
+    def from_proto(cls, proto):
+        return cls(proto.time, proto.value)
 
-    @staticmethod
-    def from_proto_list(proto_list):
-        return [RawPoint.from_proto(proto) for proto in proto_list]
+    @classmethod
+    def from_proto_list(cls, proto_list):
+        return [cls.from_proto(proto) for proto in proto_list]
 
     def __getitem__(self, index):
         if index == 0:
@@ -53,6 +53,9 @@ class RawPoint(object):
 
     def __repr__(self):
         return "RawPoint({0}, {1})".format(repr(self.time), repr(self.value))
+
+    def __str__(self):
+        return self.__repr__()
 
     def __eq__(self, other):
         return self.time == other.time and self.value == other.value
