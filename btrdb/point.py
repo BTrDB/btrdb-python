@@ -32,12 +32,8 @@ class RawPoint(object):
         return RawPoint(proto.time, proto.value)
 
     @staticmethod
-    def from_proto_list(protoList):
-        rplist = []
-        for proto in protoList:
-            rp = RawPoint.from_proto(proto)
-            rplist.append(rp)
-        return rplist
+    def from_proto_list(proto_list):
+        return [RawPoint.from_proto(proto) for proto in proto_list]
 
     def __getitem__(self, index):
         if index == 0:
@@ -48,22 +44,19 @@ class RawPoint(object):
             raise IndexError("RawPoint index out of range")
 
     @staticmethod
-    def toProto(rp):
-        return btrdb_pb2.RawPoint(time = rp[0], value = rp[1])
+    def to_proto(point):
+        return btrdb_pb2.RawPoint(time = point[0], value = point[1])
 
     @staticmethod
-    def toProtoList(rplist):
-        protoList = []
-        for rp in rplist:
-            proto = RawPoint.toProto(rp)
-            protoList.append(proto)
-        return protoList
+    def to_proto_list(points):
+        return [RawPoint.to_proto(p) for p in points]
 
     def __repr__(self):
         return "RawPoint({0}, {1})".format(repr(self.time), repr(self.value))
 
     def __eq__(self, other):
         return self.time == other.time and self.value == other.value
+
 
 class StatPoint(object):
     def __init__(self, time, minv, meanv, maxv, count, stddev):
@@ -74,17 +67,13 @@ class StatPoint(object):
         self.count = count
         self.stddev = stddev
 
-    @staticmethod
-    def from_proto(proto):
-        return StatPoint(proto.time, proto.min, proto.mean, proto.max, proto.count, proto.stddev)
+    @classmethod
+    def from_proto(cls, proto):
+        return cls(proto.time, proto.min, proto.mean, proto.max, proto.count, proto.stddev)
 
-    @staticmethod
-    def from_proto_list(protoList):
-        splist = []
-        for proto in protoList:
-            sp = StatPoint.from_proto(proto)
-            splist.append(sp)
-        return splist
+    @classmethod
+    def from_proto_list(cls, proto_list):
+        return [cls.from_proto(proto) for proto in proto_list]
 
     def __getitem__(self, index):
         if index == 0:

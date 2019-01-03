@@ -134,7 +134,7 @@ class Endpoint(object):
             yield result.ranges, result.versionMajor
 
     def insert(self, uu, values):
-        protoValues = RawPoint.toProtoList(values)
+        protoValues = RawPoint.to_proto_list(values)
         params = btrdb_pb2.InsertParams(uuid = uu.bytes, sync = False, values = protoValues)
         result = self.stub.Insert(params)
         BTrDBError.checkProtoStat(result.stat)
@@ -174,7 +174,7 @@ class Endpoint(object):
                                                   label = stream[1],
                                                   uuid = stream[2].bytes)
                         for stream in streams]
-        params = btrdb_pb2.GenerateCSVParams(queryType = queryType.toProto(),
+        params = btrdb_pb2.GenerateCSVParams(queryType = queryType.to_proto(),
                                              startTime = start,
                                              endTime = end,
                                              windowSize = width,
