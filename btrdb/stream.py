@@ -26,14 +26,21 @@ from btrdb.exceptions import BTrDBError
 
 
 ##########################################################################
+## Module Variables
+##########################################################################
+
+INSERT_BATCH_SIZE = 5000
+
+
+##########################################################################
 ## Stream Classes
 ##########################################################################
 
 class Stream(object):
-    def __init__(self, btrdb, uuid, knownToExist=False, collection=None, tags=None, annotations=None, propertyVersion=None):
-        self.b = btrdb
+    def __init__(self, btrdb, uuid, known_to_exist=False, collection=None, tags=None, annotations=None, propertyVersion=None):
+        self.btrdb = btrdb
         self.uu = uuid
-        self.knownToExist = knownToExist
+        self.known_to_exist = known_to_exist
 
         # Some cacheable attributes
         self.cachedTags = tags
@@ -51,9 +58,9 @@ class Stream(object):
 
         """
 
-        ep = self.b.ep
+        ep = self.btrdb.ep
         self.cachedCollection, self.cachedAnnotationVersion, self.cachedTags, self.cachedAnnotations, _ = ep.streamInfo(self.uu, False, True)
-        self.knownToExist = True
+        self.known_to_exist = True
 
     def exists(self):
         # type: () -> bool
@@ -71,7 +78,7 @@ class Stream(object):
             Indicates whether stream exists.
         """
 
-        if self.knownToExist:
+        if self.known_to_exist:
             return True
 
         try:
@@ -221,7 +228,7 @@ class Stream(object):
             The version of the stream.
 
         """
-        ep = self.b.ep
+        ep = self.btrdb.ep
         _, _, _, _, ver = ep.streamInfo(self.uu, True, False)
         return ver
 
@@ -242,14 +249,13 @@ class Stream(object):
             The version of the stream after inserting new points.
 
         """
-        ep = self.b.ep
-        batchsize = 5000
+        ep = self.btrdb.ep
         i = 0
         version = 0
         while i < len(vals):
-            thisBatch = vals[i:i + batchsize]
+            thisBatch = vals[i:i + INSERT_BATCH_SIZE]
             version = ep.insert(self.uu, thisBatch)
-            i += batchsize
+            i += INSERT_BATCH_SIZE
         return version
 
     def values(self, start, end, version=0):
@@ -298,7 +304,7 @@ class Stream(object):
             else:
                 raise Exception("end argument must be a whole number")
 
-        ep = self.b.ep
+        ep = self.btrdb.ep
         rps = ep.rawValues(self.uu, start, end, version)
         for rplist, version in rps:
             for rp in rplist:
@@ -347,7 +353,7 @@ class Stream(object):
         tree data structure and is faster to execute than `windows()`.
         """
 
-        ep = self.b.ep
+        ep = self.btrdb.ep
         sps = ep.alignedWindows(self.uu, start, end, pointwidth, version)
         for splist, version in sps:
             for sp in splist:
@@ -396,7 +402,7 @@ class Stream(object):
             Returns a tuple containing a StatPoint and the stream version
         """
 
-        ep = self.b.ep
+        ep = self.btrdb.ep
         sps = ep.windows(self.uu, start, end, width, depth, version)
         for splist, version in sps:
             for sp in splist:
@@ -426,7 +432,7 @@ class Stream(object):
             The version of the new stream created
 
         """
-        ep = self.b.ep
+        ep = self.btrdb.ep
         return ep.deleteRange(self.uu, start, end)
 
     def nearest(self, time, version, backward):
@@ -466,7 +472,7 @@ class Stream(object):
 
         """
 
-        ep = self.b.ep
+        ep = self.btrdb.ep
         rp, version = ep.nearest(self.uu, time, version, backward)
         return RawPoint.from_proto(rp), version
 
@@ -474,7 +480,7 @@ class Stream(object):
     This function does not work so is getting commented out. 1/12/18
 
     def changes(self, fromVersion, toVersion, resolution):
-        ep = self.b.ep
+        ep = self.btrdb.ep
         crs = ep.changes(self.uu, fromVersion, toVersion, resolution)
         for crlist, version in crs:
             for cr in crlist:
@@ -486,7 +492,7 @@ class Stream(object):
         """
         Flush writes the stream buffers out to persistent storage.
         """
-        ep = self.b.ep
+        ep = self.btrdb.ep
         ep.flush(self.uu)
 
 
