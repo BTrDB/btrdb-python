@@ -44,25 +44,23 @@ class BTrDBError(Exception):
             return "<success>"
 
 
-class ConnectionError(BTrDBError):
+class ConnectionError(Exception):
     """
     A problem interacting with the BTrDB server.
     """
     pass
 
-class InvalidOperation(BTrDBError):
+class InvalidOperation(Exception):
+    """
+    An invalid BTrDB operation has been requested.
+    """
+    pass
+
+class NotFound(Exception):
     """
     A problem interacting with the BTrDB server.
     """
     pass
-
-class NotFound(BTrDBError):
-    """
-    A problem interacting with the BTrDB server.
-    """
-    pass
-
-
 
 class BTRDBValueError(ValueError):
     """
