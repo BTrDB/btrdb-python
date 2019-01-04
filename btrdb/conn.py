@@ -111,26 +111,30 @@ class BTrDB(object):
         self.ep = endpoint
 
 
-    def streams(self, *identifiers, versions=None):
+    def streams(self, *identifiers, versions=[]):
         """
         Returns a StreamSet object with BTrDB streams from the supplied
         identifiers.  If any streams cannot be found matching the identifier
         than StreamNotFoundError will be returned.
 
-        @param *identifiers (object) a single item or iterable of items which can be
-                used to query for streams.  identiers are expected to be UUID as string,
-                UUID as UUID, or collection/name string.
+        Parameters
+        ----------
+        identifiers: str or UUID
+            a single item or iterable of items which can be used to query for
+            streams.  identiers are expected to be UUID as string, UUID as UUID,
+            or collection/name string.
 
-        @param versions (object) a single or iterable of version identifiers
+        versions: list[int]
+            a single or iterable of version numbers to match the identifiers
+
         """
         if versions and len(versions) != len(identifiers):
-            raise Exception("Number of versions does not match identifiers")
+            raise ValueError("Number of versions does not match identifiers")
 
         if not versions:
-            versions = [0 for _ in range(len(identifiers))]
+            versions = [0] * len(identifiers)
 
         streams = [self.stream_from_uuid(ident) for ident in identifiers]
-
         return StreamSet(streams)
 
     def stream_from_uuid(self, uu):
@@ -184,25 +188,9 @@ class BTrDB(object):
         # type: () -> (Mash)
         """
         Returns information about the connected BTrDB srerver.
+
         """
-
         return self.ep.info()
-
-    """
-    This function does not work (1/12/2018) so it is being commented out.
-
-    def listCollections(self, prefix):
-        colls = (prefix,)
-        maximum = 10
-        got = maximum
-        while got == maximum:
-            startingAt = colls[-1]
-            colls = self.ep.listCollections(prefix, colls, maximum)
-            for coll in colls:
-                yield coll
-            got = len(colls)
-
-    """
 
     def streams_in_collection(self, collection, isCollectionPrefix=True, tags=None, annotations=None):
         # type: (str, bool, Dict[str, str], Dict[str, str]) -> Stream
@@ -252,6 +240,7 @@ class BTrDB(object):
         ----------
         prefix: str
             A prefix of the collection names to look at
+
         """
         ep = self.ep
         tags, annotations = ep.getMetadataUsage(prefix)

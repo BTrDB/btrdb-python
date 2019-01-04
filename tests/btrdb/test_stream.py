@@ -19,8 +19,12 @@ import uuid
 import pytest
 from unittest.mock import Mock, PropertyMock
 
-from btrdb.stream import Stream, StreamSet, StreamFilter
+from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
 from btrdb.point import RawPoint
+from btrdb.exceptions import BTrDBError, InvalidOperation
+from btrdb.grpcinterface import btrdb_pb2
+
+RawPointProto =  btrdb_pb2.RawPoint
 
 
 ##########################################################################
@@ -51,6 +55,9 @@ def stream2():
 ## Stream Tests
 ##########################################################################
 
+from btrdb.conn import BTrDB
+from btrdb.endpoint import Endpoint
+
 class TestStream(object):
 
     def test_create(self):
@@ -58,6 +65,219 @@ class TestStream(object):
         Assert we can create the object
         """
         Stream(None, "FAKE")
+
+
+    def test_refresh_metadata(self):
+        """
+        Assert refresh_metadata calls Endpoint.streamInfo
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        stream.refresh_metadata()
+        stream._btrdb.ep.streamInfo.assert_called_once_with(uu, False, True)
+
+
+    def test_exists_cached_value(self):
+        """
+        Assert exists first uses cached value
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu, known_to_exist=True)
+        stream.refresh_metadata = Mock()
+
+        assert stream.exists()
+        stream.refresh_metadata.assert_not_called()
+
+
+    def test_exists(self):
+        """
+        Assert exists refreshes data if value is unknown
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
+        stream.refresh_metadata = Mock(return_value=True)
+
+        assert stream.exists()
+        stream.refresh_metadata.assert_called_once()
+
+
+    def test_exists_returns_false_on_404(self):
+        """
+        Assert exists returns False on 404 error
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
+        stream.refresh_metadata = Mock(side_effect=BTrDBError(code=404, msg="hello", mash=""))
+
+        assert stream.exists() == False
+        stream.refresh_metadata.assert_called_once()
+
+
+    def test_exists_passes_other_errors(self):
+        """
+        Assert exists does not keep non 404 errors trapped
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
+        stream.refresh_metadata = Mock(side_effect=ValueError())
+
+        with pytest.raises(ValueError):
+            stream.exists()
+        stream.refresh_metadata.assert_called_once()
+
+
+    def test_tags_returns_copy(self):
+        """
+        Assert tags returns a copy of the tags dict
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        token = {"cat": "dog"}
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu, tags=token)
+
+        assert stream.tags() is not token
+        assert stream.tags() == token
+
+
+    def test_tags_returns_cached_values(self):
+        """
+        Assert tags returns a copy of the tags dict
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        token = {"cat": "dog"}
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu, tags=token,
+            property_version=42)
+        stream.refresh_metadata = Mock()
+
+        assert stream.tags(refresh=False) == token
+        stream.refresh_metadata.assert_not_called()
+
+
+    def test_tags_forces_refresh_if_requested(self):
+        """
+        Assert tags calls refresh_metadata if requested even though a
+        cached copy is available
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        token = {"cat": "dog"}
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu, tags=token)
+        stream.refresh_metadata = Mock()
+
+        stream.tags(refresh=True)
+        stream.refresh_metadata.assert_called_once()
+
+
+    def test_annotations_returns_copy_of_value(self):
+        """
+        Assert annotations returns a copy of the annotations dict
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        token = {"cat": "dog"}
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu, annotations=token,
+            property_version=42)
+        stream.refresh_metadata = Mock()
+
+        assert stream.annotations(refresh=False)[0] == token
+        assert stream.annotations(refresh=False)[0] is not token
+        assert stream.annotations(refresh=False)[1] == 42
+
+
+    def test_annotations_returns_cached_values(self):
+        """
+        Assert annotations returns a copy of the annotations dict
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        token = {"cat": "dog"}
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu, annotations=token,
+            property_version=42)
+        stream.refresh_metadata = Mock()
+
+        assert stream.annotations(refresh=False)[0] == token
+        stream.refresh_metadata.assert_not_called()
+
+
+    def test_annotations_forces_refresh_if_requested(self):
+        """
+        Assert annotations calls refresh_metadata if requested even though a
+        cached copy is available
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        token = {"cat": "dog"}
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu, annotations=token)
+        stream.refresh_metadata = Mock()
+
+        stream.annotations(refresh=True)
+        stream.refresh_metadata.assert_called_once()
+
+
+    def test_version(self):
+        """
+        Assert version calls and returns correct value from streamInfo
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("", 0, {}, {}, 42))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        assert stream.version() == 42
+        stream._btrdb.ep.streamInfo.assert_called_once_with(uu, True, False)
+
+
+    def test_insert(self):
+        """
+        Assert insert batches data to endpoint insert and returns version
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.insert = Mock(side_effect=[1,2])
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        data = list(zip(range(10000,16000), map(float, range(6000))))
+        version = stream.insert(data)
+
+        assert stream._btrdb.ep.insert.call_args_list[0][0][1] == data[:INSERT_BATCH_SIZE]
+        assert stream._btrdb.ep.insert.call_args_list[1][0][1] == data[INSERT_BATCH_SIZE:]
+        assert version == 2
+
+
+    def test_nearest(self):
+        """
+        Assert nearest calls Endpoint.nearest with correct arguments
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.nearest = Mock(return_value=(RawPointProto(time=100, value=1.0), 42))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        point, version = stream.nearest(5, 10, False)
+        stream._btrdb.ep.nearest.assert_called_once_with(uu, 5, 10, False)
+        assert point == RawPoint(100, 1.0)
+        assert version == 42
+
+
+    def test_delete_range(self):
+        """
+        Assert delete_range calls Endpoint.deleteRange with correct arguments
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
+
+        stream.delete_range(5, 10)
+        stream._btrdb.ep.deleteRange.assert_called_once_with(uu, 5, 10)
+
+
+    def test_flush(self):
+        """
+        Assert flush calls Endpoint.flush with UUID
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
+
+        stream.flush()
+        stream._btrdb.ep.flush.assert_called_once_with(uu)
+
 
 ##########################################################################
 ## StreamSet Tests

@@ -42,7 +42,7 @@ class TestToUUID(object):
 
     def test_from_str(self):
         """
-        Assert that `to_uuid` converts from bytes
+        Assert that `to_uuid` converts from str
         """
         assert to_uuid(EXAMPLE_UUID_STR) == EXAMPLE_UUID
 

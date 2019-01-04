@@ -62,4 +62,4 @@ def connect(conn_str=None, apikey=None):
     if not apikey:
         apikey = os.environ.get(BTRDB_API_KEY, default=None)
 
-    return  BTrDB(Endpoint(Connection(conn_str, apikey=apikey).channel))
+    return BTrDB(Endpoint(Connection(conn_str, apikey=apikey).channel))
