@@ -76,6 +76,21 @@ class Endpoint(object):
         result = self.stub.SetStreamAnnotations(params)
         BTrDBError.checkProtoStat(result.stat)
 
+    def setStreamTags(self, uu, expected, tags, collection):
+        tag_data = []
+        for k, v in tags.items():
+            if v is None:
+                ov = None
+            else:
+                if isinstance(v, str):
+                    v = v.encode("utf-8")
+                ov = btrdb_pb2.OptValue(value = v)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
+            tag_data.append(kv)
+        params = btrdb_pb2.SetStreamTagsParams(uuid=uu.bytes, expectedPropertyVersion=expected, tags=tag_data, collection=collection)
+        result = self.stub.SetStreamTags(params)
+        BTrDBError.checkProtoStat(result.stat)
+
     def create(self, uu, collection, tags, annotations):
         tagkvlist = []
         for k, v in tags.items():

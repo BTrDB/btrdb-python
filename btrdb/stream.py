@@ -257,6 +257,51 @@ class Stream(object):
             i += INSERT_BATCH_SIZE
         return version
 
+    def _update_tags_collection(self, tags, collection):
+        tags = self.tags() if tags is None else tags
+        collection = self.collection() if collection is None else collection
+        self._btrdb.ep.setStreamTags(
+            uu=self.uuid(),
+            expected=self._property_version,
+            tags=tags,
+            collection=collection
+        )
+
+    def _update_annotations(self, annotations):
+        self._btrdb.ep.setStreamAnnotations(
+            uu=self.uuid(),
+            expected=self._property_version,
+            changes=annotations
+        )
+
+
+    def update(self, tags=None, annotations=None, collection=None):
+        """
+        
+        """
+        if tags is None and annotations is None and collection is None:
+            raise ValueError("you must supply a tags, annotations, or collection argument")
+
+        if tags is not None and isinstance(tags, dict) is False:
+            raise TypeError("tags must be of type dict")
+
+        if annotations is not None and isinstance(annotations, dict) is False:
+            raise TypeError("annotations must be of type dict")
+
+        if collection is not None and isinstance(collection, str) is False:
+            raise TypeError("collection must be of type string")
+
+        if tags is not None or collection is not None:
+            self._update_tags_collection(tags, collection)
+            self.refresh_metadata()
+
+        if annotations is not None:
+            self._update_annotations(annotations)
+            self.refresh_metadata()
+
+
+
+
     def values(self, start, end, version=0):
         # type: (int, int, int) -> Tuple[RawPoint, int]
 
