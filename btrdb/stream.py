@@ -274,10 +274,19 @@ class Stream(object):
             changes=annotations
         )
 
-
     def update(self, tags=None, annotations=None, collection=None):
         """
-        
+        Updates metadata including tags, annotations, and collection.
+
+        Parameters
+        ----------
+        tags: dict
+            Dict of tag information for the stream.
+        annotations: dict
+            Dict of annotation information for the stream.
+        collection: str
+            The collection prefix for a stream
+
         """
         if tags is None and annotations is None and collection is None:
             raise ValueError("you must supply a tags, annotations, or collection argument")
@@ -300,11 +309,8 @@ class Stream(object):
             self.refresh_metadata()
 
 
-
-
     def values(self, start, end, version=0):
         # type: (int, int, int) -> Tuple[RawPoint, int]
-
         """
         Read raw values from BTrDB between time [a, b) in nanoseconds.
 
@@ -871,7 +877,7 @@ class StreamSet(StreamSetBase, StreamTransformer):
 
 class StreamFilter(object):
     """
-    Placeholder for future filtering options? tags? annotations?
+    Object for storing requested filtering options
     """
     def __init__(self, start=None, end=None):
         self.start = int(start) if start else None

@@ -80,6 +80,87 @@ class TestStream(object):
         stream._btrdb.ep.streamInfo.assert_called_once_with(uu, False, True)
 
 
+    def test_update_arguments(self):
+        """
+        Assert update raises errors on invalid arguments
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        # no arguments
+        with pytest.raises(ValueError) as exc:
+            stream.update()
+        assert "must supply" in str(exc)
+
+        # tags not dict
+        with pytest.raises(TypeError) as exc:
+            stream.update(tags=[])
+        assert "tags must be of type dict" in str(exc)
+
+        # annotations not dict
+        with pytest.raises(TypeError) as exc:
+            stream.update(annotations=[])
+        assert "annotations must be of type dict" in str(exc)
+
+        # collection not string
+        with pytest.raises(TypeError) as exc:
+            stream.update(collection=42)
+        assert "collection must be of type string" in str(exc)
+
+
+    def test_update_tags(self):
+        """
+        Assert update calls correct Endpoint methods for tags update
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        tags = {"cat": "dog"}
+
+        stream.update(tags=tags)
+        stream._btrdb.ep.setStreamTags.assert_called_once_with(uu=uu, expected=42,
+            tags=tags, collection="koala")
+        stream._btrdb.ep.setStreamAnnotations.assert_not_called()
+
+
+    def test_update_collection(self):
+        """
+        Assert update calls correct Endpoint methods for collection update
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        collection = "giraffe"
+
+        stream.update(collection=collection)
+        stream._btrdb.ep.setStreamTags.assert_called_once_with(uu=uu, expected=42,
+            tags=stream.tags(), collection=collection)
+        stream._btrdb.ep.setStreamAnnotations.assert_not_called()
+
+
+    def test_update_annotations(self):
+        """
+        Assert update calls correct Endpoint methods for annotations update
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        annotations = {"owner": "rabbit"}
+
+        stream.refresh_metadata()
+        stream.update(annotations=annotations)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(uu=uu, expected=42,
+            changes=annotations)
+        stream._btrdb.ep.setStreamTags.assert_not_called()
+
+
     def test_exists_cached_value(self):
         """
         Assert exists first uses cached value
@@ -290,6 +371,7 @@ class TestStreamSet(object):
         Assert we can create the object
         """
         StreamSet([])
+
 
     ##########################################################################
     ## allow_window tests
