@@ -36,7 +36,7 @@ class TestCurrentlyAsNs(object):
         Assert currently_as_ns returns correct value
         """
         expected = int(datetime.datetime(2018,1,1,12).timestamp() * 1e9)
-        with freeze_time("2018-01-01 12:00:00"):
+        with freeze_time("2018-01-01 12:00:00 -0000"):
             assert currently_as_ns() == expected
 
 

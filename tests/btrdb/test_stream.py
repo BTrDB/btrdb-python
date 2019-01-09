@@ -405,7 +405,7 @@ class TestStream(object):
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
         endpoint.nearest = Mock(return_value=(RawPointProto(time=100, value=1.0), 42))
 
-        with freeze_time("2018-01-01 12:00:00"):
+        with freeze_time("2018-01-01 12:00:00 -0000"):
             point, ver = stream.latest()
 
         assert (point, ver) == (RawPoint(100, 1.0), 42)
@@ -421,7 +421,7 @@ class TestStream(object):
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
         endpoint.nearest = Mock(side_effect=Exception())
 
-        with freeze_time("2018-01-01 12:00:00"):
+        with freeze_time("2018-01-01 12:00:00 -0000"):
             assert stream.latest() is None
         endpoint.nearest.assert_called_once_with(uu, 1514826000000000000, 0, True)
 
