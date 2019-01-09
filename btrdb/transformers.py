@@ -48,13 +48,12 @@ def to_series(stream_set):
         raise ModuleNotFoundError("Please install Pandas to use this transformation function.")
 
     result = []
-    for output in stream_set.values:
-        result.append(
-            pd.Series([
-                {"time": item.time, "value": item.value}
-                for item in output
-            ])
-        )
+    for output in stream_set.values():
+        times, values = [], []
+        for item in output:
+            times.append(item.time)
+            values.append(item.value)
+        result.append(pd.Series(data=values, index=times))
     return result
 
 def to_dataframe(stream_set, columns=None):
@@ -82,7 +81,7 @@ def to_array(stream_set):
     except ModuleNotFoundError:
         raise Exception("...")
 
-    return tuple([np.array(output) for output in stream_set.values])
+    return tuple([np.array(output) for output in stream_set.values()])
 
 
 def to_dict(stream_set):
@@ -130,7 +129,7 @@ def to_table(stream_set):
 ## Transform Classes
 ##########################################################################
 
-class StreamTransformer(object):
+class StreamSetTransformer(object):
     """
     Base class for StreamSet or Stream transformations
     """
