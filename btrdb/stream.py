@@ -19,7 +19,7 @@ import uuid as uuidlib
 from copy import deepcopy
 
 from btrdb.point import RawPoint, StatPoint
-from btrdb.transformers import StreamTransformer
+from btrdb.transformers import StreamSetTransformer
 from btrdb.utils.buffer import PointBuffer
 from btrdb.utils.timez import currently_as_ns, to_nanoseconds
 from btrdb.exceptions import BTrDBError, InvalidOperation
@@ -957,7 +957,7 @@ class StreamSetBase(object):
         return "{} with {} streams".format(self.__class__.__name__, len(self._streams))
 
 
-class StreamSet(StreamSetBase, StreamTransformer):
+class StreamSet(StreamSetBase, StreamSetTransformer):
     """
     Public class for a collection of streams
     """
