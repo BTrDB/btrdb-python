@@ -15,13 +15,13 @@ Module for Stream and related classes
 ## Imports
 ##########################################################################
 
-import uuid
+import uuid as uuidlib
 from copy import deepcopy
 
 from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import StreamTransformer
 from btrdb.utils.buffer import PointBuffer
-from btrdb.utils.timez import currently_as_ns
+from btrdb.utils.timez import currently_as_ns, to_nanoseconds
 from btrdb.exceptions import BTrDBError, InvalidOperation
 
 
@@ -37,16 +37,18 @@ INSERT_BATCH_SIZE = 5000
 ##########################################################################
 
 class Stream(object):
-    def __init__(self, btrdb, uuid, known_to_exist=False, collection=None, tags=None, annotations=None, property_version=None):
+    def __init__(self, btrdb, uuid, **db_values):
+        db_args = ('known_to_exist', 'collection', 'tags', 'annotations', 'property_version')
+        for key in db_args:
+            value = db_values.pop(key, None)
+            setattr(self, f"_{key}", value)
+        if db_values:
+            bad_keys = ", ".join(db_values.keys())
+            raise TypeError(f"got unexpected db_values argument(s) '{bad_keys}'")
+
         self._btrdb = btrdb
         self._uuid = uuid
-        self._known_to_exist = known_to_exist
 
-        # Some cacheable attributes
-        self._tags = tags
-        self._annotations = annotations
-        self._property_version = property_version
-        self._collection = collection
 
     def refresh_metadata(self):
         # type: () -> ()
@@ -98,14 +100,31 @@ class Stream(object):
         except BTrDBError as bte:
             if bte.code == 404:
                 return False
-            raise
+            raise bte
 
+    @property
+    def btrdb(self):
+        """
+        Returns the stream's BTrDB object.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        BTrDB
+            The BTrDB database object.
+
+        """
+        return self._btrdb
+
+    @property
     def uuid(self):
-        # type: () -> UUID
         """
         Returns the stream's UUID.
 
-        This method returns the stream's UUID. The stream may nor may not exist
+        This property returns the stream's UUID. The stream may nor may not exist
         yet, depending on how the stream object was obtained.
 
         Parameters
@@ -123,11 +142,67 @@ class Stream(object):
         stream.exists()
 
         """
-
         return self._uuid
 
+    def earliest(self, version=0):
+        """
+        Returns the first point of data in the stream.  Returns None if error
+        encountered during lookup or no values in stream.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        RawPoint
+            The first data point in the stream
+        int
+            The version of the stream for the RawPoint supplied
+
+        """
+        earliest = None
+        start = 0
+
+        try:
+            earliest = self.nearest(start, version=version, backward=False)
+        except Exception:
+            # TODO: figure out proper exception type
+            pass
+
+        return earliest
+
+
+    def latest(self, version=0):
+        """
+        Returns last point of data in the stream. Note that this method will
+        return None if no point can be found that is less than the current
+        date/time.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        RawPoint, int
+            The last data point in the stream and the version of the stream
+            the value was retrieved at.
+
+        """
+        latest = None
+        start = currently_as_ns()
+
+        try:
+            latest = self.nearest(start, version=version, backward=True)
+        except Exception:
+            pass
+
+        return latest
+
+
+
     def tags(self, refresh=False):
-        # type: () -> Dict[str, str]
         """
         Returns the stream's tags.
 
@@ -152,7 +227,6 @@ class Stream(object):
         return deepcopy(self._tags)
 
     def annotations(self, refresh=False):
-        # type: () -> Tuple[Dict[str, str], int]
         """
 
         Returns a stream's annotations
@@ -227,7 +301,6 @@ class Stream(object):
         return self._btrdb.ep.streamInfo(self._uuid, True, False)[4]
 
     def insert(self, data):
-        # type: List[Tuple[int, float]] -> int
         """
         Insert new data in the form (time, value) into the series.
 
@@ -260,8 +333,11 @@ class Stream(object):
     def _update_tags_collection(self, tags, collection):
         tags = self.tags() if tags is None else tags
         collection = self.collection() if collection is None else collection
+        if collection is None:
+            raise ValueError("collection must be provided to update tags or collection")
+
         self._btrdb.ep.setStreamTags(
-            uu=self.uuid(),
+            uu=self.uuid,
             expected=self._property_version,
             tags=tags,
             collection=collection
@@ -269,7 +345,7 @@ class Stream(object):
 
     def _update_annotations(self, annotations):
         self._btrdb.ep.setStreamAnnotations(
-            uu=self.uuid(),
+            uu=self.uuid,
             expected=self._property_version,
             changes=annotations
         )
@@ -308,6 +384,29 @@ class Stream(object):
             self._update_annotations(annotations)
             self.refresh_metadata()
 
+    def delete(self, start, end):
+        """
+        "Delete" all points between [`start`, `end`)
+
+        "Delete" all points between `start` (inclusive) and `end` (exclusive),
+        both in nanoseconds. As BTrDB has persistent multiversioning, the
+        deleted points will still exist as part of an older version of the
+        stream.
+
+        Parameters
+        ----------
+        start : int
+            The start time in nanoseconds for the range to be deleted
+        end : int
+            The end time in nanoseconds for the range to be deleted
+
+        Returns
+        -------
+        int
+            The version of the new stream created
+
+        """
+        return self._btrdb.ep.deleteRange(self._uuid, start, end)
 
     def values(self, start, end, version=0):
         # type: (int, int, int) -> Tuple[RawPoint, int]
@@ -342,10 +441,12 @@ class Stream(object):
         the vector nodes.
 
         """
-        rps = self._btrdb.ep.rawValues(self._uuid, start, end, version)
-        for rplist, version in rps:
-            for rp in rplist:
-                yield RawPoint.from_proto(rp), version
+        materialized = []
+        point_windows = self._btrdb.ep.rawValues(self._uuid, start, end, version)
+        for point_list, version in point_windows:
+            for point in point_list:
+                materialized.append((RawPoint.from_proto(point), version))
+        return materialized
 
     def aligned_windows(self, start, end, pointwidth, version=0):
         # type: (int, int, int, int) -> Tuple[StatPoint, int]
@@ -378,21 +479,26 @@ class Stream(object):
         version : int
             Version of the stream to query
 
-        Yields
-        ------
-        (StatPoint, int)
-            Returns a tuple containing a StatPoint and the stream version
-
+        Returns
+        -------
+        tuple(tuple(StatPoint, int), ...)
+            Returns a tuple containing windows of data.  Each window is a tuple
+            containing data tuples.  Each data tuple contains a StatPoint and
+            the stream version.
 
         Notes
         -----
         As the window-width is a power-of-two, it aligns with BTrDB internal
         tree data structure and is faster to execute than `windows()`.
         """
+        materialized = []
         windows = self._btrdb.ep.alignedWindows(self._uuid, start, end, pointwidth, version)
         for stat_points, version in windows:
+            window = []
             for point in stat_points:
-                yield StatPoint.from_proto(point), version
+                window.append((StatPoint.from_proto(point), version))
+            materialized.append(tuple(window))
+        return tuple(materialized)
 
     def windows(self, start, end, width, depth=0, version=0):
         # type: (int, int, int, int, int) -> Tuple[StatPoint, int]
@@ -413,10 +519,12 @@ class Stream(object):
         version : int
             Version of the stream to query
 
-        Yields
-        ------
-        (StatPoint, int)
-            Returns a tuple containing a StatPoint and the stream version
+        Returns
+        -------
+        tuple(tuple(StatPoint, int), ...)
+            Returns a tuple containing windows of data.  Each window is a tuple
+            containing data tuples.  Each data tuple contains a StatPoint and
+            the stream version.
 
         Notes
         -----
@@ -438,37 +546,14 @@ class Stream(object):
         side.
 
         """
-
+        materialized = []
         windows = self._btrdb.ep.windows(self._uuid, start, end, width, depth, version)
         for stat_points, version in windows:
+            window = []
             for point in stat_points:
-                yield StatPoint.from_proto(point), version
-
-    def delete_range(self, start, end):
-        # type: (int, int) -> int
-
-        """
-        "Delete" all points between [`start`, `end`)
-
-        "Delete" all points between `start` (inclusive) and `end` (exclusive),
-        both in nanoseconds. As BTrDB has persistent multiversioning, the
-        deleted points will still exist as part of an older version of the
-        stream.
-
-        Parameters
-        ----------
-        start : int
-            The start time in nanoseconds for the range to be deleted
-        end : int
-            The end time in nanoseconds for the range to be deleted
-
-        Returns
-        -------
-        int
-            The version of the new stream created
-
-        """
-        return self._btrdb.ep.deleteRange(self._uuid, start, end)
+                window.append((StatPoint.from_proto(point), version))
+            materialized.append(tuple(window))
+        return tuple(materialized)
 
     def nearest(self, time, version, backward):
         # type: (int, int, bool) -> Tuple[RawPoint, int]
@@ -546,10 +631,10 @@ class StreamSetBase(object):
 
     @property
     def allow_window(self):
-        return not bool(self.pointwidth or self.width or self.depth)
+        return not bool(self.pointwidth or (self.width and self.depth))
 
     def _latest_versions(self):
-        return {s.uuid(): s.version() for s in self._streams}
+        return {s.uuid: s.version() for s in self._streams}
 
 
     def pin_versions(self, versions=None):
@@ -575,7 +660,7 @@ class StreamSetBase(object):
                 raise TypeError("`versions` argument must be dict")
 
             for key in versions.keys():
-                if not isinstance(key, uuid.UUID):
+                if not isinstance(key, uuidlib.UUID):
                     raise TypeError("version keys must be type UUID")
 
 
@@ -603,7 +688,7 @@ class StreamSetBase(object):
 
     def earliest(self):
         """
-        Returns earliest timestamp (ns) of data in streams using available
+        Returns earliest points of data in streams using available
         filters.
 
         Parameters
@@ -612,29 +697,30 @@ class StreamSetBase(object):
 
         Returns
         -------
-        int
-            The earliest timestamp found among all streams
+        tuple(RawPoint)
+            The earliest points of data found among all streams
 
         """
-        earliest = None
+        earliest = []
         params = self._params_from_filters()
         start = params.get("start", 0)
 
         for s in self._streams:
-            version = self.versions()[s.uuid()]
+            version = self.versions()[s.uuid]
             try:
-                s_start, _ = s.nearest(start, version=version, backward=False)
+                point, _ = s.nearest(start, version=version, backward=False)
             except Exception:
                 # TODO: figure out proper exception type
-                continue
-            if earliest is None or s_start.time < earliest:
-                earliest = s_start.time
+                earliest.append(None)
 
-        return earliest
+            earliest.append(point)
+
+
+        return tuple(earliest)
 
     def latest(self):
         """
-        Returns latest timestamp (ns) of data in streams using available
+        Returns latest points of data in the streams using available
         filters.  Note that this method will return None if no
         end filter is provided and point cannot be found that is less than the
         current date/time.
@@ -645,24 +731,24 @@ class StreamSetBase(object):
 
         Returns
         -------
-        int
-            The latest timestamp found among all streams
+        tuple(RawPoint)
+            The latest points of data found among all streams
 
         """
-        latest = None
+        latest = []
         params = self._params_from_filters()
         start = params.get("end", currently_as_ns())
 
         for s in self._streams:
-            version = self.versions()[s.uuid()]
+            version = self.versions()[s.uuid]
             try:
-                s_latest, _ = s.nearest(start, version=version, backward=True)
+                point, _ = s.nearest(start, version=version, backward=True)
             except Exception:
-                continue
-            if latest is None or s_latest.time > latest:
-                latest = s_latest.time
+                latest.append(None)
 
-        return latest
+            latest.append(point)
+
+        return tuple(latest)
 
     def filter(self, start=None, end=None):
         """
@@ -808,7 +894,7 @@ class StreamSetBase(object):
 
         """
         params = self._params_from_filters()
-        result_iterables = [s.values(**params) for s in self._streams]
+        result_iterables = [iter(s.values(**params)) for s in self._streams]
         buffer = PointBuffer(len(self._streams))
 
         while True:
@@ -832,7 +918,6 @@ class StreamSetBase(object):
             if streams_empty and len(buffer.keys()) == 0:
                 break
 
-
     def _params_from_filters(self):
         params = {}
         for filter in self.filters:
@@ -842,14 +927,12 @@ class StreamSetBase(object):
                 params["end"] = filter.end
         return params
 
-    @property
     def values_iter(self):
         """
         Must return context object which would then close server cursor on __exit__
         """
         raise NotImplementedError()
 
-    @property
     def values(self):
         """
         Returns a fully materialized list of lists for the stream values/points
@@ -862,6 +945,16 @@ class StreamSetBase(object):
             result.append([point[0] for point in stream_output])
 
         return result
+
+    def __iter__(self):
+        for stream in self._streams:
+            yield stream
+
+    def __repr__(self):
+        return "<{}({} streams)>".format(self.__class__.__name__, len(self._streams))
+
+    def __str__(self):
+        return "{} with {} streams".format(self.__class__.__name__, len(self._streams))
 
 
 class StreamSet(StreamSetBase, StreamTransformer):
@@ -880,14 +973,11 @@ class StreamFilter(object):
     Object for storing requested filtering options
     """
     def __init__(self, start=None, end=None):
-        self.start = int(start) if start else None
-        self.end = int(end) if end else None
+        self.start = to_nanoseconds(start) if start else None
+        self.end = to_nanoseconds(end) if end else None
+
+        if self.start is None and self.end is None:
+            raise ValueError("A valid `start` or `end` must be supplied")
 
         if self.start is not None and self.end is not None and self.start >= self.end:
             raise ValueError("`start` must be strictly less than `end` argument")
-
-        # if not isinstance(self.start, int) and self.start is not None:
-        #     raise ValueError("`start` must be int, float, or None")
-        #
-        # if not isinstance(self.end, int) and self.end is not None:
-        #     raise ValueError("`end` must be int, float, or None")

@@ -30,7 +30,7 @@ The 'btrdb' module provides Python bindings to interact with BTrDB.
 """
 
 import grpc
-import uuid
+import uuid as uuidlib
 import os
 
 from grpc._cython.cygrpc import CompressionAlgorithm
@@ -111,7 +111,7 @@ class BTrDB(object):
         self.ep = endpoint
 
 
-    def streams(self, *identifiers, versions=[]):
+    def streams(self, *identifiers, versions=None):
         """
         Returns a StreamSet object with BTrDB streams from the supplied
         identifiers.  If any streams cannot be found matching the identifier
@@ -128,19 +128,25 @@ class BTrDB(object):
             a single or iterable of version numbers to match the identifiers
 
         """
-        if versions and len(versions) != len(identifiers):
-            raise ValueError("Number of versions does not match identifiers")
+        if versions is not None and not isinstance(versions, list):
+            raise TypeError("versions argument must be of type list")
 
-        if not versions:
-            versions = [0] * len(identifiers)
+        if versions and len(versions) != len(identifiers):
+            raise ValueError("number of versions does not match identifiers")
 
         streams = [self.stream_from_uuid(ident) for ident in identifiers]
-        return StreamSet(streams)
+        obj = StreamSet(streams)
 
-    def stream_from_uuid(self, uu):
+        if versions:
+            version_dict = {streams[idx].uuid: versions[idx] for idx in range(len(versions))}
+            obj.pin_versions(version_dict)
+
+        return obj
+
+    def stream_from_uuid(self, uuid):
         # type: (UUID or str or bytes) -> Stream
         """
-        Creates a stream handle to the BTrDB stream with the UUID `uu`. This
+        Creates a stream handle to the BTrDB stream with the UUID `uuid`. This
         method does not check whether a stream with the specified UUID exists.
         It is always good form to check whether the stream existed using
         `stream.exists()`.
@@ -148,7 +154,7 @@ class BTrDB(object):
 
         Parameters
         ----------
-        uu: UUID
+        uuid: UUID
             The uuid of the requested stream.
 
         Returns
@@ -157,16 +163,16 @@ class BTrDB(object):
             A Stream class object.
 
         """
-        return Stream(self, to_uuid(uu))
+        return Stream(self, to_uuid(uuid))
 
-    def create(self, uu, collection, tags=None, annotations=None):
+    def create(self, uuid, collection, tags=None, annotations=None):
         # type: (UUID, str, Dict[str, str], Dict[str, str]) -> Stream
         """
-        Tells BTrDB to create a new stream with UUID `uu` in `collection` with specified `tags` and `annotations`.
+        Tells BTrDB to create a new stream with UUID `uuid` in `collection` with specified `tags` and `annotations`.
 
         Parameters
         ----------
-        uu: UUID
+        uuid: UUID
             The uuid of the requested stream.
 
         Returns
@@ -181,8 +187,14 @@ class BTrDB(object):
         if annotations is None:
             annotations = {}
 
-        self.ep.create(uu, collection, tags, annotations)
-        return Stream(self, uu, True, collection, tags.copy(), annotations.copy(), 0)
+        self.ep.create(uuid, collection, tags, annotations)
+        return Stream(self, uuid,
+            known_to_exist=True,
+            collection=collection,
+            tags=tags.copy(),
+            annotations=annotations.copy(),
+            property_version=0
+        )
 
     def info(self):
         # type: () -> (Mash)
@@ -192,7 +204,7 @@ class BTrDB(object):
         """
         return self.ep.info()
 
-    def streams_in_collection(self, collection, isCollectionPrefix=True, tags=None, annotations=None):
+    def streams_in_collection(self, collection, is_collection_prefix=True, tags=None, annotations=None):
         # type: (str, bool, Dict[str, str], Dict[str, str]) -> Stream
 
         """
@@ -204,7 +216,7 @@ class BTrDB(object):
         ----------
         collection: str
             The name of the collection to be found, case sensitive.
-        isCollectionPrefix: bool
+        is_collection_prefix: bool
             Whether the collection is a prefix.
         tags: Dict[str, str]
             The tags to identify the stream.
@@ -224,11 +236,13 @@ class BTrDB(object):
         if annotations is None:
             annotations = {}
 
-        streams = self.ep.lookupStreams(collection, isCollectionPrefix, tags, annotations)
+        streams = self.ep.lookupStreams(collection, is_collection_prefix, tags, annotations)
         for desclist in streams:
             for desc in desclist:
                 tagsanns = unpack_stream_descriptor(desc)
-                yield Stream(self, uuid.UUID(bytes = desc.uuid), True, desc.collection, tagsanns[0], tagsanns[1], desc.propertyVersion)
+                yield Stream(self, uuidlib.UUID(bytes = desc.uuid), known_to_exist=True,
+                    collection=desc.collection, tags=tagsanns[0], annotations=tagsanns[1],
+                    property_version=desc.propertyVersion)
 
     def collection_metadata(self, prefix):
         # type: (csv.writer, QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> Tuple[Dict[str, int], Dict[str, int]]

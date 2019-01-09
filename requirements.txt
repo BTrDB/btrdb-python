@@ -1,6 +1,3 @@
 # GRPC / Protobuff related
 grpcio==1.12.1
 grpcio-tools==1.12.1
-
-# for btrdb4 codebase (will be removed in future release)
-isodate

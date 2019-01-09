@@ -15,6 +15,7 @@ Testing package for the btrdb connection module
 ## Imports
 ##########################################################################
 
+import uuid as uuidlib
 import pytest
 from unittest.mock import Mock, PropertyMock
 
@@ -22,7 +23,7 @@ from btrdb.conn import Connection, BTrDB
 
 
 ##########################################################################
-## Tests
+## Connection Tests
 ##########################################################################
 
 class TestConnection(object):
@@ -47,7 +48,22 @@ class TestConnection(object):
         assert "cannot use an API key with an insecure" in str(exc)
 
 
+##########################################################################
+## BTrDB Tests
+##########################################################################
+
 class TestBTrDB(object):
+
+    def test_streams_raises_err_if_version_not_list(self):
+        """
+        Assert streams raises TypeError if versions is not list
+        """
+        db = BTrDB(None)
+        with pytest.raises(TypeError) as exc:
+            db.streams('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a', versions="2,2")
+
+        assert "versions argument must be of type list" in str(exc)
+
 
     def test_streams_raises_err_if_version_argument_mismatch(self):
         """
@@ -58,3 +74,17 @@ class TestBTrDB(object):
             db.streams('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a', versions=[2,2])
 
         assert "versions does not match identifiers" in str(exc)
+
+
+    def test_streams_stores_versions(self):
+        """
+        Assert streams correctly stores supplied version info
+        """
+        db = BTrDB(None)
+        uuid1 = uuidlib.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        uuid2 = uuidlib.UUID('17dbe387-89ea-42b6-864b-f505cdb483f5')
+        versions = [22,44]
+        expected = dict(zip([uuid1, uuid2], versions))
+
+        streams = db.streams(uuid1, uuid2, versions=versions)
+        assert streams._pinned_versions == expected

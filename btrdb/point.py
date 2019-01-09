@@ -95,7 +95,7 @@ class StatPoint(object):
             raise IndexError("RawPoint index out of range")
 
     def __repr__(self):
-        return "StatPoint({0}, {1}, {2}, {3}, {4})".format(
+        return "StatPoint({0}, {1}, {2}, {3}, {4}, {5})".format(
             repr(self.time),
             repr(self.min),
             repr(self.mean),
@@ -103,3 +103,11 @@ class StatPoint(object):
             repr(self.count),
             repr(self.stddev)
         )
+
+    def __eq__(self, other):
+        return self.time == other.time and \
+            self.min == other.min and \
+            self.mean == other.mean and \
+            self.max == other.max and \
+            self.count == other.count and \
+            self.stddev == other.stddev

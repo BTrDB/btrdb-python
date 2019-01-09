@@ -18,13 +18,15 @@ Testing package for the btrdb stream module
 import uuid
 import pytest
 from unittest.mock import Mock, PropertyMock
+from freezegun import freeze_time
 
 from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
-from btrdb.point import RawPoint
+from btrdb.point import RawPoint, StatPoint
 from btrdb.exceptions import BTrDBError, InvalidOperation
 from btrdb.grpcinterface import btrdb_pb2
 
 RawPointProto =  btrdb_pb2.RawPoint
+StatPointProto =  btrdb_pb2.StatPoint
 
 
 ##########################################################################
@@ -79,6 +81,10 @@ class TestStream(object):
         stream.refresh_metadata()
         stream._btrdb.ep.streamInfo.assert_called_once_with(uu, False, True)
 
+
+    ##########################################################################
+    ## update tests
+    ##########################################################################
 
     def test_update_arguments(self):
         """
@@ -161,6 +167,10 @@ class TestStream(object):
         stream._btrdb.ep.setStreamTags.assert_not_called()
 
 
+    ##########################################################################
+    ## exists tests
+    ##########################################################################
+
     def test_exists_cached_value(self):
         """
         Assert exists first uses cached value
@@ -209,6 +219,10 @@ class TestStream(object):
             stream.exists()
         stream.refresh_metadata.assert_called_once()
 
+
+    ##########################################################################
+    ## tag/annotation tests
+    ##########################################################################
 
     def test_tags_returns_copy(self):
         """
@@ -293,6 +307,129 @@ class TestStream(object):
         stream.refresh_metadata.assert_called_once()
 
 
+    ##########################################################################
+    ## windowing tests
+    ##########################################################################
+
+    def test_windows(self):
+        """
+        Assert windows returns tuples of data from Endpoint.windows
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        windows = [
+            [(StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6), StatPointProto(time=2,min=3,mean=4,max=5,count=6,stddev=7)), 42],
+            [(StatPointProto(time=3,min=4,mean=5,max=6,count=7,stddev=8), StatPointProto(time=4,min=5,mean=6,max=7,count=8,stddev=9)), 42],
+        ]
+        expected = (
+            ((StatPoint(time=1,minv=2.0,meanv=3.0,maxv=4.0,count=5,stddev=6.0), 42), (StatPoint(time=2,minv=3.0,meanv=4.0,maxv=5.0,count=6,stddev=7.0), 42)),
+            ((StatPoint(time=3,minv=4.0,meanv=5.0,maxv=6.0,count=7,stddev=8.0), 42), (StatPoint(time=4,minv=5.0,meanv=6.0,maxv=7.0,count=8,stddev=9.0), 42)),
+        )
+        endpoint.windows = Mock(return_value=windows)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        params = {"start": 100, "end": 500, "width": 2}
+
+        result = stream.windows(**params)
+        assert result == expected
+        assert isinstance(result, tuple)
+        assert isinstance(result[0], tuple)
+        stream._btrdb.ep.windows.assert_called_once_with(
+            uu, 100, 500, 2, 0, 0
+        )
+
+
+    def test_aligned_windows(self):
+        """
+        Assert windows returns tuples of data from Endpoint.alignedWindows
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        windows = [
+            [(StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6), StatPointProto(time=2,min=3,mean=4,max=5,count=6,stddev=7)), 42],
+            [(StatPointProto(time=3,min=4,mean=5,max=6,count=7,stddev=8), StatPointProto(time=4,min=5,mean=6,max=7,count=8,stddev=9)), 42],
+        ]
+        expected = (
+            ((StatPoint(time=1,minv=2.0,meanv=3.0,maxv=4.0,count=5,stddev=6.0), 42), (StatPoint(time=2,minv=3.0,meanv=4.0,maxv=5.0,count=6,stddev=7.0), 42)),
+            ((StatPoint(time=3,minv=4.0,meanv=5.0,maxv=6.0,count=7,stddev=8.0), 42), (StatPoint(time=4,minv=5.0,meanv=6.0,maxv=7.0,count=8,stddev=9.0), 42)),
+        )
+        endpoint.alignedWindows = Mock(return_value=windows)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        params = {"start": 100, "end": 500, "pointwidth": 1}
+
+        result = stream.aligned_windows(**params)
+        assert result == expected
+        assert isinstance(result, tuple)
+        assert isinstance(result[0], tuple)
+        stream._btrdb.ep.alignedWindows.assert_called_once_with(
+            uu, 100, 500, 1, 0
+        )
+
+
+    ##########################################################################
+    ## earliest/latest tests
+    ##########################################################################
+
+    def test_earliest(self):
+        """
+        Assert earliest calls Endpoint.nearest
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(return_value=(RawPointProto(time=100, value=1.0), 42))
+
+        point, ver = stream.earliest()
+        assert (point, ver) == (RawPoint(100, 1.0), 42)
+        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
+
+
+    def test_earliest_swallows_exception(self):
+        """
+        Assert earliest returns None when endpoint throws exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=Exception())
+
+        assert stream.earliest() is None
+        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
+
+
+    def test_latest(self):
+        """
+        Assert latest calls Endpoint.nearest
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(return_value=(RawPointProto(time=100, value=1.0), 42))
+
+        with freeze_time("2018-01-01 12:00:00"):
+            point, ver = stream.latest()
+
+        assert (point, ver) == (RawPoint(100, 1.0), 42)
+        endpoint.nearest.assert_called_once_with(uu, 1514826000000000000, 0, True)
+
+
+    def test_latest_swallows_exception(self):
+        """
+        Assert latest returns None when endpoint throws exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=Exception())
+
+        with freeze_time("2018-01-01 12:00:00"):
+            assert stream.latest() is None
+        endpoint.nearest.assert_called_once_with(uu, 1514826000000000000, 0, True)
+
+
+    ##########################################################################
+    ## misc tests
+    ##########################################################################
+
     def test_version(self):
         """
         Assert version calls and returns correct value from streamInfo
@@ -345,7 +482,7 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
 
-        stream.delete_range(5, 10)
+        stream.delete(5, 10)
         stream._btrdb.ep.deleteRange.assert_called_once_with(uu, 5, 10)
 
 
@@ -358,6 +495,8 @@ class TestStream(object):
 
         stream.flush()
         stream._btrdb.ep.flush.assert_called_once_with(uu)
+
+
 
 
 ##########################################################################
@@ -403,8 +542,8 @@ class TestStreamSet(object):
         """
         streams = StreamSet([stream1, stream2])
         expected = {
-            stream1.uuid(): stream1.version(),
-            stream2.uuid(): stream2.version()
+            stream1.uuid: stream1.version(),
+            stream2.uuid: stream2.version()
         }
         assert streams._latest_versions() == expected
 
@@ -497,8 +636,8 @@ class TestStreamSet(object):
         """
         streams = StreamSet([stream1, stream2])
         expected = {
-            stream1.uuid(): stream1.version(),
-            stream2.uuid(): stream2.version()
+            stream1.uuid: stream1.version(),
+            stream2.uuid: stream2.version()
         }
 
         assert streams.versions() == expected
@@ -536,7 +675,7 @@ class TestStreamSet(object):
         Assert earliest returns correct time code
         """
         streams = StreamSet([stream1, stream2])
-        assert streams.earliest() == 10
+        assert streams.latest() == (RawPoint(time=10, value=1), RawPoint(time=20, value=1))
 
 
     def test_latest(self, stream1, stream2):
@@ -544,7 +683,7 @@ class TestStreamSet(object):
         Assert latest returns correct time code
         """
         streams = StreamSet([stream1, stream2])
-        assert streams.latest() == 20
+        assert streams.latest() == (RawPoint(time=10, value=1), RawPoint(time=20, value=1))
 
 
     ##########################################################################
@@ -774,7 +913,7 @@ class TestStreamSet(object):
         stream2.values = Mock(return_value=iter(stream2_values))
 
         streams = StreamSet([stream1, stream2])
-        assert streams.values == [
+        assert streams.values() == [
             [t[0] for t in stream1_values],
             [t[0] for t in stream2_values],
         ]
