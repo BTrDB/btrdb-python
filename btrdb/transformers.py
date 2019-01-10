@@ -44,8 +44,8 @@ def to_series(stream_set):
     """
     try:
         import pandas as pd
-    except ModuleNotFoundError:
-        raise ModuleNotFoundError("Please install Pandas to use this transformation function.")
+    except ImportError:
+        raise ImportError("Please install Pandas to use this transformation function.")
 
     result = []
     for output in stream_set.values():
@@ -64,8 +64,8 @@ def to_dataframe(stream_set, columns=None):
     """
     try:
         import pandas as pd
-    except ModuleNotFoundError:
-        raise Exception("Please install Pandas to use this transformation function.")
+    except ImportError:
+        raise ImportError("Please install Pandas to use this transformation function.")
 
     stream_names = _stream_names(stream_set)
     columns = columns if columns else ["time"] + list(stream_names)
@@ -78,8 +78,8 @@ def to_array(stream_set):
     """
     try:
         import numpy as np
-    except ModuleNotFoundError:
-        raise Exception("...")
+    except ImportError:
+        raise ImportError("Please install Numpy to use this transformation function.")
 
     return tuple([np.array(output) for output in stream_set.values()])
 
@@ -119,8 +119,8 @@ def to_table(stream_set):
     """
     try:
         from tabulate import tabulate
-    except ModuleNotFoundError:
-        raise Exception("...")
+    except ImportError:
+        raise ImportError("Please install tabulate to use this transformation function.")
 
     return tabulate(stream_set.to_dict(), headers="keys")
 
