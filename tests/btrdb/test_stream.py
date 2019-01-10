@@ -194,7 +194,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock(return_value=True)
 
         assert stream.exists()
-        stream.refresh_metadata.assert_called()
+        assert stream.refresh_metadata.call_count == 1
 
 
     def test_exists_returns_false_on_404(self):
@@ -206,7 +206,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock(side_effect=BTrDBError(code=404, msg="hello", mash=""))
 
         assert stream.exists() == False
-        stream.refresh_metadata.assert_called()
+        assert stream.refresh_metadata.call_count == 1
 
 
     def test_exists_passes_other_errors(self):
@@ -219,7 +219,7 @@ class TestStream(object):
 
         with pytest.raises(ValueError):
             stream.exists()
-        stream.refresh_metadata.assert_called()
+        assert stream.refresh_metadata.call_count == 1
 
 
     ##########################################################################
@@ -263,7 +263,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock()
 
         stream.tags(refresh=True)
-        stream.refresh_metadata.assert_called()
+        assert stream.refresh_metadata.call_count == 1
 
 
     def test_annotations_returns_copy_of_value(self):
@@ -306,7 +306,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock()
 
         stream.annotations(refresh=True)
-        stream.refresh_metadata.assert_called()
+        assert stream.refresh_metadata.call_count == 1
 
 
     ##########################################################################
