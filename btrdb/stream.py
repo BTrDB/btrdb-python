@@ -41,10 +41,10 @@ class Stream(object):
         db_args = ('known_to_exist', 'collection', 'tags', 'annotations', 'property_version')
         for key in db_args:
             value = db_values.pop(key, None)
-            setattr(self, f"_{key}", value)
+            setattr(self, "_{}".format(key), value)
         if db_values:
             bad_keys = ", ".join(db_values.keys())
-            raise TypeError(f"got unexpected db_values argument(s) '{bad_keys}'")
+            raise TypeError("got unexpected db_values argument(s) '{}'".format(bad_keys))
 
         self._btrdb = btrdb
         self._uuid = uuid

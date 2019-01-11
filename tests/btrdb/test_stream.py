@@ -16,9 +16,11 @@ Testing package for the btrdb stream module
 ##########################################################################
 
 import uuid
+import pytz
+import datetime
 import pytest
 from unittest.mock import Mock, PropertyMock
-from freezegun import freeze_time
+from unittest.mock import patch
 
 from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
 from btrdb.point import RawPoint, StatPoint
@@ -192,7 +194,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock(return_value=True)
 
         assert stream.exists()
-        stream.refresh_metadata.assert_called_once()
+        assert stream.refresh_metadata.call_count == 1
 
 
     def test_exists_returns_false_on_404(self):
@@ -204,7 +206,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock(side_effect=BTrDBError(code=404, msg="hello", mash=""))
 
         assert stream.exists() == False
-        stream.refresh_metadata.assert_called_once()
+        assert stream.refresh_metadata.call_count == 1
 
 
     def test_exists_passes_other_errors(self):
@@ -217,7 +219,7 @@ class TestStream(object):
 
         with pytest.raises(ValueError):
             stream.exists()
-        stream.refresh_metadata.assert_called_once()
+        assert stream.refresh_metadata.call_count == 1
 
 
     ##########################################################################
@@ -261,7 +263,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock()
 
         stream.tags(refresh=True)
-        stream.refresh_metadata.assert_called_once()
+        assert stream.refresh_metadata.call_count == 1
 
 
     def test_annotations_returns_copy_of_value(self):
@@ -304,7 +306,7 @@ class TestStream(object):
         stream.refresh_metadata = Mock()
 
         stream.annotations(refresh=True)
-        stream.refresh_metadata.assert_called_once()
+        assert stream.refresh_metadata.call_count == 1
 
 
     ##########################################################################
@@ -396,7 +398,8 @@ class TestStream(object):
         endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
 
 
-    def test_latest(self):
+    @patch("btrdb.stream.currently_as_ns")
+    def test_latest(self, mocked):
         """
         Assert latest calls Endpoint.nearest
         """
@@ -404,15 +407,16 @@ class TestStream(object):
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
         endpoint.nearest = Mock(return_value=(RawPointProto(time=100, value=1.0), 42))
-
-        with freeze_time("2018-01-01 12:00:00"):
-            point, ver = stream.latest()
+        ns_fake_time = 1514808000000000000
+        mocked.return_value = ns_fake_time
+        point, ver = stream.latest()
 
         assert (point, ver) == (RawPoint(100, 1.0), 42)
-        endpoint.nearest.assert_called_once_with(uu, 1514826000000000000, 0, True)
+        endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
 
 
-    def test_latest_swallows_exception(self):
+    @patch("btrdb.stream.currently_as_ns")
+    def test_latest_swallows_exception(self, mocked):
         """
         Assert latest returns None when endpoint throws exception
         """
@@ -420,10 +424,11 @@ class TestStream(object):
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
         endpoint.nearest = Mock(side_effect=Exception())
+        ns_fake_time = 1514808000000000000
+        mocked.return_value = ns_fake_time
 
-        with freeze_time("2018-01-01 12:00:00"):
-            assert stream.latest() is None
-        endpoint.nearest.assert_called_once_with(uu, 1514826000000000000, 0, True)
+        assert stream.latest() is None
+        endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
 
 
     ##########################################################################

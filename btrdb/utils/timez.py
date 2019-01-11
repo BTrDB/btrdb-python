@@ -56,7 +56,7 @@ def to_nanoseconds(val):
         import numpy as np
         if isinstance(val, np.datetime64):
             val = val.astype(datetime.datetime)
-    except ModuleNotFoundError:
+    except ImportError:
         pass
 
     if isinstance(val, str):
