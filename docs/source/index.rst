@@ -82,6 +82,7 @@ API Reference
    api/streams
    api/points
    api/exceptions
+   api/transformers
    api/utils-timez
 
 
