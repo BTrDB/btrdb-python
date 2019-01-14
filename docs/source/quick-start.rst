@@ -68,6 +68,19 @@ if needed.
     for point, _ in stream.values(start, end):
       print(point.time, point.value)
 
+Some convenience functions are available to make it easier to deal with
+converting to nanoseconds.
+
+.. code-block:: python
+
+    from btrdb.utils.timez import to_nanoseconds, currently_as_ns
+
+    start = to_nanoseconds(datetime(2018,1,1, tzinfo=timezone.utc))
+    end = currently_as_ns()
+
+    for point, _ in stream.values(start, end):
+      print(point.time, point.value)
+
 You can also view windows of data at arbitrary levels of detail.  One such
 windowing feature is shown below.
 
@@ -78,7 +91,7 @@ windowing feature is shown below.
     params = {
         "start": 1500000000000000000,
         "end": 1500000000010000000,
-        "width": 10000,
+        "width": 2000000,
         "depth": 0,
     }
     for window in stream.windows(**params):
