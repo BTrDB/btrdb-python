@@ -104,7 +104,7 @@ class Connection(object):
 
 class BTrDB(object):
     """
-
+    The primary server connection object for communicating with a BTrDB server.
     """
 
     def __init__(self, endpoint):
@@ -144,7 +144,6 @@ class BTrDB(object):
         return obj
 
     def stream_from_uuid(self, uuid):
-        # type: (UUID or str or bytes) -> Stream
         """
         Creates a stream handle to the BTrDB stream with the UUID `uuid`. This
         method does not check whether a stream with the specified UUID exists.
@@ -166,7 +165,6 @@ class BTrDB(object):
         return Stream(self, to_uuid(uuid))
 
     def create(self, uuid, collection, tags=None, annotations=None):
-        # type: (UUID, str, Dict[str, str], Dict[str, str]) -> Stream
         """
         Tells BTrDB to create a new stream with UUID `uuid` in `collection` with specified `tags` and `annotations`.
 
@@ -197,16 +195,18 @@ class BTrDB(object):
         )
 
     def info(self):
-        # type: () -> (Mash)
         """
         Returns information about the connected BTrDB srerver.
+
+        Returns
+        -------
+        InfoResponse
+            An object containing server connection and status information
 
         """
         return self.ep.info()
 
     def streams_in_collection(self, collection, is_collection_prefix=True, tags=None, annotations=None):
-        # type: (str, bool, Dict[str, str], Dict[str, str]) -> Stream
-
         """
         Search for streams matching given parameters
 

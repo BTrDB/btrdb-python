@@ -27,16 +27,25 @@ import pytz
 ##########################################################################
 
 def currently_as_ns():
+    """
+    Returns the current UTC time as nanoseconds since epoch
+    """
     dt = datetime.datetime.utcnow()
     return int(dt.timestamp() * 1e9)
 
 
 def ns_to_datetime(ns):
+    """
+    Converts nanoseconds to a datetime object
+    """
     dt = datetime.datetime.utcfromtimestamp(ns / 1e9)
     return dt.replace(tzinfo=pytz.utc)
 
 
 def datetime_to_ns(dt):
+    """
+    Converts a datetime object nanoseconds
+    """
     if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
         aware = pytz.utc.localize(dt)
     else:
@@ -47,7 +56,7 @@ def datetime_to_ns(dt):
 
 def to_nanoseconds(val):
     """
-    Converts datetime, datetime64, float, str to nanoseconds
+    Converts datetime, datetime64, float, str (RFC 2822) to nanoseconds
     """
     if val is None or isinstance(val, int):
         return val

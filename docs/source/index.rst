@@ -1,15 +1,11 @@
-.. btrdb-python documentation master file, created by
-   sphinx-quickstart on Tue Dec 18 16:36:47 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to btrdb-python docs!
+Welcome to btrdb docs!
 ========================================
-
-
 
 .. image:: https://img.shields.io/travis/looselycoupled/btrdb4-python/development.svg
     :target: https://pypi.org/project/btrdb4-python/
+
+.. image:: https://readthedocs.org/projects/btrdb/badge/?version=latest
+    :target: https://btrdb.readthedocs.io/en/latest/
 
 .. image:: https://img.shields.io/pypi/pyversions/btrdb.svg
     :target: https://pypi.org/project/btrdb/
@@ -61,7 +57,7 @@ to get a `Dockerized <https://www.docker.com/>`_ version up and running quickly.
 
 
 User Guide
-==========
+----------
 
 The remaining documentation can be found below.  If there is anything you'd like
 added or corrected, please feel free to submit a pull request or open an issue
@@ -72,13 +68,26 @@ in Github!
 
    quick-start
    installing
-   adding_data
-   metadata
+   concepts
+   working
 
 
-.. Indices and tables
-.. ==================
-..
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-.. * :ref:`search`
+API Reference
+--------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   api/package
+   api/streams
+   api/points
+   api/exceptions
+   api/utils-timez
+
+
+Indices and tables
+--------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

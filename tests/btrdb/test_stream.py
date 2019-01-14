@@ -324,8 +324,8 @@ class TestStream(object):
             [(StatPointProto(time=3,min=4,mean=5,max=6,count=7,stddev=8), StatPointProto(time=4,min=5,mean=6,max=7,count=8,stddev=9)), 42],
         ]
         expected = (
-            ((StatPoint(time=1,minv=2.0,meanv=3.0,maxv=4.0,count=5,stddev=6.0), 42), (StatPoint(time=2,minv=3.0,meanv=4.0,maxv=5.0,count=6,stddev=7.0), 42)),
-            ((StatPoint(time=3,minv=4.0,meanv=5.0,maxv=6.0,count=7,stddev=8.0), 42), (StatPoint(time=4,minv=5.0,meanv=6.0,maxv=7.0,count=8,stddev=9.0), 42)),
+            (StatPoint(time=1,minv=2.0,meanv=3.0,maxv=4.0,count=5,stddev=6.0), 42), (StatPoint(time=2,minv=3.0,meanv=4.0,maxv=5.0,count=6,stddev=7.0), 42),
+            (StatPoint(time=3,minv=4.0,meanv=5.0,maxv=6.0,count=7,stddev=8.0), 42), (StatPoint(time=4,minv=5.0,meanv=6.0,maxv=7.0,count=8,stddev=9.0), 42),
         )
         endpoint.windows = Mock(return_value=windows)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
@@ -351,8 +351,8 @@ class TestStream(object):
             [(StatPointProto(time=3,min=4,mean=5,max=6,count=7,stddev=8), StatPointProto(time=4,min=5,mean=6,max=7,count=8,stddev=9)), 42],
         ]
         expected = (
-            ((StatPoint(time=1,minv=2.0,meanv=3.0,maxv=4.0,count=5,stddev=6.0), 42), (StatPoint(time=2,minv=3.0,meanv=4.0,maxv=5.0,count=6,stddev=7.0), 42)),
-            ((StatPoint(time=3,minv=4.0,meanv=5.0,maxv=6.0,count=7,stddev=8.0), 42), (StatPoint(time=4,minv=5.0,meanv=6.0,maxv=7.0,count=8,stddev=9.0), 42)),
+            (StatPoint(time=1,minv=2.0,meanv=3.0,maxv=4.0,count=5,stddev=6.0), 42), (StatPoint(time=2,minv=3.0,meanv=4.0,maxv=5.0,count=6,stddev=7.0), 42),
+            (StatPoint(time=3,minv=4.0,meanv=5.0,maxv=6.0,count=7,stddev=8.0), 42), (StatPoint(time=4,minv=5.0,meanv=6.0,maxv=7.0,count=8,stddev=9.0), 42),
         )
         endpoint.alignedWindows = Mock(return_value=windows)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
@@ -858,7 +858,7 @@ class TestStreamSet(object):
         ]))
 
         streams = StreamSet([stream1, stream2])
-        rows = streams.rows()
+        rows = iter(streams.rows())
 
         assert next(rows) == (RawPoint(time=1, value=1), RawPoint(time=1, value=1))
         assert next(rows) == (RawPoint(time=2, value=2), None)

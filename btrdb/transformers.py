@@ -29,7 +29,7 @@ def _get_time_from_row(row):
 
 def _stream_names(stream_set):
     return tuple(
-        s.collection() + "/" +  s.tags()["name"] \
+        s.collection + "/" +  s.name \
         for s in stream_set._streams
     )
 
