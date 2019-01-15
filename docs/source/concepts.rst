@@ -17,20 +17,17 @@ of their behavior which will allow you to use them effectively.
 BTrDB Server
 ------------
 Like most time series databases, the BTrDB server contains multiple streams of
-data in which each stream contains a data point at a given time.  In BTrDB, only
-one value can be indexed by a given time (we sometimes call this univariate
-data) as opposed to some other systems which may provide for multiple values at
-a given time within a given stream.  This focus on univariate data opens a host
-of benefits and is one of the reasons BTrDB is able to process incredibly
-large amounts of data quickly and easily.
-
+data in which each stream contains a data point at a given time.  However,
+BTrDB focuses on univariate data which opens a host of benefits and is one of
+the reasons BTrDB is able to process incredibly large amounts of data quickly
+and easily.
 
 Points
 ------------
-Points of data make up the smallest objects you will be dealing with when making
-calls to the database.  Because there are different types of interactions with
-the database, there are different types of points that could be returned to you:
-`RawPoint` and `StatPoint`.
+Points of data within a time series make up the smallest objects you will be
+dealing with when making calls to the database.  Because there are different
+types of interactions with the database, there are different types of points
+that could be returned to you: :code:`RawPoint` and :code:`StatPoint`.
 
 RawPoint
 ^^^^^^^^^^^^
@@ -54,6 +51,12 @@ The StatPoint provides statistics about multiple points and gives
 aggregation values such as `min`, `max`, `mean`, etc.  This is most useful when you
 don't need to touch every individual value such as when you only need the count
 of the values over a range of time.
+
+These statistical queries execute in time proportional to the number of
+results, not the number of underlying points (i.e logarithmic time) and so you
+can attain valuable data in a fraction of the time when compared with retrieving
+all of the individual values.  Due to the internal data structures, BTrDB does
+not need to read the underlying points to return these statistics!
 
 .. code-block:: python
 

@@ -544,15 +544,17 @@ class Stream(object):
         Parameters
         ----------
         start : int
-            The start time in nanoseconds for the range to be queried
+            The start time in nanoseconds for the range to be queried.
         end : int
-            The end time in nanoseconds for the range to be queried
+            The end time in nanoseconds for the range to be queried.
         width : int
-            The number of ns between data points
+            The number of nanoseconds in each window, subject to the depth
+            parameter.
         depth : int
-            The precision of the data as a power of 2 in nanoseconds.
+            The precision of the window duration as a power of 2 in nanoseconds.
+            E.g 30 would make the window duration accurate to roughly 1 second
         version : int
-            Version of the stream to query
+            The version of the stream to query.
 
         Returns
         -------

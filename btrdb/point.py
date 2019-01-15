@@ -30,7 +30,8 @@ class RawPoint(object):
     Parameters
     ----------
     time : int
-        The time portion of a single value in the time series.
+        The time portion of a single value in the time series in nanoseconds
+        since the Unix epoch.
     value : float
         The value of a time series at a single point in time.
 
@@ -42,14 +43,14 @@ class RawPoint(object):
     @property
     def time(self):
         """
-        The time portion of a data point
+        The time portion of a data point in nanoseconds since the Unix epoch.
         """
         return self._time
 
     @property
     def value(self):
         """
-        The value portion of a data point
+        The value portion of a data point as a float object.
         """
         return self._value
 
@@ -99,17 +100,19 @@ class StatPoint(object):
     Parameters
     ----------
     time : int
-        The time in which the aggregated values represent.
+        The time in which the aggregated values represent in nanoseconds since
+        the Unix epoch.
     min : float
-        The minimum value of a time series within a specified range of time.
+        The minimum value in a time series within a specified range of time.
     mean : float
-        The mean value of a time series within a specified range of time.
+        The mean value in a time series within a specified range of time.
     max : float
-        The maximum value of a time series within a specified range of time.
+        The maximum value in a time series within a specified range of time.
     count : float
-        The number of values of a time series within a specified range of time.
+        The number of values in a time series within a specified range of time.
     stddev : float
-        The standard deviation of the values that this object represents.
+        The standard deviation of values in a time series within a specified
+        range of time.
 
 
     Notes

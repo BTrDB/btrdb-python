@@ -133,7 +133,7 @@ used when creating the StreamSet.
 
 
 Transforming to Other Formats
---------------------------------
+-----------------------------
 A number of transformation features have been added so that you can work in the
 tools and APIs you are most comfortable and productive with.  At the moment, we
 support the `numpy` and `pandas` libraries if you have them installed and
@@ -191,7 +191,7 @@ full list of transformation methods available.
 
 
 Serializing Data
-----------------------------
+----------------
 If you would like to save your data to disk for later use or to import into
 another program, we have several options available with more planned in the
 future.
