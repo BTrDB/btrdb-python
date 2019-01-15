@@ -34,21 +34,24 @@ your appetite.
   .. code-block:: python
 
       import btrdb
+      from btrdb.utils.timez import to_nanoseconds
+
+      # establish connection to server
       conn = btrdb.connect("192.168.1.101:4410")
 
       # search for streams and view metadata
       streams = conn.streams_in_collection("USEAST_NOC1/90807")
       for stream in streams:
-          print(stream.collection(), stream.tags())
+          print(stream.collection, stream.name, stream.tags())
 
-      # view raw data points
+      # retrieve a single stream
       stream = conn.stream_from_uuid("07d28a44-4991-492d-b9c5-2d8cec5aa6d4")
-      start = datetime(2018,1,1,12,30, tzinfo=timezone.utc)
-      start = start.timestamp() * 1e9
-      end = start + (3600 * 1e9)
 
-      for point, _ in stream.rawValues(start, end):
-        print(point.time, point.value)
+      # print one hour of time series data starting at 1/1/2018 12:30:00 UTC
+      start = to_nanoseconds(datetime(2018,1,1,12,30))
+      end = start + (60 * 60 * 1e9)
+      for point, _ in stream.values(start, end):
+          print(point.time, point.value)
 
 If you don't have access to a BTrDB server, then please see our smartgridstore
 `docs <https://docs.smartgrid.store/>`_ and `repo <https://github.com/BTrDB/smartgridstore>`_
