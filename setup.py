@@ -27,7 +27,7 @@ from setuptools import find_packages
 ##########################################################################
 
 ## Basic information
-NAME         = "btrdb4-python"
+NAME         = "btrdb"
 DESCRIPTION  = "Bindings to interact with the Berkeley Tree Database using gRPC."
 AUTHOR       = "Michael Andersen, Allen Leis"
 EMAIL        = "michael@steelcode.com"
@@ -43,17 +43,19 @@ KEYWORDS     = ('btrdb', 'berkeley', 'timeseries', 'database', 'bindings' 'gRPC'
 ## Define the classifiers
 ## See https://pypi.python.org/pypi?%3Aaction=list_classifiers
 CLASSIFIERS  = (
-    'Development Status :: 5 - Beta',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
     'Intended Audience :: Science/Research',
-    'License :: OSI Approved :: Apache Software License',
+    'License :: OSI Approved :: BSD License',
     'Natural Language :: English',
     'Operating System :: OS Independent',
     'Programming Language :: Python',
+    'Programming Language :: Python :: 3.4',
     'Programming Language :: Python :: 3.5',
     'Programming Language :: Python :: 3.6',
     'Programming Language :: Python :: 3.7',
-    'Topic :: Software Development',
+    'Topic :: Database',
     'Topic :: Software Development :: Libraries :: Python Modules',
 )
 
@@ -61,7 +63,7 @@ CLASSIFIERS  = (
 PROJECT      = os.path.abspath(os.path.dirname(__file__))
 REQUIRE_PATH = "requirements.txt"
 VERSION_PATH = os.path.join(PACKAGE, "version.py")
-PKG_DESCRIBE = "DESCRIPTION.rst"
+PKG_DESCRIBE = "DESCRIPTION.md"
 
 ## Directories to ignore in find_packages
 EXCLUDES     = (
@@ -124,8 +126,8 @@ config = {
     "name": NAME,
     "version": get_version(),
     "description": DESCRIPTION,
-    # "long_description": read(PKG_DESCRIBE),
-    # "long_description_content_type": get_description_type(PKG_DESCRIBE),
+    "long_description": read(PKG_DESCRIBE),
+    "long_description_content_type": get_description_type(PKG_DESCRIBE),
     "classifiers": CLASSIFIERS,
     "keywords": KEYWORDS,
     "license": LICENSE,
@@ -150,7 +152,7 @@ config = {
         "console_scripts": [],
     },
     "install_requires": list(get_requires()),
-    "python_requires": ">=3.5, <4",
+    "python_requires": ">=3.4, <4",
     "setup_requires":["pytest-runner"],
     "tests_require":["pytest"],
 }
