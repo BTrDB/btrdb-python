@@ -23,14 +23,14 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'btrdb-python'
+project = 'btrdb'
 copyright = '2018, Michael P. Andersen'
 author = 'Michael P. Andersen'
 
 # The short X.Y version
-version = '4.0'
+version = '5.0'
 # The full version, including alpha/beta/rc tags
-release = 'v4.0'
+release = 'v5.0'
 
 
 # -- General configuration ---------------------------------------------------
@@ -43,6 +43,8 @@ release = 'v4.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.napoleon',
     'sphinx.ext.todo',
     'sphinx.ext.githubpages',
 ]
@@ -88,7 +90,7 @@ html_theme = 'alabaster'
 #
 html_theme_options = {
     'show_powered_by': False,
-    'github_user': 'looselycoupled',
+    'github_user': 'BTrDB',
     'github_repo': 'btrdb4-python',
     'travis_button': False,
     'github_banner': False,

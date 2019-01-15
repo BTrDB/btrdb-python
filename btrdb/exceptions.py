@@ -14,7 +14,7 @@ Module for custom exceptions
 
 class BTrDBError(Exception):
     """
-    The root exception for all package related errors.
+    The primary exception for grpc related errors.
     """
     def __init__(self, code, msg, mash):
         self.code = code
@@ -46,7 +46,7 @@ class BTrDBError(Exception):
 
 class ConnectionError(Exception):
     """
-    A problem interacting with the BTrDB server.
+    An error has occurred while interacting with the BTrDB server or when trying to establish a connection.
     """
     pass
 

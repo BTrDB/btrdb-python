@@ -29,7 +29,7 @@ def _get_time_from_row(row):
 
 def _stream_names(stream_set):
     return tuple(
-        s.collection() + "/" +  s.tags()["name"] \
+        s.collection + "/" +  s.name \
         for s in stream_set._streams
     )
 
@@ -74,20 +74,22 @@ def to_dataframe(stream_set, columns=None):
 
 def to_array(stream_set):
     """
-    Returns a tuple of Numpy arrays
+    Returns a list of Numpy arrays
     """
     try:
         import numpy as np
     except ImportError:
         raise ImportError("Please install Numpy to use this transformation function.")
 
-    return tuple([np.array(output) for output in stream_set.values()])
+    return [np.array(output) for output in stream_set.values()]
 
 
 def to_dict(stream_set):
     """
-    Returns a generator that yields dictionary objects for each time code
+    Returns a list of dictionary objects for each time code with the appropriate
+    stream data attached.
     """
+    data = []
     stream_names = _stream_names(stream_set)
     for row in stream_set.rows():
         item = {
@@ -95,7 +97,8 @@ def to_dict(stream_set):
         }
         for idx, col in enumerate(stream_names):
             item[col] = row[idx].value if row[idx] else None
-        yield item
+        data.append(item)
+    return data
 
 
 def to_csv(stream_set, path, dialect=None, headers=None):

@@ -37,6 +37,20 @@ INSERT_BATCH_SIZE = 5000
 ##########################################################################
 
 class Stream(object):
+    """
+    An object that represents a specific time series stream in the BTrDB database.
+
+    Parameters
+    ----------
+        btrdb : BTrDB
+            A reference to the BTrDB object connecting this stream back to the physical server.
+        uuid : UUID
+            The unique UUID identifier for this stream.
+        db_values : kwargs
+            Framework only initialization arguments.  Not for developer use.
+
+    """
+
     def __init__(self, btrdb, uuid, **db_values):
         db_args = ('known_to_exist', 'collection', 'tags', 'annotations', 'property_version')
         for key in db_args:
@@ -122,19 +136,13 @@ class Stream(object):
     @property
     def uuid(self):
         """
-        Returns the stream's UUID.
-
-        This property returns the stream's UUID. The stream may nor may not exist
+        Returns the stream's UUID. The stream may nor may not exist
         yet, depending on how the stream object was obtained.
-
-        Parameters
-        ----------
-        None
 
         Returns
         -------
-        UUID
-            The UUID of the stream.
+        uuid : uuid.UUID
+            The unique identifier of the stream.
 
 
         See Also
@@ -143,6 +151,43 @@ class Stream(object):
 
         """
         return self._uuid
+
+    @property
+    def name(self):
+        """
+        Returns the stream's name which is parsed from the stream tags.  This
+        may require a round trip to the server depending on how the stream was
+        acquired.
+
+        Returns
+        -------
+        name : str
+            The name of the stream.
+
+        """
+        return self.tags()["name"]
+
+    @property
+    def collection(self):
+        """
+        Returns the collection of the stream. It may require a round trip to the
+        server depending on how the stream was acquired.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        str
+            the collection of the stream
+
+        """
+        if self._collection is not None:
+            return self._collection
+
+        self.refresh_metadata()
+        return self._collection
 
     def earliest(self, version=0):
         """
@@ -257,28 +302,6 @@ class Stream(object):
 
         return deepcopy(self._annotations), deepcopy(self._property_version)
 
-    def collection(self):
-        # type: () -> str
-        """
-        Returns the collection of the stream. It may require a round trip to the
-        server depending on how the stream was acquired.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        str
-            the collection of the stream
-
-        """
-        if self._collection is not None:
-            return self._collection
-
-        self.refresh_metadata()
-        return self._collection
-
     def version(self):
         # type: () -> int
         """
@@ -332,7 +355,7 @@ class Stream(object):
 
     def _update_tags_collection(self, tags, collection):
         tags = self.tags() if tags is None else tags
-        collection = self.collection() if collection is None else collection
+        collection = self.collection if collection is None else collection
         if collection is None:
             raise ValueError("collection must be provided to update tags or collection")
 
@@ -363,6 +386,11 @@ class Stream(object):
         collection: str
             The collection prefix for a stream
 
+        Returns
+        -------
+        property_version : int
+            The version of the metadata (separate from the version of the data)
+
         """
         if tags is None and annotations is None and collection is None:
             raise ValueError("you must supply a tags, annotations, or collection argument")
@@ -383,6 +411,8 @@ class Stream(object):
         if annotations is not None:
             self._update_annotations(annotations)
             self.refresh_metadata()
+
+        return self._property_version
 
     def delete(self, start, end):
         """
@@ -442,6 +472,9 @@ class Stream(object):
 
         """
         materialized = []
+        start = to_nanoseconds(start)
+        end = to_nanoseconds(end)
+
         point_windows = self._btrdb.ep.rawValues(self._uuid, start, end, version)
         for point_list, version in point_windows:
             for point in point_list:
@@ -492,12 +525,14 @@ class Stream(object):
         tree data structure and is faster to execute than `windows()`.
         """
         materialized = []
+        start = to_nanoseconds(start)
+        end = to_nanoseconds(end)
+
         windows = self._btrdb.ep.alignedWindows(self._uuid, start, end, pointwidth, version)
         for stat_points, version in windows:
-            window = []
             for point in stat_points:
-                window.append((StatPoint.from_proto(point), version))
-            materialized.append(tuple(window))
+                materialized.append((StatPoint.from_proto(point), version))
+
         return tuple(materialized)
 
     def windows(self, start, end, width, depth=0, version=0):
@@ -509,15 +544,17 @@ class Stream(object):
         Parameters
         ----------
         start : int
-            The start time in nanoseconds for the range to be queried
+            The start time in nanoseconds for the range to be queried.
         end : int
-            The end time in nanoseconds for the range to be queried
+            The end time in nanoseconds for the range to be queried.
         width : int
-            Specify the number of ns between data points
+            The number of nanoseconds in each window, subject to the depth
+            parameter.
         depth : int
-
+            The precision of the window duration as a power of 2 in nanoseconds.
+            E.g 30 would make the window duration accurate to roughly 1 second
         version : int
-            Version of the stream to query
+            The version of the stream to query.
 
         Returns
         -------
@@ -547,12 +584,14 @@ class Stream(object):
 
         """
         materialized = []
+        start = to_nanoseconds(start)
+        end = to_nanoseconds(end)
+
         windows = self._btrdb.ep.windows(self._uuid, start, end, width, depth, version)
         for stat_points, version in windows:
-            window = []
             for point in stat_points:
-                window.append((StatPoint.from_proto(point), version))
-            materialized.append(tuple(window))
+                materialized.append((StatPoint.from_proto(point), version))
+
         return tuple(materialized)
 
     def nearest(self, time, version, backward):
@@ -880,19 +919,22 @@ class StreamSetBase(object):
 
     def rows(self):
         """
-        Return iterator of tuples containing stream values at each unique time
-        code.  If a stream has no value for that time than None is provided.
+        Returns a materialized list of tuples where each tuple contains the
+        points from each stream at a unique time.  If a stream has no value for that
+        time than None is provided instead of a point object.
 
         Parameters
         ----------
         None
 
-        Yields
+        Returns
         -------
-        Tuple(Tuple(RawPoint, int))
-            Returns a tuple of tuples containing a RawPoint and the stream version
+        list(tuple(RawPoint, int))
+            A list of tuples containing a RawPoint (or StatPoint) and the stream
+            version.
 
         """
+        result = []
         params = self._params_from_filters()
         result_iterables = [iter(s.values(**params)) for s in self._streams]
         buffer = PointBuffer(len(self._streams))
@@ -913,10 +955,12 @@ class StreamSetBase(object):
 
             key = buffer.next_key_ready()
             if key:
-                yield tuple(buffer.pop(key))
+                result.append(tuple(buffer.pop(key)))
 
             if streams_empty and len(buffer.keys()) == 0:
                 break
+
+        return result
 
     def _params_from_filters(self):
         params = {}

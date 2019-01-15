@@ -38,20 +38,22 @@ BTRDB_API_KEY = "BTRDB_API_KEY"
 def connect(conn_str=None, apikey=None):
     """
     Connect to a BTrDB server.
+
     Parameters
     ----------
     conn_str: str, default=None
-        The address and port of the cluster to connect to, e.g. 192.168.1.1:4411.
+        The address and port of the cluster to connect to, e.g. `192.168.1.1:4411`.
         If set to None will look up the string from the environment variable
         $BTRDB_ENDPOINTS (recommended).
     apikey: str, default=None
-        The API key use to authenticate requests (optional). If None, the key
+        The API key used to authenticate requests (optional). If None, the key
         is looked up from the environment variable $BTRDB_API_KEY.
 
     Returns
     -------
     db : BTrDB
         An instance of the BTrDB context to directly interact with the database.
+
     """
     if not conn_str:
         conn_str = os.environ.get(BTRDB_ENDPOINTS, None)
