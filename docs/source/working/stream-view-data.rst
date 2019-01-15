@@ -94,7 +94,7 @@ with count == 0 will be omitted.
     # view data aggregates
     for point, _ in stream.aligned_windows(start=start, end=end,
                                            pointwidth=pointwidth):
-        print(point.time, point.mean, point.stddev)
+        print(point)
     >> StatPoint(1499999999814008832, 1.0, 1.0, 1.0, 1, 0.0)
     >> StatPoint(1500000000082444288, 2.0, 3.0, 4.0, 3, 0.816496580927726)
     >> StatPoint(1500000000350879744, 5.0, 6.0, 7.0, 3, 0.816496580927726)
