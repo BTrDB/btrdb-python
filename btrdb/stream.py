@@ -639,12 +639,6 @@ class Stream(object):
         Obliterate deletes a stream from the BTrDB server.  An exception will be
         raised if the stream could not be found.
 
-        Parameters
-        ----------
-
-        Returns
-        -------
-
         Raises
         ------
         BTrDBError [404] stream does not exist
