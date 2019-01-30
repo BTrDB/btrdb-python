@@ -90,7 +90,7 @@ Aside from basic unit tests, the test suite is configured to use [pyflakes](http
 
 When working on this codebase, keep in mind that the project is set up in a typical production/release/development cycle as described in _[A Successful Git Branching Model](http://nvie.com/posts/a-successful-git-branching-model/)_. A typical workflow is as follows:
 
-1. Select an issue from the [issues page](https://github.com/BTrDB/btrdb4-python/issues) - preferably one that is "ready" then move it to "in-progress" using labels or just comment that you are working on it.
+1. Select an issue from the [issues page](https://github.com/BTrDB/btrdb-python/issues) - preferably one that is "ready" then move it to "in-progress" using labels or just comment that you are working on it.
 
 2. Create a branch off of develop called "feature-[feature name]", work and commit into that branch.
 

@@ -21,16 +21,18 @@ import sys
 sys.path.insert(0, os.path.abspath('_themes'))
 sys.path.insert(0, os.path.abspath('../..'))
 
+from btrdb.version import get_version
+
 # -- Project information -----------------------------------------------------
 
 project = 'btrdb'
-copyright = '2018, Michael P. Andersen'
+copyright = '2019, Michael P. Andersen'
 author = 'Michael P. Andersen'
 
 # The short X.Y version
-version = '5.0'
+version = get_version()
 # The full version, including alpha/beta/rc tags
-release = 'v5.0'
+release = 'v' + get_version()
 
 
 # -- General configuration ---------------------------------------------------
@@ -91,7 +93,7 @@ html_theme = 'alabaster'
 html_theme_options = {
     'show_powered_by': False,
     'github_user': 'BTrDB',
-    'github_repo': 'btrdb4-python',
+    'github_repo': 'btrdb-python',
     'travis_button': False,
     'github_banner': False,
     'show_related': False,

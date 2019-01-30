@@ -19,7 +19,7 @@ in the 4.x bindings are best used to speak to a 4.x BTrDB database.
 
 .. code-block:: bash
 
-    $ pip install btrdb==4.0.0
+    $ pip install btrdb==4.11.2
 
 
 To upgrade using pip:
