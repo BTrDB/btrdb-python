@@ -502,6 +502,31 @@ class TestStream(object):
         stream._btrdb.ep.flush.assert_called_once_with(uu)
 
 
+    def test_obliterate(self):
+        """
+        Assert obliterate calls Endpoint.obliterate with UUID
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
+
+        stream.obliterate()
+        stream._btrdb.ep.obliterate.assert_called_once_with(uu)
+
+
+    def test_obliterate_allows_error(self):
+        """
+        Assert obliterate raises error if stream not found. (does not swallow error)
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.obliterate = Mock(side_effect=BTrDBError(code=404, msg="hello", mash=""))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        with pytest.raises(BTrDBError):
+            stream.obliterate()
+        stream._btrdb.ep.obliterate.assert_called_once()
+
+
 
 
 ##########################################################################

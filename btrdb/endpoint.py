@@ -61,6 +61,11 @@ class Endpoint(object):
         tagsanns = unpack_stream_descriptor(desc)
         return desc.collection, desc.propertyVersion, tagsanns[0], tagsanns[1], result.versionMajor
 
+    def obliterate(self, uu):
+        params = btrdb_pb2.ObliterateParams(uuid = uu.bytes)
+        result = self.stub.Obliterate(params)
+        BTrDBError.checkProtoStat(result.stat)
+
     def setStreamAnnotations(self, uu, expected, changes):
         annkvlist = []
         for k, v in changes.items():
