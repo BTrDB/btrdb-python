@@ -82,6 +82,7 @@ API Reference
    :maxdepth: 2
 
    api/package
+   api/conn
    api/streams
    api/points
    api/exceptions

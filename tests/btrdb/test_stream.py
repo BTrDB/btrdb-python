@@ -22,6 +22,8 @@ import pytest
 from unittest.mock import Mock, PropertyMock
 from unittest.mock import patch
 
+from btrdb.conn import BTrDB
+from btrdb.endpoint import Endpoint
 from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
 from btrdb.point import RawPoint, StatPoint
 from btrdb.exceptions import BTrDBError, InvalidOperation
@@ -58,9 +60,6 @@ def stream2():
 ##########################################################################
 ## Stream Tests
 ##########################################################################
-
-from btrdb.conn import BTrDB
-from btrdb.endpoint import Endpoint
 
 class TestStream(object):
 
