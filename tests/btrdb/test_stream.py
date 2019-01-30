@@ -524,7 +524,7 @@ class TestStream(object):
 
         with pytest.raises(BTrDBError):
             stream.obliterate()
-        stream._btrdb.ep.obliterate.assert_called_once()
+        stream._btrdb.ep.obliterate.assert_called_once_with(uu)
 
 
 
