@@ -20,7 +20,8 @@ import pytest
 from unittest.mock import Mock, PropertyMock
 
 from btrdb.conn import Connection, BTrDB
-
+from btrdb.endpoint import Endpoint
+from btrdb.grpcinterface import btrdb_pb2
 
 ##########################################################################
 ## Connection Tests
@@ -88,3 +89,22 @@ class TestBTrDB(object):
 
         streams = db.streams(uuid1, uuid2, versions=versions)
         assert streams._pinned_versions == expected
+
+    def test_info(self):
+        """
+        Assert info method returns a dict
+        """
+        serialized = b'\x18\x05*\x055.0.02\x10\n\x0elocalhost:4410'
+        info = btrdb_pb2.InfoResponse.FromString(serialized)
+
+        endpoint = Mock(Endpoint)
+        endpoint.info = Mock(return_value=info)
+        conn = BTrDB(endpoint)
+
+        truth = {
+            "majorVersion": 5,
+            "build": "5.0.0",
+            "proxy": { "proxyEndpoints": "localhost:4410", },
+        }
+
+        assert conn.info() == truth

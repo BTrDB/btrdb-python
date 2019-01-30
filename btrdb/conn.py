@@ -159,7 +159,7 @@ class BTrDB(object):
         Returns
         -------
         Stream
-            A Stream class object.
+            instance of Stream class or None
 
         """
         return Stream(self, to_uuid(uuid))
@@ -176,7 +176,7 @@ class BTrDB(object):
         Returns
         -------
         Stream
-            a Stream class object
+            instance of Stream class
         """
 
         if tags is None:
@@ -200,11 +200,16 @@ class BTrDB(object):
 
         Returns
         -------
-        InfoResponse
-            An object containing server connection and status information
+        dict
+            server connection and status information
 
         """
-        return self.ep.info()
+        info = self.ep.info()
+        return {
+            "majorVersion": info.majorVersion,
+            "build": info.build,
+            "proxy": { "proxyEndpoints": info.proxy.proxyEndpoints[0] },
+        }
 
     def streams_in_collection(self, collection, is_collection_prefix=True, tags=None, annotations=None):
         """

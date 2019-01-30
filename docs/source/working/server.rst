@@ -55,8 +55,4 @@ method of the server object as shown below.
 
     conn = btrdb.connect()
     conn.info()
-    >> majorVersion: 5
-      build: "5.0.0"
-      proxy {
-          proxyEndpoints: "localhost:4410"
-      }
+    >> {'majorVersion': 5, 'build': '5.0.0', 'proxy': {'proxyEndpoints': '192.168.1.101:4410'}}
