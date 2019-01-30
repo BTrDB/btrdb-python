@@ -33,7 +33,7 @@ AUTHOR       = "Michael Andersen, Allen Leis"
 EMAIL        = "michael@steelcode.com"
 MAINTAINER   = "Michael Andersen"
 LICENSE      = "BSD-3-Clause"
-REPOSITORY   = "https://github.com/BTrDB/btrdb4-python"
+REPOSITORY   = "https://github.com/BTrDB/btrdb-python"
 PACKAGE      = "btrdb"
 URL          = "http://btrdb.io/"
 
