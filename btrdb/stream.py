@@ -633,6 +633,20 @@ class Stream(object):
         rp, version = self._btrdb.ep.nearest(self._uuid, time, version, backward)
         return RawPoint.from_proto(rp), version
 
+    def obliterate(self):
+        # type: () -> None
+        """
+        Obliterate deletes a stream from the BTrDB server.  An exception will be
+        raised if the stream could not be found.
+
+        Raises
+        ------
+        BTrDBError [404] stream does not exist
+            The stream could not be found in BTrDB
+
+        """
+        self._btrdb.ep.obliterate(self._uuid)
+
     def flush(self):
         # type: () -> None
         """
