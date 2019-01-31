@@ -174,9 +174,8 @@ class TestToNsDelta(object):
         """
         Assert ns_delta converts inputs properly
         """
-        val = ns_delta(1,1,1,1,1,1,1)
-        assert val == int(1 + 1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
-            (1e9 * 60 * 60 * 24) )
+        val = ns_delta(1,2,1,3,1,23,1)
+        assert val == 93663001023001
 
     def test_ns_delta_precision(self):
         """
