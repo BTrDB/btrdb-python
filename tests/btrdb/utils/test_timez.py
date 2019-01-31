@@ -183,7 +183,7 @@ class TestToNsDelta(object):
         Assert ns_delta deals with real inputs
         """
         val = ns_delta(days=365, minutes=0.5, nanoseconds=1)
-        assert val == int(1000000000 * 60 * 60 * 24 * 365) + int(1000000000 * 30) + 1
+        assert val == int(1e9 * 60 * 60 * 24 * 365) + int(1e9 * 30) + 1
 
     def test_returns_int(self):
         """
