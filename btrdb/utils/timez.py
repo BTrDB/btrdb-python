@@ -18,6 +18,9 @@ Time related utilities
 ##########################################################################
 
 import datetime
+
+from operator import mul
+from decimal import Decimal
 from email.utils import parsedate_to_datetime
 
 import pytz
@@ -129,17 +132,17 @@ def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, \
 
     Parameters
     ----------
-    days : int
+    days : int, float, decimal.Decimal
         days (as 24 hours) to convert to nanoseconds
-    hours : int
+    hours : int, float, decimal.Decimal
         hours to convert to nanoseconds
-    minutes : int
+    minutes : int, float, decimal.Decimal
         minutes to convert to nanoseconds
-    seconds : int
+    seconds : int, float, decimal.Decimal
         seconds to convert to nanoseconds
-    milliseconds : int
+    milliseconds : int, float, decimal.Decimal
         milliseconds to convert to nanoseconds
-    microseconds : int
+    microseconds : int, float, decimal.Decimal
         microseconds to convert to nanoseconds
     nanoseconds : int
         nanoseconds to add to the time span
@@ -150,17 +153,21 @@ def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, \
 
     """
     MICROSECOND = 1000
-    MILLESECOND = MICROSECOND * 1000
-    SECOND = MILLESECOND * 1000
+    MILLISECOND = MICROSECOND * 1000
+    SECOND = MILLISECOND * 1000
     MINUTE = SECOND * 60
     HOUR = MINUTE * 60
     DAY = HOUR * 24
 
-    nanoseconds += days * DAY
-    nanoseconds += hours * HOUR
-    nanoseconds += minutes * MINUTE
-    nanoseconds += seconds * SECOND
-    nanoseconds += milliseconds * MILLESECOND
-    nanoseconds += microseconds * MICROSECOND
+    if not isinstance(nanoseconds, int):
+        raise TypeError("nanoseconds argument must be an integer")
 
+    units = []
+    for unit in (days, hours, minutes, seconds, milliseconds, microseconds):
+        if isinstance(unit, float):
+            unit = Decimal(unit)
+        units.append(unit)
+
+    factors = [DAY, HOUR, MINUTE, SECOND, MILLISECOND, MICROSECOND]
+    nanoseconds += sum(map(mul, units, factors))
     return int(nanoseconds)
