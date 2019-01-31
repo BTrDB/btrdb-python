@@ -36,7 +36,17 @@ def currently_as_ns():
 
 def ns_to_datetime(ns):
     """
-    Converts nanoseconds to a datetime object
+    Converts nanoseconds to a datetime object (UTC)
+
+    Parameters
+    ----------
+    ns : int
+        nanoseconds since epoch
+
+    Returns
+    -------
+    nanoseconds since epoch as a datetime object : datetime
+
     """
     dt = datetime.datetime.utcfromtimestamp(ns / 1e9)
     return dt.replace(tzinfo=pytz.utc)
@@ -44,7 +54,17 @@ def ns_to_datetime(ns):
 
 def datetime_to_ns(dt):
     """
-    Converts a datetime object nanoseconds
+    Converts a datetime object to nanoseconds since epoch.  If a timezone aware
+    object is received then it will be converted to UTC.
+
+    Parameters
+    ----------
+    dt : datetime
+
+    Returns
+    -------
+    nanoseconds : int
+
     """
     if dt.tzinfo is None or dt.tzinfo.utcoffset(dt) is None:
         aware = pytz.utc.localize(dt)
@@ -56,7 +76,17 @@ def datetime_to_ns(dt):
 
 def to_nanoseconds(val):
     """
-    Converts datetime, datetime64, float, str (RFC 2822) to nanoseconds
+    Converts datetime, datetime64, float, str (RFC 2822) to nanoseconds.  If a
+    datetime-like object is received then nanoseconds since epoch is returned.
+
+    Parameters
+    ----------
+    val : datetime, datetime64, float, str
+        an object to convert to nanoseconds
+
+    Returns
+    -------
+    object converted to nanoseconds : int
     """
     if val is None or isinstance(val, int):
         return val
@@ -89,3 +119,45 @@ def to_nanoseconds(val):
             raise ValueError("can only convert whole numbers to nanoseconds")
 
     raise TypeError("only int, float, str, datetime, and datetime64 are allowed")
+
+
+def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, microseconds=0):
+    """
+    Similar to `timedelta`, ns_delta represents a span of time but as
+    the total number of nanoseconds.
+
+    Parameters
+    ----------
+    days : int
+        days (as 24 hours) to convert to nanoseconds
+    hours : int
+        hours to convert to nanoseconds
+    minutes : int
+        minutes to convert to nanoseconds
+    seconds : int
+        seconds to convert to nanoseconds
+    milliseconds : int
+        milliseconds to convert to nanoseconds
+    microseconds : int
+        microseconds to convert to nanoseconds
+
+    Returns
+    -------
+    amount of time in nanoseconds : int
+
+    """
+    MICROSECOND = 1000
+    MILLESECOND = MICROSECOND * 1000
+    SECOND = MILLESECOND * 1000
+    MINUTE = SECOND * 60
+    HOUR = MINUTE * 60
+    DAY = HOUR * 24
+
+    ns = days * DAY
+    ns += hours * HOUR
+    ns += minutes * MINUTE
+    ns += seconds * SECOND
+    ns += milliseconds * MILLESECOND
+    ns += microseconds * MICROSECOND
+
+    return ns

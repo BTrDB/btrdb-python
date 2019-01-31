@@ -22,7 +22,7 @@ import numpy as np
 from freezegun import freeze_time
 
 from btrdb.utils.timez import (currently_as_ns, datetime_to_ns, ns_to_datetime,
-                              to_nanoseconds)
+                              to_nanoseconds, ns_delta)
 
 
 ##########################################################################
@@ -166,3 +166,14 @@ class TestToNanoseconds(object):
 
         dt64 = np.datetime64('2018-01-01T12:00')
         assert expected == to_nanoseconds(dt64)
+
+
+class TestToNsDelta(object):
+
+    def test_ns_delta(self):
+        """
+        Assert ns_delta converts inputs properly
+        """
+        val = ns_delta(1,1,1,1,1,1)
+        assert val == int(1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
+            (1e9 * 60 * 60 * 24) )
