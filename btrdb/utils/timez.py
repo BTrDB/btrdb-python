@@ -121,7 +121,8 @@ def to_nanoseconds(val):
     raise TypeError("only int, float, str, datetime, and datetime64 are allowed")
 
 
-def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, microseconds=0):
+def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, \
+             microseconds=0, nanoseconds=0):
     """
     Similar to `timedelta`, ns_delta represents a span of time but as
     the total number of nanoseconds.
@@ -140,6 +141,8 @@ def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, microseconds
         milliseconds to convert to nanoseconds
     microseconds : int
         microseconds to convert to nanoseconds
+    nanoseconds : int
+        nanoseconds to add to the time span
 
     Returns
     -------
@@ -153,11 +156,11 @@ def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, microseconds
     HOUR = MINUTE * 60
     DAY = HOUR * 24
 
-    ns = days * DAY
-    ns += hours * HOUR
-    ns += minutes * MINUTE
-    ns += seconds * SECOND
-    ns += milliseconds * MILLESECOND
-    ns += microseconds * MICROSECOND
+    nanoseconds += days * DAY
+    nanoseconds += hours * HOUR
+    nanoseconds += minutes * MINUTE
+    nanoseconds += seconds * SECOND
+    nanoseconds += milliseconds * MILLESECOND
+    nanoseconds += microseconds * MICROSECOND
 
-    return ns
+    return int(nanoseconds)

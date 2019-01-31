@@ -174,6 +174,15 @@ class TestToNsDelta(object):
         """
         Assert ns_delta converts inputs properly
         """
-        val = ns_delta(1,1,1,1,1,1)
-        assert val == int(1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
+        val = ns_delta(1,1,1,1,1,1,1)
+        assert val == int(1 + 1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
             (1e9 * 60 * 60 * 24) )
+
+    def test_returns_int(self):
+        """
+        Assert ns_delta returns int if floats used for arguments
+        """
+        val = ns_delta(1.0,1.0,1.0,1.0,1.0,1.0,1.0)
+        assert val == int(1 + 1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
+            (1e9 * 60 * 60 * 24) )
+        assert isinstance(val, int)
