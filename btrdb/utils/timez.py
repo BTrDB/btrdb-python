@@ -18,6 +18,9 @@ Time related utilities
 ##########################################################################
 
 import datetime
+
+from operator import mul
+from decimal import Decimal
 from email.utils import parsedate_to_datetime
 
 import pytz
@@ -156,11 +159,15 @@ def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, \
     HOUR = MINUTE * 60
     DAY = HOUR * 24
 
-    nanoseconds += days * DAY
-    nanoseconds += hours * HOUR
-    nanoseconds += minutes * MINUTE
-    nanoseconds += seconds * SECOND
-    nanoseconds += milliseconds * MILLESECOND
-    nanoseconds += microseconds * MICROSECOND
+    if not isinstance(nanoseconds, int):
+        raise TypeError("nanoseconds argument must be an integer")
 
+    units = []
+    for unit in (days, hours, minutes, seconds, milliseconds, microseconds):
+        if isinstance(unit, float):
+            unit = Decimal(unit)
+        units.append(unit)
+
+    factors = [DAY, HOUR, MINUTE, SECOND, MILLESECOND, MICROSECOND]
+    nanoseconds += sum(map(mul, units, factors))
     return int(nanoseconds)

@@ -189,7 +189,7 @@ class TestToNsDelta(object):
         """
         Assert ns_delta returns int if floats used for arguments
         """
-        val = ns_delta(1.0,1.0,1.0,1.0,1.0,1.0,1.0)
+        val = ns_delta(1.0,1.0,1.0,1.0,1.0,1.0,1)
         assert val == int(1 + 1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
             (1e9 * 60 * 60 * 24) )
         assert isinstance(val, int)
