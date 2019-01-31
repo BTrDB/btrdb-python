@@ -178,6 +178,13 @@ class TestToNsDelta(object):
         assert val == int(1 + 1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
             (1e9 * 60 * 60 * 24) )
 
+    def test_ns_delta_precision(self):
+        """
+        Assert ns_delta deals with real inputs
+        """
+        val = ns_delta(days=365, minutes=0.5, nanoseconds=1)
+        assert val == int(1000000000 * 60 * 60 * 24 * 365) + int(1000000000 * 30) + 1
+
     def test_returns_int(self):
         """
         Assert ns_delta returns int if floats used for arguments
