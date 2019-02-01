@@ -109,11 +109,18 @@ class Endpoint(object):
         result = self.stub.Create(params)
         BTrDBError.checkProtoStat(result.stat)
 
-    def listCollections(self, prefix, startingAt, limit):
-        params = btrdb_pb2.ListCollectionsParams(prefix = prefix, startWith = startingAt, limit = limit)
-        result = self.stub.ListCollections(params)
-        BTrDBError.checkProtoStat(result.stat)
-        return result.collections
+    def listCollections(self, prefix):
+        """
+        Returns a generator for windows of collection paths matching search
+
+        Yields
+        ------
+        collection paths : list[str]
+        """
+        params = btrdb_pb2.ListCollectionsParams(prefix=prefix)
+        for msg in self.stub.ListCollections(params):
+            BTrDBError.checkProtoStat(msg.stat)
+            yield msg.collections
 
     def lookupStreams(self, collection, isCollectionPrefix, tags, annotations):
         tagkvlist = []

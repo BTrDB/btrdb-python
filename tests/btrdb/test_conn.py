@@ -106,5 +106,18 @@ class TestBTrDB(object):
             "build": "5.0.0",
             "proxy": { "proxyEndpoints": "localhost:4410", },
         }
-
         assert conn.info() == truth
+
+    def test_list_collections(self):
+        """
+        Assert list_collections method works
+        """
+        endpoint = Mock(Endpoint)
+        endpoint.listCollections = Mock(side_effect=[[
+            ['allen/automated'],
+            ['allen/bindings']
+        ]])
+        conn = BTrDB(endpoint)
+
+        truth = ['allen/automated', 'allen/bindings']
+        assert conn.list_collections() == truth
