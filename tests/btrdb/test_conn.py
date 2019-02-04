@@ -113,10 +113,10 @@ class TestBTrDB(object):
         Assert list_collections method works
         """
         endpoint = Mock(Endpoint)
-        endpoint.listCollections = Mock(side_effect=[[
+        endpoint.listCollections = Mock(side_effect=[iter([
             ['allen/automated'],
             ['allen/bindings']
-        ]])
+        ])])
         conn = BTrDB(endpoint)
 
         truth = ['allen/automated', 'allen/bindings']
