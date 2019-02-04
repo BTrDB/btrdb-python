@@ -211,6 +211,18 @@ class BTrDB(object):
             "proxy": { "proxyEndpoints": info.proxy.proxyEndpoints[0] },
         }
 
+    def list_collections(self, starts_with=""):
+        """
+        Returns a list of collection paths using the `starts_with` argument for
+        filtering.
+
+        Returns
+        -------
+        collection paths: list[str]
+
+        """
+        return [c for some in self.ep.listCollections(starts_with) for c in some]
+
     def streams_in_collection(self, collection, is_collection_prefix=True, tags=None, annotations=None):
         """
         Search for streams matching given parameters
