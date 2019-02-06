@@ -17,14 +17,14 @@ Testing package for the btrdb stream module
 
 import os
 from io import StringIO, BytesIO
+
 import pytest
 from unittest.mock import Mock, PropertyMock
-
 import numpy as np
 from pandas import Series, DataFrame
 
 from btrdb.stream import Stream, StreamSet
-from btrdb.point import RawPoint, StatPoint
+from btrdb.point import RawPoint
 from btrdb.transformers import *
 
 ##########################################################################
@@ -69,16 +69,16 @@ def streamset():
 
 expected = {
     "to_dict": [
-        {'test/stream0': None, 'test/stream1': 1.0, 'test/stream2': 1.0, 'test/stream3': 1.0, 'time': 1500000000000000000},
-        {'test/stream0': 2.0, 'test/stream1': None, 'test/stream2': 2.0, 'test/stream3': 2.0, 'time': 1500000000100000000},
-        {'test/stream0': None, 'test/stream1': 3.0, 'test/stream2': None, 'test/stream3': 3.0, 'time': 1500000000200000000},
-        {'test/stream0': 4.0, 'test/stream1': None, 'test/stream2': 4.0, 'test/stream3': 4.0, 'time': 1500000000300000000},
-        {'test/stream0': None, 'test/stream1': 5.0, 'test/stream2': 5.0, 'test/stream3': 5.0, 'time': 1500000000400000000},
-        {'test/stream0': 6.0, 'test/stream1': None, 'test/stream2': None, 'test/stream3': 6.0, 'time': 1500000000500000000},
-        {'test/stream0': None, 'test/stream1': 7.0, 'test/stream2': 7.0, 'test/stream3': 7.0, 'time': 1500000000600000000},
-        {'test/stream0': 8.0, 'test/stream1': None, 'test/stream2': 8.0, 'test/stream3': 8.0, 'time': 1500000000700000000},
-        {'test/stream0': None, 'test/stream1': 9.0, 'test/stream2': 9.0, 'test/stream3': 9.0, 'time': 1500000000800000000},
-        {'test/stream0': 10.0, 'test/stream1': None, 'test/stream2': 10.0, 'test/stream3': 10.0, 'time': 1500000000900000000}
+        {'time': 1500000000000000000, 'test/stream0': None, 'test/stream1': 1.0, 'test/stream2': 1.0, 'test/stream3': 1.0},
+        {'time': 1500000000100000000, 'test/stream0': 2.0, 'test/stream1': None, 'test/stream2': 2.0, 'test/stream3': 2.0},
+        {'time': 1500000000200000000, 'test/stream0': None, 'test/stream1': 3.0, 'test/stream2': None, 'test/stream3': 3.0},
+        {'time': 1500000000300000000, 'test/stream0': 4.0, 'test/stream1': None, 'test/stream2': 4.0, 'test/stream3': 4.0},
+        {'time': 1500000000400000000, 'test/stream0': None, 'test/stream1': 5.0, 'test/stream2': 5.0, 'test/stream3': 5.0},
+        {'time': 1500000000500000000, 'test/stream0': 6.0, 'test/stream1': None, 'test/stream2': None, 'test/stream3': 6.0},
+        {'time': 1500000000600000000, 'test/stream0': None, 'test/stream1': 7.0, 'test/stream2': 7.0, 'test/stream3': 7.0},
+        {'time': 1500000000700000000, 'test/stream0': 8.0, 'test/stream1': None, 'test/stream2': 8.0, 'test/stream3': 8.0},
+        {'time': 1500000000800000000, 'test/stream0': None, 'test/stream1': 9.0, 'test/stream2': 9.0, 'test/stream3': 9.0},
+        {'time': 1500000000900000000, 'test/stream0': 10.0, 'test/stream1': None, 'test/stream2': 10.0, 'test/stream3': 10.0}
     ],
     "to_array": [
         np.array([RawPoint(1500000000100000000, 2.0),
@@ -110,18 +110,18 @@ expected = {
             RawPoint(1500000000800000000, 9.0),
             RawPoint(1500000000900000000, 10.0)])
     ],
-    "table": """  test/stream0    test/stream1    test/stream2    test/stream3                 time
---------------  --------------  --------------  --------------  -------------------
-                             1               1               1  1500000000000000000
-             2                               2               2  1500000000100000000
-                             3                               3  1500000000200000000
-             4                               4               4  1500000000300000000
-                             5               5               5  1500000000400000000
-             6                                               6  1500000000500000000
-                             7               7               7  1500000000600000000
-             8                               8               8  1500000000700000000
-                             9               9               9  1500000000800000000
-            10                              10              10  1500000000900000000""",
+    "table": """               time    test/stream0    test/stream1    test/stream2    test/stream3
+-------------------  --------------  --------------  --------------  --------------
+1500000000000000000                               1               1               1
+1500000000100000000               2                               2               2
+1500000000200000000                               3                               3
+1500000000300000000               4                               4               4
+1500000000400000000                               5               5               5
+1500000000500000000               6                                               6
+1500000000600000000                               7               7               7
+1500000000700000000               8                               8               8
+1500000000800000000                               9               9               9
+1500000000900000000              10                              10              10""",
     "series": None,
     "dataframe": None,
     "csv": """time,test/stream0,test/stream1,test/stream2,test/stream3
@@ -197,5 +197,4 @@ class TestTransformers(object):
         assert result == expected["to_dict"]
 
     def test_to_table(self, streamset):
-        streamset.to_dict = Mock(return_value=expected["to_dict"])
         assert to_table(streamset) == expected["table"]

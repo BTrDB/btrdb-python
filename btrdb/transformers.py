@@ -17,6 +17,7 @@ Value transformation utilities
 
 import csv
 import contextlib
+from collections import OrderedDict
 
 ##########################################################################
 ## Helper Functions
@@ -91,15 +92,15 @@ def to_array(stream_set):
 
 def to_dict(stream_set):
     """
-    Returns a list of dictionary objects for each time code with the appropriate
+    Returns a list of OrderedDict for each time code with the appropriate
     stream data attached.
     """
     data = []
     stream_names = _stream_names(stream_set)
     for row in stream_set.rows():
-        item = {
+        item = OrderedDict({
             "time": _get_time_from_row(row),
-        }
+        })
         for idx, col in enumerate(stream_names):
             item[col] = row[idx].value if row[idx] else None
         data.append(item)
