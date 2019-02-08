@@ -35,7 +35,7 @@ class BTrDBError(Exception):
         return self.code != 0
 
     def __repr__(self):
-        return "{4}({0}, {1}, {2})".format(repr(self.code), repr(self.msg), repr(self.mash), self.__class__.__name__)
+        return "{3}({0}, {1}, {2})".format(repr(self.code), repr(self.msg), repr(self.mash), self.__class__.__name__)
 
     def __str__(self):
         if self.isError():

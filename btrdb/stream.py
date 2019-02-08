@@ -206,17 +206,8 @@ class Stream(object):
             The version of the stream for the RawPoint supplied
 
         """
-        earliest = None
         start = 0
-
-        try:
-            earliest = self.nearest(start, version=version, backward=False)
-        except Exception:
-            # TODO: figure out proper exception type
-            pass
-
-        return earliest
-
+        return self.nearest(start, version=version, backward=False)
 
     def latest(self, version=0):
         """
@@ -235,17 +226,8 @@ class Stream(object):
             the value was retrieved at.
 
         """
-        latest = None
         start = currently_as_ns()
-
-        try:
-            latest = self.nearest(start, version=version, backward=True)
-        except Exception:
-            pass
-
-        return latest
-
-
+        return self.nearest(start, version=version, backward=True)
 
     def tags(self, refresh=False):
         """
@@ -594,7 +576,7 @@ class Stream(object):
 
         return tuple(materialized)
 
-    def nearest(self, time, version, backward):
+    def nearest(self, time, version, backward=False):
         # type: (int, int, bool) -> Tuple[RawPoint, int]
 
         """
@@ -622,16 +604,17 @@ class Stream(object):
         int
             Version of the stream used to satisfy the query
 
-
-        Raises
-        ------
-        BTrDBError [401] no such point
-            No point satisfies the query in the direction specified
-
         """
 
-        rp, version = self._btrdb.ep.nearest(self._uuid, time, version, backward)
+        try:
+            rp, version = self._btrdb.ep.nearest(self._uuid, time, version, backward)
+        except BTrDBError as exc:
+            if exc.code != 401:
+                raise
+            return None
+
         return RawPoint.from_proto(rp), version
+
 
     def obliterate(self):
         # type: () -> None
@@ -760,14 +743,8 @@ class StreamSetBase(object):
 
         for s in self._streams:
             version = self.versions()[s.uuid]
-            try:
-                point, _ = s.nearest(start, version=version, backward=False)
-            except Exception:
-                # TODO: figure out proper exception type
-                earliest.append(None)
-
+            point, _ = s.nearest(start, version=version, backward=False)
             earliest.append(point)
-
 
         return tuple(earliest)
 
@@ -794,11 +771,7 @@ class StreamSetBase(object):
 
         for s in self._streams:
             version = self.versions()[s.uuid]
-            try:
-                point, _ = s.nearest(start, version=version, backward=True)
-            except Exception:
-                latest.append(None)
-
+            point, _ = s.nearest(start, version=version, backward=True)
             latest.append(point)
 
         return tuple(latest)

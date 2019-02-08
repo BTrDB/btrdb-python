@@ -391,9 +391,24 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=Exception())
+        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
 
         assert stream.earliest() is None
+        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
+
+
+    def test_earliest_passes_exception(self):
+        """
+        Assert earliest reraises non 401 exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+
+        with pytest.raises(BTrDBError) as exc:
+            stream.earliest()
+        assert exc.value.code == 999
         endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
 
 
@@ -422,11 +437,29 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=Exception())
+        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
         ns_fake_time = 1514808000000000000
         mocked.return_value = ns_fake_time
 
         assert stream.latest() is None
+        endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
+
+
+    @patch("btrdb.stream.currently_as_ns")
+    def test_latest_passes_exception(self, mocked):
+        """
+        Assert latest reraises non 401 exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+        ns_fake_time = 1514808000000000000
+        mocked.return_value = ns_fake_time
+
+        with pytest.raises(BTrDBError) as exc:
+            stream.latest()
+        assert exc.value.code == 999
         endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
 
 
@@ -477,6 +510,34 @@ class TestStream(object):
         stream._btrdb.ep.nearest.assert_called_once_with(uu, 5, 10, False)
         assert point == RawPoint(100, 1.0)
         assert version == 42
+
+
+    def test_nearest_swallows_exception(self):
+        """
+        Assert nearest returns None when endpoint throws 401 exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
+
+        assert stream.nearest(0, 0, False) is None
+        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
+
+
+    def test_nearest_passes_exception(self):
+        """
+        Assert nearest reraises non 401 exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+
+        with pytest.raises(BTrDBError) as exc:
+            stream.nearest(0, 0, False)
+        assert exc.value.code == 999
+        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
 
 
     def test_delete_range(self):
