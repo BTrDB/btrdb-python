@@ -208,17 +208,7 @@ class Stream(object):
         """
         earliest = None
         start = 0
-
-        # NOTE: left in for clarity but Stream.nearest has the same check
-        try:
-            earliest = self.nearest(start, version=version, backward=False)
-        except BTrDBError as exc:
-            if exc.code != 401:
-                raise
-            return None
-
-        return earliest
-
+        return self.nearest(start, version=version, backward=False)
 
     def latest(self, version=0):
         """
@@ -239,18 +229,7 @@ class Stream(object):
         """
         latest = None
         start = currently_as_ns()
-
-        # NOTE: left in for clarity but Stream.nearest has the same check
-        try:
-            latest = self.nearest(start, version=version, backward=True)
-        except BTrDBError as exc:
-            if exc.code != 401:
-                raise
-            return None
-
-        return latest
-
-
+        return self.nearest(start, version=version, backward=True)
 
     def tags(self, refresh=False):
         """
