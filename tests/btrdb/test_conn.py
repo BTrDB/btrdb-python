@@ -104,7 +104,7 @@ class TestBTrDB(object):
         truth = {
             "majorVersion": 5,
             "build": "5.0.0",
-            "proxy": { "proxyEndpoints": "localhost:4410", },
+            "proxy": { "proxyEndpoints": ["localhost:4410"], },
         }
         assert conn.info() == truth
 

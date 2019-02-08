@@ -15,102 +15,102 @@ class BTrDBStub(object):
       channel: A grpc.Channel.
     """
     self.RawValues = channel.unary_stream(
-        '/grpcinterface.BTrDB/RawValues',
+        '/v5api.BTrDB/RawValues',
         request_serializer=btrdb__pb2.RawValuesParams.SerializeToString,
         response_deserializer=btrdb__pb2.RawValuesResponse.FromString,
         )
     self.AlignedWindows = channel.unary_stream(
-        '/grpcinterface.BTrDB/AlignedWindows',
+        '/v5api.BTrDB/AlignedWindows',
         request_serializer=btrdb__pb2.AlignedWindowsParams.SerializeToString,
         response_deserializer=btrdb__pb2.AlignedWindowsResponse.FromString,
         )
     self.Windows = channel.unary_stream(
-        '/grpcinterface.BTrDB/Windows',
+        '/v5api.BTrDB/Windows',
         request_serializer=btrdb__pb2.WindowsParams.SerializeToString,
         response_deserializer=btrdb__pb2.WindowsResponse.FromString,
         )
     self.StreamInfo = channel.unary_unary(
-        '/grpcinterface.BTrDB/StreamInfo',
+        '/v5api.BTrDB/StreamInfo',
         request_serializer=btrdb__pb2.StreamInfoParams.SerializeToString,
         response_deserializer=btrdb__pb2.StreamInfoResponse.FromString,
         )
     self.SetStreamAnnotations = channel.unary_unary(
-        '/grpcinterface.BTrDB/SetStreamAnnotations',
+        '/v5api.BTrDB/SetStreamAnnotations',
         request_serializer=btrdb__pb2.SetStreamAnnotationsParams.SerializeToString,
         response_deserializer=btrdb__pb2.SetStreamAnnotationsResponse.FromString,
         )
     self.SetStreamTags = channel.unary_unary(
-        '/grpcinterface.BTrDB/SetStreamTags',
+        '/v5api.BTrDB/SetStreamTags',
         request_serializer=btrdb__pb2.SetStreamTagsParams.SerializeToString,
         response_deserializer=btrdb__pb2.SetStreamTagsResponse.FromString,
         )
     self.Create = channel.unary_unary(
-        '/grpcinterface.BTrDB/Create',
+        '/v5api.BTrDB/Create',
         request_serializer=btrdb__pb2.CreateParams.SerializeToString,
         response_deserializer=btrdb__pb2.CreateResponse.FromString,
         )
     self.ListCollections = channel.unary_stream(
-        '/grpcinterface.BTrDB/ListCollections',
+        '/v5api.BTrDB/ListCollections',
         request_serializer=btrdb__pb2.ListCollectionsParams.SerializeToString,
         response_deserializer=btrdb__pb2.ListCollectionsResponse.FromString,
         )
     self.LookupStreams = channel.unary_stream(
-        '/grpcinterface.BTrDB/LookupStreams',
+        '/v5api.BTrDB/LookupStreams',
         request_serializer=btrdb__pb2.LookupStreamsParams.SerializeToString,
         response_deserializer=btrdb__pb2.LookupStreamsResponse.FromString,
         )
     self.Nearest = channel.unary_unary(
-        '/grpcinterface.BTrDB/Nearest',
+        '/v5api.BTrDB/Nearest',
         request_serializer=btrdb__pb2.NearestParams.SerializeToString,
         response_deserializer=btrdb__pb2.NearestResponse.FromString,
         )
     self.Changes = channel.unary_stream(
-        '/grpcinterface.BTrDB/Changes',
+        '/v5api.BTrDB/Changes',
         request_serializer=btrdb__pb2.ChangesParams.SerializeToString,
         response_deserializer=btrdb__pb2.ChangesResponse.FromString,
         )
     self.Insert = channel.unary_unary(
-        '/grpcinterface.BTrDB/Insert',
+        '/v5api.BTrDB/Insert',
         request_serializer=btrdb__pb2.InsertParams.SerializeToString,
         response_deserializer=btrdb__pb2.InsertResponse.FromString,
         )
     self.Delete = channel.unary_unary(
-        '/grpcinterface.BTrDB/Delete',
+        '/v5api.BTrDB/Delete',
         request_serializer=btrdb__pb2.DeleteParams.SerializeToString,
         response_deserializer=btrdb__pb2.DeleteResponse.FromString,
         )
     self.Info = channel.unary_unary(
-        '/grpcinterface.BTrDB/Info',
+        '/v5api.BTrDB/Info',
         request_serializer=btrdb__pb2.InfoParams.SerializeToString,
         response_deserializer=btrdb__pb2.InfoResponse.FromString,
         )
     self.FaultInject = channel.unary_unary(
-        '/grpcinterface.BTrDB/FaultInject',
+        '/v5api.BTrDB/FaultInject',
         request_serializer=btrdb__pb2.FaultInjectParams.SerializeToString,
         response_deserializer=btrdb__pb2.FaultInjectResponse.FromString,
         )
     self.Flush = channel.unary_unary(
-        '/grpcinterface.BTrDB/Flush',
+        '/v5api.BTrDB/Flush',
         request_serializer=btrdb__pb2.FlushParams.SerializeToString,
         response_deserializer=btrdb__pb2.FlushResponse.FromString,
         )
     self.Obliterate = channel.unary_unary(
-        '/grpcinterface.BTrDB/Obliterate',
+        '/v5api.BTrDB/Obliterate',
         request_serializer=btrdb__pb2.ObliterateParams.SerializeToString,
         response_deserializer=btrdb__pb2.ObliterateResponse.FromString,
         )
     self.GetMetadataUsage = channel.unary_unary(
-        '/grpcinterface.BTrDB/GetMetadataUsage',
+        '/v5api.BTrDB/GetMetadataUsage',
         request_serializer=btrdb__pb2.MetadataUsageParams.SerializeToString,
         response_deserializer=btrdb__pb2.MetadataUsageResponse.FromString,
         )
     self.GenerateCSV = channel.unary_stream(
-        '/grpcinterface.BTrDB/GenerateCSV',
+        '/v5api.BTrDB/GenerateCSV',
         request_serializer=btrdb__pb2.GenerateCSVParams.SerializeToString,
         response_deserializer=btrdb__pb2.GenerateCSVResponse.FromString,
         )
     self.SQLQuery = channel.unary_stream(
-        '/grpcinterface.BTrDB/SQLQuery',
+        '/v5api.BTrDB/SQLQuery',
         request_serializer=btrdb__pb2.SQLQueryParams.SerializeToString,
         response_deserializer=btrdb__pb2.SQLQueryResponse.FromString,
         )
@@ -365,5 +365,5 @@ def add_BTrDBServicer_to_server(servicer, server):
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
-      'grpcinterface.BTrDB', rpc_method_handlers)
+      'v5api.BTrDB', rpc_method_handlers)
   server.add_generic_rpc_handlers((generic_handler,))

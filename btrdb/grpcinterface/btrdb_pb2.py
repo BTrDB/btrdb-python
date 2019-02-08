@@ -17,16 +17,16 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='btrdb.proto',
-  package='grpcinterface',
+  package='v5api',
   syntax='proto3',
-  serialized_pb=_b('\n\x0b\x62trdb.proto\x12\rgrpcinterface\"Q\n\x0fRawValuesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\"\x8d\x01\n\x11RawValuesResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\'\n\x06values\x18\x04 \x03(\x0b\x32\x17.grpcinterface.RawPoint\"j\n\x14\x41lignedWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\x12\n\npointWidth\x18\x05 \x01(\r\"\x93\x01\n\x16\x41lignedWindowsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12(\n\x06values\x18\x04 \x03(\x0b\x32\x18.grpcinterface.StatPoint\"m\n\rWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\r\n\x05width\x18\x05 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x06 \x01(\r\"\x8c\x01\n\x0fWindowsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12(\n\x06values\x18\x04 \x03(\x0b\x32\x18.grpcinterface.StatPoint\"p\n\x10StreamInfoParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x13\n\x0bomitVersion\x18\x02 \x01(\x08\x12\x16\n\x0eomitDescriptor\x18\x03 \x01(\x08\x12!\n\x04role\x18\x64 \x01(\x0b\x32\x13.grpcinterface.Role\"\x9a\x01\n\x12StreamInfoResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x33\n\ndescriptor\x18\x04 \x01(\x0b\x32\x1f.grpcinterface.StreamDescriptor\"\xa8\x01\n\x10StreamDescriptor\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12(\n\x04tags\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12/\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12\x17\n\x0fpropertyVersion\x18\x05 \x01(\x04\"\x8a\x01\n\x1aSetStreamAnnotationsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12+\n\x07\x63hanges\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12\x10\n\x08removals\x18\x04 \x03(\t\"C\n\x1cSetStreamAnnotationsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"\x92\x01\n\x13SetStreamTagsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12(\n\x04tags\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12\x12\n\ncollection\x18\x04 \x01(\t\x12\x0e\n\x06remove\x18\x05 \x03(\t\"<\n\x15SetStreamTagsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"\x8b\x01\n\x0c\x43reateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12(\n\x04tags\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12/\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\"5\n\x0e\x43reateResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"H\n\x13MetadataUsageParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12!\n\x04role\x18\x64 \x01(\x0b\x32\x13.grpcinterface.Role\"\x91\x01\n\x15MetadataUsageResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12%\n\x04tags\x18\x02 \x03(\x0b\x32\x17.grpcinterface.KeyCount\x12,\n\x0b\x61nnotations\x18\x03 \x03(\x0b\x32\x17.grpcinterface.KeyCount\"&\n\x08KeyCount\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\x04\"J\n\x15ListCollectionsParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12!\n\x04role\x18\x64 \x01(\x0b\x32\x13.grpcinterface.Role\"S\n\x17ListCollectionsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x13\n\x0b\x63ollections\x18\x02 \x03(\t\"\xc3\x01\n\x13LookupStreamsParams\x12\x12\n\ncollection\x18\x01 \x01(\t\x12\x1a\n\x12isCollectionPrefix\x18\x02 \x01(\x08\x12(\n\x04tags\x18\x03 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12/\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x1a.grpcinterface.KeyOptValue\x12!\n\x04role\x18\x64 \x01(\x0b\x32\x13.grpcinterface.Role\"n\n\x15LookupStreamsResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x30\n\x07results\x18\x02 \x03(\x0b\x32\x1f.grpcinterface.StreamDescriptor\"S\n\rNearestParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04time\x18\x02 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x03 \x01(\x04\x12\x10\n\x08\x62\x61\x63kward\x18\x04 \x01(\x08\"\x8a\x01\n\x0fNearestResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12&\n\x05value\x18\x04 \x01(\x0b\x32\x17.grpcinterface.RawPoint\"U\n\rChangesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\tfromMajor\x18\x02 \x01(\x04\x12\x0f\n\x07toMajor\x18\x03 \x01(\x04\x12\x12\n\nresolution\x18\x04 \x01(\r\"\x8f\x01\n\x0f\x43hangesResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12+\n\x06ranges\x18\x04 \x03(\x0b\x32\x1b.grpcinterface.ChangedRange\"S\n\x0cInsertParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04sync\x18\x02 \x01(\x08\x12\'\n\x06values\x18\x03 \x03(\x0b\x32\x17.grpcinterface.RawPoint\"a\n\x0eInsertResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"8\n\x0c\x44\x65leteParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\"a\n\x0e\x44\x65leteResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"\x0c\n\nInfoParams\"\xba\x01\n\x0cInfoResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12!\n\x04mash\x18\x02 \x01(\x0b\x32\x13.grpcinterface.Mash\x12\x14\n\x0cmajorVersion\x18\x03 \x01(\r\x12\x14\n\x0cminorVersion\x18\x04 \x01(\r\x12\r\n\x05\x62uild\x18\x05 \x01(\t\x12\'\n\x05proxy\x18\x06 \x01(\x0b\x32\x18.grpcinterface.ProxyInfo\"#\n\tProxyInfo\x12\x16\n\x0eproxyEndpoints\x18\x01 \x03(\t\"1\n\x11\x46\x61ultInjectParams\x12\x0c\n\x04type\x18\x01 \x01(\x04\x12\x0e\n\x06params\x18\x02 \x01(\x0c\"F\n\x13\x46\x61ultInjectResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\n\n\x02rv\x18\x02 \x01(\x0c\"\x1b\n\x0b\x46lushParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"`\n\rFlushResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\" \n\x10ObliterateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"9\n\x12ObliterateResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\"\'\n\x08RawPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\r\n\x05value\x18\x02 \x01(\x01\"`\n\tStatPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0c\n\x04mean\x18\x03 \x01(\x01\x12\x0b\n\x03max\x18\x04 \x01(\x01\x12\r\n\x05\x63ount\x18\x05 \x01(\x06\x12\x0e\n\x06stddev\x18\x06 \x01(\x01\"*\n\x0c\x43hangedRange\x12\r\n\x05start\x18\x01 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x10\"F\n\x06Status\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12!\n\x04mash\x18\x03 \x01(\x0b\x32\x13.grpcinterface.Mash\"\xa0\x01\n\x04Mash\x12\x10\n\x08revision\x18\x01 \x01(\x03\x12\x0e\n\x06leader\x18\x02 \x01(\t\x12\x16\n\x0eleaderRevision\x18\x03 \x01(\x03\x12\x13\n\x0btotalWeight\x18\x04 \x01(\x03\x12\x0f\n\x07healthy\x18\x05 \x01(\x08\x12\x10\n\x08unmapped\x18\x06 \x01(\x01\x12&\n\x07members\x18\x07 \x03(\x0b\x32\x15.grpcinterface.Member\"\xc3\x01\n\x06Member\x12\x0c\n\x04hash\x18\x01 \x01(\r\x12\x10\n\x08nodename\x18\x02 \x01(\t\x12\n\n\x02up\x18\x03 \x01(\x08\x12\n\n\x02in\x18\x04 \x01(\x08\x12\x0f\n\x07\x65nabled\x18\x05 \x01(\x08\x12\r\n\x05start\x18\x06 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x07 \x01(\x03\x12\x0e\n\x06weight\x18\x08 \x01(\x03\x12\x16\n\x0ereadPreference\x18\t \x01(\x01\x12\x15\n\rhttpEndpoints\x18\n \x01(\t\x12\x15\n\rgrpcEndpoints\x18\x0b \x01(\t\"@\n\x0bKeyOptValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12$\n\x03val\x18\x02 \x01(\x0b\x32\x17.grpcinterface.OptValue\"\x19\n\x08OptValue\x12\r\n\x05value\x18\x01 \x01(\t\"&\n\x08KeyValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"?\n\x0fStreamCSVConfig\x12\x0f\n\x07version\x18\x01 \x01(\x04\x12\r\n\x05label\x18\x02 \x01(\t\x12\x0c\n\x04uuid\x18\x03 \x01(\x0c\"\xad\x02\n\x11GenerateCSVParams\x12=\n\tqueryType\x18\x01 \x01(\x0e\x32*.grpcinterface.GenerateCSVParams.QueryType\x12\x11\n\tstartTime\x18\x02 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x03 \x01(\x03\x12\x12\n\nwindowSize\x18\x04 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x05 \x01(\r\x12\x17\n\x0fincludeVersions\x18\x06 \x01(\x08\x12/\n\x07streams\x18\x07 \x03(\x0b\x32\x1e.grpcinterface.StreamCSVConfig\"H\n\tQueryType\x12\x19\n\x15\x41LIGNED_WINDOWS_QUERY\x10\x00\x12\x11\n\rWINDOWS_QUERY\x10\x01\x12\r\n\tRAW_QUERY\x10\x02\"Y\n\x13GenerateCSVResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x10\n\x08isHeader\x18\x02 \x01(\x08\x12\x0b\n\x03row\x18\x03 \x03(\t\"R\n\x0eSQLQueryParams\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0e\n\x06params\x18\x02 \x03(\t\x12!\n\x04role\x18\x64 \x01(\x0b\x32\x13.grpcinterface.Role\"L\n\x10SQLQueryResponse\x12#\n\x04stat\x18\x01 \x01(\x0b\x32\x15.grpcinterface.Status\x12\x13\n\x0bSQLQueryRow\x18\x02 \x03(\x0c\"\x14\n\x04Role\x12\x0c\n\x04name\x18\x01 \x01(\t2\xf3\x0c\n\x05\x42TrDB\x12O\n\tRawValues\x12\x1e.grpcinterface.RawValuesParams\x1a .grpcinterface.RawValuesResponse0\x01\x12^\n\x0e\x41lignedWindows\x12#.grpcinterface.AlignedWindowsParams\x1a%.grpcinterface.AlignedWindowsResponse0\x01\x12I\n\x07Windows\x12\x1c.grpcinterface.WindowsParams\x1a\x1e.grpcinterface.WindowsResponse0\x01\x12P\n\nStreamInfo\x12\x1f.grpcinterface.StreamInfoParams\x1a!.grpcinterface.StreamInfoResponse\x12n\n\x14SetStreamAnnotations\x12).grpcinterface.SetStreamAnnotationsParams\x1a+.grpcinterface.SetStreamAnnotationsResponse\x12Y\n\rSetStreamTags\x12\".grpcinterface.SetStreamTagsParams\x1a$.grpcinterface.SetStreamTagsResponse\x12\x44\n\x06\x43reate\x12\x1b.grpcinterface.CreateParams\x1a\x1d.grpcinterface.CreateResponse\x12\x61\n\x0fListCollections\x12$.grpcinterface.ListCollectionsParams\x1a&.grpcinterface.ListCollectionsResponse0\x01\x12[\n\rLookupStreams\x12\".grpcinterface.LookupStreamsParams\x1a$.grpcinterface.LookupStreamsResponse0\x01\x12G\n\x07Nearest\x12\x1c.grpcinterface.NearestParams\x1a\x1e.grpcinterface.NearestResponse\x12I\n\x07\x43hanges\x12\x1c.grpcinterface.ChangesParams\x1a\x1e.grpcinterface.ChangesResponse0\x01\x12\x44\n\x06Insert\x12\x1b.grpcinterface.InsertParams\x1a\x1d.grpcinterface.InsertResponse\x12\x44\n\x06\x44\x65lete\x12\x1b.grpcinterface.DeleteParams\x1a\x1d.grpcinterface.DeleteResponse\x12>\n\x04Info\x12\x19.grpcinterface.InfoParams\x1a\x1b.grpcinterface.InfoResponse\x12S\n\x0b\x46\x61ultInject\x12 .grpcinterface.FaultInjectParams\x1a\".grpcinterface.FaultInjectResponse\x12\x41\n\x05\x46lush\x12\x1a.grpcinterface.FlushParams\x1a\x1c.grpcinterface.FlushResponse\x12P\n\nObliterate\x12\x1f.grpcinterface.ObliterateParams\x1a!.grpcinterface.ObliterateResponse\x12\\\n\x10GetMetadataUsage\x12\".grpcinterface.MetadataUsageParams\x1a$.grpcinterface.MetadataUsageResponse\x12U\n\x0bGenerateCSV\x12 .grpcinterface.GenerateCSVParams\x1a\".grpcinterface.GenerateCSVResponse0\x01\x12L\n\x08SQLQuery\x12\x1d.grpcinterface.SQLQueryParams\x1a\x1f.grpcinterface.SQLQueryResponse0\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x0b\x62trdb.proto\x12\x05v5api\"Q\n\x0fRawValuesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\"}\n\x11RawValuesResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x1f\n\x06values\x18\x04 \x03(\x0b\x32\x0f.v5api.RawPoint\"j\n\x14\x41lignedWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\x12\n\npointWidth\x18\x05 \x01(\r\"\x83\x01\n\x16\x41lignedWindowsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12 \n\x06values\x18\x04 \x03(\x0b\x32\x10.v5api.StatPoint\"m\n\rWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\r\n\x05width\x18\x05 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x06 \x01(\r\"|\n\x0fWindowsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12 \n\x06values\x18\x04 \x03(\x0b\x32\x10.v5api.StatPoint\"h\n\x10StreamInfoParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x13\n\x0bomitVersion\x18\x02 \x01(\x08\x12\x16\n\x0eomitDescriptor\x18\x03 \x01(\x08\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"\x8a\x01\n\x12StreamInfoResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12+\n\ndescriptor\x18\x04 \x01(\x0b\x32\x17.v5api.StreamDescriptor\"\x98\x01\n\x10StreamDescriptor\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x17\n\x0fpropertyVersion\x18\x05 \x01(\x04\"\x82\x01\n\x1aSetStreamAnnotationsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12#\n\x07\x63hanges\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x10\n\x08removals\x18\x04 \x03(\t\";\n\x1cSetStreamAnnotationsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"\x8a\x01\n\x13SetStreamTagsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x12\n\ncollection\x18\x04 \x01(\t\x12\x0e\n\x06remove\x18\x05 \x03(\t\"4\n\x15SetStreamTagsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"{\n\x0c\x43reateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\"-\n\x0e\x43reateResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"@\n\x13MetadataUsageParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"y\n\x15MetadataUsageResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x1d\n\x04tags\x18\x02 \x03(\x0b\x32\x0f.v5api.KeyCount\x12$\n\x0b\x61nnotations\x18\x03 \x03(\x0b\x32\x0f.v5api.KeyCount\"&\n\x08KeyCount\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\x04\"B\n\x15ListCollectionsParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"K\n\x17ListCollectionsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x13\n\x0b\x63ollections\x18\x02 \x03(\t\"\xab\x01\n\x13LookupStreamsParams\x12\x12\n\ncollection\x18\x01 \x01(\t\x12\x1a\n\x12isCollectionPrefix\x18\x02 \x01(\x08\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"^\n\x15LookupStreamsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12(\n\x07results\x18\x02 \x03(\x0b\x32\x17.v5api.StreamDescriptor\"S\n\rNearestParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04time\x18\x02 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x03 \x01(\x04\x12\x10\n\x08\x62\x61\x63kward\x18\x04 \x01(\x08\"z\n\x0fNearestResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x1e\n\x05value\x18\x04 \x01(\x0b\x32\x0f.v5api.RawPoint\"U\n\rChangesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\tfromMajor\x18\x02 \x01(\x04\x12\x0f\n\x07toMajor\x18\x03 \x01(\x04\x12\x12\n\nresolution\x18\x04 \x01(\r\"\x7f\n\x0f\x43hangesResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12#\n\x06ranges\x18\x04 \x03(\x0b\x32\x13.v5api.ChangedRange\"K\n\x0cInsertParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04sync\x18\x02 \x01(\x08\x12\x1f\n\x06values\x18\x03 \x03(\x0b\x32\x0f.v5api.RawPoint\"Y\n\x0eInsertResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"8\n\x0c\x44\x65leteParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\"Y\n\x0e\x44\x65leteResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"\x0c\n\nInfoParams\"\xa2\x01\n\x0cInfoResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x19\n\x04mash\x18\x02 \x01(\x0b\x32\x0b.v5api.Mash\x12\x14\n\x0cmajorVersion\x18\x03 \x01(\r\x12\x14\n\x0cminorVersion\x18\x04 \x01(\r\x12\r\n\x05\x62uild\x18\x05 \x01(\t\x12\x1f\n\x05proxy\x18\x06 \x01(\x0b\x32\x10.v5api.ProxyInfo\"#\n\tProxyInfo\x12\x16\n\x0eproxyEndpoints\x18\x01 \x03(\t\"1\n\x11\x46\x61ultInjectParams\x12\x0c\n\x04type\x18\x01 \x01(\x04\x12\x0e\n\x06params\x18\x02 \x01(\x0c\">\n\x13\x46\x61ultInjectResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\n\n\x02rv\x18\x02 \x01(\x0c\"\x1b\n\x0b\x46lushParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"X\n\rFlushResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\" \n\x10ObliterateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"1\n\x12ObliterateResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"\'\n\x08RawPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\r\n\x05value\x18\x02 \x01(\x01\"`\n\tStatPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0c\n\x04mean\x18\x03 \x01(\x01\x12\x0b\n\x03max\x18\x04 \x01(\x01\x12\r\n\x05\x63ount\x18\x05 \x01(\x06\x12\x0e\n\x06stddev\x18\x06 \x01(\x01\"*\n\x0c\x43hangedRange\x12\r\n\x05start\x18\x01 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x10\">\n\x06Status\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x19\n\x04mash\x18\x03 \x01(\x0b\x32\x0b.v5api.Mash\"\x98\x01\n\x04Mash\x12\x10\n\x08revision\x18\x01 \x01(\x03\x12\x0e\n\x06leader\x18\x02 \x01(\t\x12\x16\n\x0eleaderRevision\x18\x03 \x01(\x03\x12\x13\n\x0btotalWeight\x18\x04 \x01(\x03\x12\x0f\n\x07healthy\x18\x05 \x01(\x08\x12\x10\n\x08unmapped\x18\x06 \x01(\x01\x12\x1e\n\x07members\x18\x07 \x03(\x0b\x32\r.v5api.Member\"\xc3\x01\n\x06Member\x12\x0c\n\x04hash\x18\x01 \x01(\r\x12\x10\n\x08nodename\x18\x02 \x01(\t\x12\n\n\x02up\x18\x03 \x01(\x08\x12\n\n\x02in\x18\x04 \x01(\x08\x12\x0f\n\x07\x65nabled\x18\x05 \x01(\x08\x12\r\n\x05start\x18\x06 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x07 \x01(\x03\x12\x0e\n\x06weight\x18\x08 \x01(\x03\x12\x16\n\x0ereadPreference\x18\t \x01(\x01\x12\x15\n\rhttpEndpoints\x18\n \x01(\t\x12\x15\n\rgrpcEndpoints\x18\x0b \x01(\t\"8\n\x0bKeyOptValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x03val\x18\x02 \x01(\x0b\x32\x0f.v5api.OptValue\"\x19\n\x08OptValue\x12\r\n\x05value\x18\x01 \x01(\t\"&\n\x08KeyValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"?\n\x0fStreamCSVConfig\x12\x0f\n\x07version\x18\x01 \x01(\x04\x12\r\n\x05label\x18\x02 \x01(\t\x12\x0c\n\x04uuid\x18\x03 \x01(\x0c\"\x9d\x02\n\x11GenerateCSVParams\x12\x35\n\tqueryType\x18\x01 \x01(\x0e\x32\".v5api.GenerateCSVParams.QueryType\x12\x11\n\tstartTime\x18\x02 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x03 \x01(\x03\x12\x12\n\nwindowSize\x18\x04 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x05 \x01(\r\x12\x17\n\x0fincludeVersions\x18\x06 \x01(\x08\x12\'\n\x07streams\x18\x07 \x03(\x0b\x32\x16.v5api.StreamCSVConfig\"H\n\tQueryType\x12\x19\n\x15\x41LIGNED_WINDOWS_QUERY\x10\x00\x12\x11\n\rWINDOWS_QUERY\x10\x01\x12\r\n\tRAW_QUERY\x10\x02\"Q\n\x13GenerateCSVResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x10\n\x08isHeader\x18\x02 \x01(\x08\x12\x0b\n\x03row\x18\x03 \x03(\t\"J\n\x0eSQLQueryParams\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0e\n\x06params\x18\x02 \x03(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"D\n\x10SQLQueryResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x13\n\x0bSQLQueryRow\x18\x02 \x03(\x0c\"\x14\n\x04Role\x12\x0c\n\x04name\x18\x01 \x01(\t2\xb3\n\n\x05\x42TrDB\x12?\n\tRawValues\x12\x16.v5api.RawValuesParams\x1a\x18.v5api.RawValuesResponse0\x01\x12N\n\x0e\x41lignedWindows\x12\x1b.v5api.AlignedWindowsParams\x1a\x1d.v5api.AlignedWindowsResponse0\x01\x12\x39\n\x07Windows\x12\x14.v5api.WindowsParams\x1a\x16.v5api.WindowsResponse0\x01\x12@\n\nStreamInfo\x12\x17.v5api.StreamInfoParams\x1a\x19.v5api.StreamInfoResponse\x12^\n\x14SetStreamAnnotations\x12!.v5api.SetStreamAnnotationsParams\x1a#.v5api.SetStreamAnnotationsResponse\x12I\n\rSetStreamTags\x12\x1a.v5api.SetStreamTagsParams\x1a\x1c.v5api.SetStreamTagsResponse\x12\x34\n\x06\x43reate\x12\x13.v5api.CreateParams\x1a\x15.v5api.CreateResponse\x12Q\n\x0fListCollections\x12\x1c.v5api.ListCollectionsParams\x1a\x1e.v5api.ListCollectionsResponse0\x01\x12K\n\rLookupStreams\x12\x1a.v5api.LookupStreamsParams\x1a\x1c.v5api.LookupStreamsResponse0\x01\x12\x37\n\x07Nearest\x12\x14.v5api.NearestParams\x1a\x16.v5api.NearestResponse\x12\x39\n\x07\x43hanges\x12\x14.v5api.ChangesParams\x1a\x16.v5api.ChangesResponse0\x01\x12\x34\n\x06Insert\x12\x13.v5api.InsertParams\x1a\x15.v5api.InsertResponse\x12\x34\n\x06\x44\x65lete\x12\x13.v5api.DeleteParams\x1a\x15.v5api.DeleteResponse\x12.\n\x04Info\x12\x11.v5api.InfoParams\x1a\x13.v5api.InfoResponse\x12\x43\n\x0b\x46\x61ultInject\x12\x18.v5api.FaultInjectParams\x1a\x1a.v5api.FaultInjectResponse\x12\x31\n\x05\x46lush\x12\x12.v5api.FlushParams\x1a\x14.v5api.FlushResponse\x12@\n\nObliterate\x12\x17.v5api.ObliterateParams\x1a\x19.v5api.ObliterateResponse\x12L\n\x10GetMetadataUsage\x12\x1a.v5api.MetadataUsageParams\x1a\x1c.v5api.MetadataUsageResponse\x12\x45\n\x0bGenerateCSV\x12\x18.v5api.GenerateCSVParams\x1a\x1a.v5api.GenerateCSVResponse0\x01\x12<\n\x08SQLQuery\x12\x15.v5api.SQLQueryParams\x1a\x17.v5api.SQLQueryResponse0\x01\x62\x06proto3')
 )
 
 
 
 _GENERATECSVPARAMS_QUERYTYPE = _descriptor.EnumDescriptor(
   name='QueryType',
-  full_name='grpcinterface.GenerateCSVParams.QueryType',
+  full_name='v5api.GenerateCSVParams.QueryType',
   filename=None,
   file=DESCRIPTOR,
   values=[
@@ -45,42 +45,42 @@ _GENERATECSVPARAMS_QUERYTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=4989,
-  serialized_end=5061,
+  serialized_start=4599,
+  serialized_end=4671,
 )
 _sym_db.RegisterEnumDescriptor(_GENERATECSVPARAMS_QUERYTYPE)
 
 
 _RAWVALUESPARAMS = _descriptor.Descriptor(
   name='RawValuesParams',
-  full_name='grpcinterface.RawValuesParams',
+  full_name='v5api.RawValuesParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.RawValuesParams.uuid', index=0,
+      name='uuid', full_name='v5api.RawValuesParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='start', full_name='grpcinterface.RawValuesParams.start', index=1,
+      name='start', full_name='v5api.RawValuesParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end', full_name='grpcinterface.RawValuesParams.end', index=2,
+      name='end', full_name='v5api.RawValuesParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.RawValuesParams.versionMajor', index=3,
+      name='versionMajor', full_name='v5api.RawValuesParams.versionMajor', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -98,41 +98,41 @@ _RAWVALUESPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=30,
-  serialized_end=111,
+  serialized_start=22,
+  serialized_end=103,
 )
 
 
 _RAWVALUESRESPONSE = _descriptor.Descriptor(
   name='RawValuesResponse',
-  full_name='grpcinterface.RawValuesResponse',
+  full_name='v5api.RawValuesResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.RawValuesResponse.stat', index=0,
+      name='stat', full_name='v5api.RawValuesResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.RawValuesResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.RawValuesResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.RawValuesResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.RawValuesResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='values', full_name='grpcinterface.RawValuesResponse.values', index=3,
+      name='values', full_name='v5api.RawValuesResponse.values', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -150,48 +150,48 @@ _RAWVALUESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=114,
-  serialized_end=255,
+  serialized_start=105,
+  serialized_end=230,
 )
 
 
 _ALIGNEDWINDOWSPARAMS = _descriptor.Descriptor(
   name='AlignedWindowsParams',
-  full_name='grpcinterface.AlignedWindowsParams',
+  full_name='v5api.AlignedWindowsParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.AlignedWindowsParams.uuid', index=0,
+      name='uuid', full_name='v5api.AlignedWindowsParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='start', full_name='grpcinterface.AlignedWindowsParams.start', index=1,
+      name='start', full_name='v5api.AlignedWindowsParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end', full_name='grpcinterface.AlignedWindowsParams.end', index=2,
+      name='end', full_name='v5api.AlignedWindowsParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.AlignedWindowsParams.versionMajor', index=3,
+      name='versionMajor', full_name='v5api.AlignedWindowsParams.versionMajor', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='pointWidth', full_name='grpcinterface.AlignedWindowsParams.pointWidth', index=4,
+      name='pointWidth', full_name='v5api.AlignedWindowsParams.pointWidth', index=4,
       number=5, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -209,41 +209,41 @@ _ALIGNEDWINDOWSPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=257,
-  serialized_end=363,
+  serialized_start=232,
+  serialized_end=338,
 )
 
 
 _ALIGNEDWINDOWSRESPONSE = _descriptor.Descriptor(
   name='AlignedWindowsResponse',
-  full_name='grpcinterface.AlignedWindowsResponse',
+  full_name='v5api.AlignedWindowsResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.AlignedWindowsResponse.stat', index=0,
+      name='stat', full_name='v5api.AlignedWindowsResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.AlignedWindowsResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.AlignedWindowsResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.AlignedWindowsResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.AlignedWindowsResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='values', full_name='grpcinterface.AlignedWindowsResponse.values', index=3,
+      name='values', full_name='v5api.AlignedWindowsResponse.values', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -261,55 +261,55 @@ _ALIGNEDWINDOWSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=366,
-  serialized_end=513,
+  serialized_start=341,
+  serialized_end=472,
 )
 
 
 _WINDOWSPARAMS = _descriptor.Descriptor(
   name='WindowsParams',
-  full_name='grpcinterface.WindowsParams',
+  full_name='v5api.WindowsParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.WindowsParams.uuid', index=0,
+      name='uuid', full_name='v5api.WindowsParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='start', full_name='grpcinterface.WindowsParams.start', index=1,
+      name='start', full_name='v5api.WindowsParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end', full_name='grpcinterface.WindowsParams.end', index=2,
+      name='end', full_name='v5api.WindowsParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.WindowsParams.versionMajor', index=3,
+      name='versionMajor', full_name='v5api.WindowsParams.versionMajor', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='width', full_name='grpcinterface.WindowsParams.width', index=4,
+      name='width', full_name='v5api.WindowsParams.width', index=4,
       number=5, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='depth', full_name='grpcinterface.WindowsParams.depth', index=5,
+      name='depth', full_name='v5api.WindowsParams.depth', index=5,
       number=6, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -327,41 +327,41 @@ _WINDOWSPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=515,
-  serialized_end=624,
+  serialized_start=474,
+  serialized_end=583,
 )
 
 
 _WINDOWSRESPONSE = _descriptor.Descriptor(
   name='WindowsResponse',
-  full_name='grpcinterface.WindowsResponse',
+  full_name='v5api.WindowsResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.WindowsResponse.stat', index=0,
+      name='stat', full_name='v5api.WindowsResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.WindowsResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.WindowsResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.WindowsResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.WindowsResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='values', full_name='grpcinterface.WindowsResponse.values', index=3,
+      name='values', full_name='v5api.WindowsResponse.values', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -379,41 +379,41 @@ _WINDOWSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=627,
-  serialized_end=767,
+  serialized_start=585,
+  serialized_end=709,
 )
 
 
 _STREAMINFOPARAMS = _descriptor.Descriptor(
   name='StreamInfoParams',
-  full_name='grpcinterface.StreamInfoParams',
+  full_name='v5api.StreamInfoParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.StreamInfoParams.uuid', index=0,
+      name='uuid', full_name='v5api.StreamInfoParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='omitVersion', full_name='grpcinterface.StreamInfoParams.omitVersion', index=1,
+      name='omitVersion', full_name='v5api.StreamInfoParams.omitVersion', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='omitDescriptor', full_name='grpcinterface.StreamInfoParams.omitDescriptor', index=2,
+      name='omitDescriptor', full_name='v5api.StreamInfoParams.omitDescriptor', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='role', full_name='grpcinterface.StreamInfoParams.role', index=3,
+      name='role', full_name='v5api.StreamInfoParams.role', index=3,
       number=100, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -431,41 +431,41 @@ _STREAMINFOPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=769,
-  serialized_end=881,
+  serialized_start=711,
+  serialized_end=815,
 )
 
 
 _STREAMINFORESPONSE = _descriptor.Descriptor(
   name='StreamInfoResponse',
-  full_name='grpcinterface.StreamInfoResponse',
+  full_name='v5api.StreamInfoResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.StreamInfoResponse.stat', index=0,
+      name='stat', full_name='v5api.StreamInfoResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.StreamInfoResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.StreamInfoResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.StreamInfoResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.StreamInfoResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='descriptor', full_name='grpcinterface.StreamInfoResponse.descriptor', index=3,
+      name='descriptor', full_name='v5api.StreamInfoResponse.descriptor', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -483,48 +483,48 @@ _STREAMINFORESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=884,
-  serialized_end=1038,
+  serialized_start=818,
+  serialized_end=956,
 )
 
 
 _STREAMDESCRIPTOR = _descriptor.Descriptor(
   name='StreamDescriptor',
-  full_name='grpcinterface.StreamDescriptor',
+  full_name='v5api.StreamDescriptor',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.StreamDescriptor.uuid', index=0,
+      name='uuid', full_name='v5api.StreamDescriptor.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='collection', full_name='grpcinterface.StreamDescriptor.collection', index=1,
+      name='collection', full_name='v5api.StreamDescriptor.collection', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='tags', full_name='grpcinterface.StreamDescriptor.tags', index=2,
+      name='tags', full_name='v5api.StreamDescriptor.tags', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='annotations', full_name='grpcinterface.StreamDescriptor.annotations', index=3,
+      name='annotations', full_name='v5api.StreamDescriptor.annotations', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='propertyVersion', full_name='grpcinterface.StreamDescriptor.propertyVersion', index=4,
+      name='propertyVersion', full_name='v5api.StreamDescriptor.propertyVersion', index=4,
       number=5, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -542,41 +542,41 @@ _STREAMDESCRIPTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1041,
-  serialized_end=1209,
+  serialized_start=959,
+  serialized_end=1111,
 )
 
 
 _SETSTREAMANNOTATIONSPARAMS = _descriptor.Descriptor(
   name='SetStreamAnnotationsParams',
-  full_name='grpcinterface.SetStreamAnnotationsParams',
+  full_name='v5api.SetStreamAnnotationsParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.SetStreamAnnotationsParams.uuid', index=0,
+      name='uuid', full_name='v5api.SetStreamAnnotationsParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='expectedPropertyVersion', full_name='grpcinterface.SetStreamAnnotationsParams.expectedPropertyVersion', index=1,
+      name='expectedPropertyVersion', full_name='v5api.SetStreamAnnotationsParams.expectedPropertyVersion', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='changes', full_name='grpcinterface.SetStreamAnnotationsParams.changes', index=2,
+      name='changes', full_name='v5api.SetStreamAnnotationsParams.changes', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='removals', full_name='grpcinterface.SetStreamAnnotationsParams.removals', index=3,
+      name='removals', full_name='v5api.SetStreamAnnotationsParams.removals', index=3,
       number=4, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -594,20 +594,20 @@ _SETSTREAMANNOTATIONSPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1212,
-  serialized_end=1350,
+  serialized_start=1114,
+  serialized_end=1244,
 )
 
 
 _SETSTREAMANNOTATIONSRESPONSE = _descriptor.Descriptor(
   name='SetStreamAnnotationsResponse',
-  full_name='grpcinterface.SetStreamAnnotationsResponse',
+  full_name='v5api.SetStreamAnnotationsResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.SetStreamAnnotationsResponse.stat', index=0,
+      name='stat', full_name='v5api.SetStreamAnnotationsResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -625,48 +625,48 @@ _SETSTREAMANNOTATIONSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1352,
-  serialized_end=1419,
+  serialized_start=1246,
+  serialized_end=1305,
 )
 
 
 _SETSTREAMTAGSPARAMS = _descriptor.Descriptor(
   name='SetStreamTagsParams',
-  full_name='grpcinterface.SetStreamTagsParams',
+  full_name='v5api.SetStreamTagsParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.SetStreamTagsParams.uuid', index=0,
+      name='uuid', full_name='v5api.SetStreamTagsParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='expectedPropertyVersion', full_name='grpcinterface.SetStreamTagsParams.expectedPropertyVersion', index=1,
+      name='expectedPropertyVersion', full_name='v5api.SetStreamTagsParams.expectedPropertyVersion', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='tags', full_name='grpcinterface.SetStreamTagsParams.tags', index=2,
+      name='tags', full_name='v5api.SetStreamTagsParams.tags', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='collection', full_name='grpcinterface.SetStreamTagsParams.collection', index=3,
+      name='collection', full_name='v5api.SetStreamTagsParams.collection', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='remove', full_name='grpcinterface.SetStreamTagsParams.remove', index=4,
+      name='remove', full_name='v5api.SetStreamTagsParams.remove', index=4,
       number=5, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -684,20 +684,20 @@ _SETSTREAMTAGSPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1422,
-  serialized_end=1568,
+  serialized_start=1308,
+  serialized_end=1446,
 )
 
 
 _SETSTREAMTAGSRESPONSE = _descriptor.Descriptor(
   name='SetStreamTagsResponse',
-  full_name='grpcinterface.SetStreamTagsResponse',
+  full_name='v5api.SetStreamTagsResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.SetStreamTagsResponse.stat', index=0,
+      name='stat', full_name='v5api.SetStreamTagsResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -715,41 +715,41 @@ _SETSTREAMTAGSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1570,
-  serialized_end=1630,
+  serialized_start=1448,
+  serialized_end=1500,
 )
 
 
 _CREATEPARAMS = _descriptor.Descriptor(
   name='CreateParams',
-  full_name='grpcinterface.CreateParams',
+  full_name='v5api.CreateParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.CreateParams.uuid', index=0,
+      name='uuid', full_name='v5api.CreateParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='collection', full_name='grpcinterface.CreateParams.collection', index=1,
+      name='collection', full_name='v5api.CreateParams.collection', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='tags', full_name='grpcinterface.CreateParams.tags', index=2,
+      name='tags', full_name='v5api.CreateParams.tags', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='annotations', full_name='grpcinterface.CreateParams.annotations', index=3,
+      name='annotations', full_name='v5api.CreateParams.annotations', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -767,20 +767,20 @@ _CREATEPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1633,
-  serialized_end=1772,
+  serialized_start=1502,
+  serialized_end=1625,
 )
 
 
 _CREATERESPONSE = _descriptor.Descriptor(
   name='CreateResponse',
-  full_name='grpcinterface.CreateResponse',
+  full_name='v5api.CreateResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.CreateResponse.stat', index=0,
+      name='stat', full_name='v5api.CreateResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -798,27 +798,27 @@ _CREATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1774,
-  serialized_end=1827,
+  serialized_start=1627,
+  serialized_end=1672,
 )
 
 
 _METADATAUSAGEPARAMS = _descriptor.Descriptor(
   name='MetadataUsageParams',
-  full_name='grpcinterface.MetadataUsageParams',
+  full_name='v5api.MetadataUsageParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='prefix', full_name='grpcinterface.MetadataUsageParams.prefix', index=0,
+      name='prefix', full_name='v5api.MetadataUsageParams.prefix', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='role', full_name='grpcinterface.MetadataUsageParams.role', index=1,
+      name='role', full_name='v5api.MetadataUsageParams.role', index=1,
       number=100, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -836,34 +836,34 @@ _METADATAUSAGEPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1829,
-  serialized_end=1901,
+  serialized_start=1674,
+  serialized_end=1738,
 )
 
 
 _METADATAUSAGERESPONSE = _descriptor.Descriptor(
   name='MetadataUsageResponse',
-  full_name='grpcinterface.MetadataUsageResponse',
+  full_name='v5api.MetadataUsageResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.MetadataUsageResponse.stat', index=0,
+      name='stat', full_name='v5api.MetadataUsageResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='tags', full_name='grpcinterface.MetadataUsageResponse.tags', index=1,
+      name='tags', full_name='v5api.MetadataUsageResponse.tags', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='annotations', full_name='grpcinterface.MetadataUsageResponse.annotations', index=2,
+      name='annotations', full_name='v5api.MetadataUsageResponse.annotations', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -881,27 +881,27 @@ _METADATAUSAGERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1904,
-  serialized_end=2049,
+  serialized_start=1740,
+  serialized_end=1861,
 )
 
 
 _KEYCOUNT = _descriptor.Descriptor(
   name='KeyCount',
-  full_name='grpcinterface.KeyCount',
+  full_name='v5api.KeyCount',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='grpcinterface.KeyCount.key', index=0,
+      name='key', full_name='v5api.KeyCount.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='count', full_name='grpcinterface.KeyCount.count', index=1,
+      name='count', full_name='v5api.KeyCount.count', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -919,27 +919,27 @@ _KEYCOUNT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2051,
-  serialized_end=2089,
+  serialized_start=1863,
+  serialized_end=1901,
 )
 
 
 _LISTCOLLECTIONSPARAMS = _descriptor.Descriptor(
   name='ListCollectionsParams',
-  full_name='grpcinterface.ListCollectionsParams',
+  full_name='v5api.ListCollectionsParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='prefix', full_name='grpcinterface.ListCollectionsParams.prefix', index=0,
+      name='prefix', full_name='v5api.ListCollectionsParams.prefix', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='role', full_name='grpcinterface.ListCollectionsParams.role', index=1,
+      name='role', full_name='v5api.ListCollectionsParams.role', index=1,
       number=100, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -957,27 +957,27 @@ _LISTCOLLECTIONSPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2091,
-  serialized_end=2165,
+  serialized_start=1903,
+  serialized_end=1969,
 )
 
 
 _LISTCOLLECTIONSRESPONSE = _descriptor.Descriptor(
   name='ListCollectionsResponse',
-  full_name='grpcinterface.ListCollectionsResponse',
+  full_name='v5api.ListCollectionsResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.ListCollectionsResponse.stat', index=0,
+      name='stat', full_name='v5api.ListCollectionsResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='collections', full_name='grpcinterface.ListCollectionsResponse.collections', index=1,
+      name='collections', full_name='v5api.ListCollectionsResponse.collections', index=1,
       number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -995,48 +995,48 @@ _LISTCOLLECTIONSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2167,
-  serialized_end=2250,
+  serialized_start=1971,
+  serialized_end=2046,
 )
 
 
 _LOOKUPSTREAMSPARAMS = _descriptor.Descriptor(
   name='LookupStreamsParams',
-  full_name='grpcinterface.LookupStreamsParams',
+  full_name='v5api.LookupStreamsParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='collection', full_name='grpcinterface.LookupStreamsParams.collection', index=0,
+      name='collection', full_name='v5api.LookupStreamsParams.collection', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='isCollectionPrefix', full_name='grpcinterface.LookupStreamsParams.isCollectionPrefix', index=1,
+      name='isCollectionPrefix', full_name='v5api.LookupStreamsParams.isCollectionPrefix', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='tags', full_name='grpcinterface.LookupStreamsParams.tags', index=2,
+      name='tags', full_name='v5api.LookupStreamsParams.tags', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='annotations', full_name='grpcinterface.LookupStreamsParams.annotations', index=3,
+      name='annotations', full_name='v5api.LookupStreamsParams.annotations', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='role', full_name='grpcinterface.LookupStreamsParams.role', index=4,
+      name='role', full_name='v5api.LookupStreamsParams.role', index=4,
       number=100, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1054,27 +1054,27 @@ _LOOKUPSTREAMSPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2253,
-  serialized_end=2448,
+  serialized_start=2049,
+  serialized_end=2220,
 )
 
 
 _LOOKUPSTREAMSRESPONSE = _descriptor.Descriptor(
   name='LookupStreamsResponse',
-  full_name='grpcinterface.LookupStreamsResponse',
+  full_name='v5api.LookupStreamsResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.LookupStreamsResponse.stat', index=0,
+      name='stat', full_name='v5api.LookupStreamsResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='results', full_name='grpcinterface.LookupStreamsResponse.results', index=1,
+      name='results', full_name='v5api.LookupStreamsResponse.results', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1092,41 +1092,41 @@ _LOOKUPSTREAMSRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2450,
-  serialized_end=2560,
+  serialized_start=2222,
+  serialized_end=2316,
 )
 
 
 _NEARESTPARAMS = _descriptor.Descriptor(
   name='NearestParams',
-  full_name='grpcinterface.NearestParams',
+  full_name='v5api.NearestParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.NearestParams.uuid', index=0,
+      name='uuid', full_name='v5api.NearestParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='time', full_name='grpcinterface.NearestParams.time', index=1,
+      name='time', full_name='v5api.NearestParams.time', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.NearestParams.versionMajor', index=2,
+      name='versionMajor', full_name='v5api.NearestParams.versionMajor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='backward', full_name='grpcinterface.NearestParams.backward', index=3,
+      name='backward', full_name='v5api.NearestParams.backward', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -1144,41 +1144,41 @@ _NEARESTPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2562,
-  serialized_end=2645,
+  serialized_start=2318,
+  serialized_end=2401,
 )
 
 
 _NEARESTRESPONSE = _descriptor.Descriptor(
   name='NearestResponse',
-  full_name='grpcinterface.NearestResponse',
+  full_name='v5api.NearestResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.NearestResponse.stat', index=0,
+      name='stat', full_name='v5api.NearestResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.NearestResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.NearestResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.NearestResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.NearestResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='value', full_name='grpcinterface.NearestResponse.value', index=3,
+      name='value', full_name='v5api.NearestResponse.value', index=3,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1196,41 +1196,41 @@ _NEARESTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2648,
-  serialized_end=2786,
+  serialized_start=2403,
+  serialized_end=2525,
 )
 
 
 _CHANGESPARAMS = _descriptor.Descriptor(
   name='ChangesParams',
-  full_name='grpcinterface.ChangesParams',
+  full_name='v5api.ChangesParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.ChangesParams.uuid', index=0,
+      name='uuid', full_name='v5api.ChangesParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='fromMajor', full_name='grpcinterface.ChangesParams.fromMajor', index=1,
+      name='fromMajor', full_name='v5api.ChangesParams.fromMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='toMajor', full_name='grpcinterface.ChangesParams.toMajor', index=2,
+      name='toMajor', full_name='v5api.ChangesParams.toMajor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='resolution', full_name='grpcinterface.ChangesParams.resolution', index=3,
+      name='resolution', full_name='v5api.ChangesParams.resolution', index=3,
       number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1248,41 +1248,41 @@ _CHANGESPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2788,
-  serialized_end=2873,
+  serialized_start=2527,
+  serialized_end=2612,
 )
 
 
 _CHANGESRESPONSE = _descriptor.Descriptor(
   name='ChangesResponse',
-  full_name='grpcinterface.ChangesResponse',
+  full_name='v5api.ChangesResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.ChangesResponse.stat', index=0,
+      name='stat', full_name='v5api.ChangesResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.ChangesResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.ChangesResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.ChangesResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.ChangesResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='ranges', full_name='grpcinterface.ChangesResponse.ranges', index=3,
+      name='ranges', full_name='v5api.ChangesResponse.ranges', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1300,34 +1300,34 @@ _CHANGESRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2876,
-  serialized_end=3019,
+  serialized_start=2614,
+  serialized_end=2741,
 )
 
 
 _INSERTPARAMS = _descriptor.Descriptor(
   name='InsertParams',
-  full_name='grpcinterface.InsertParams',
+  full_name='v5api.InsertParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.InsertParams.uuid', index=0,
+      name='uuid', full_name='v5api.InsertParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='sync', full_name='grpcinterface.InsertParams.sync', index=1,
+      name='sync', full_name='v5api.InsertParams.sync', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='values', full_name='grpcinterface.InsertParams.values', index=2,
+      name='values', full_name='v5api.InsertParams.values', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1345,34 +1345,34 @@ _INSERTPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3021,
-  serialized_end=3104,
+  serialized_start=2743,
+  serialized_end=2818,
 )
 
 
 _INSERTRESPONSE = _descriptor.Descriptor(
   name='InsertResponse',
-  full_name='grpcinterface.InsertResponse',
+  full_name='v5api.InsertResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.InsertResponse.stat', index=0,
+      name='stat', full_name='v5api.InsertResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.InsertResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.InsertResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.InsertResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.InsertResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1390,34 +1390,34 @@ _INSERTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3106,
-  serialized_end=3203,
+  serialized_start=2820,
+  serialized_end=2909,
 )
 
 
 _DELETEPARAMS = _descriptor.Descriptor(
   name='DeleteParams',
-  full_name='grpcinterface.DeleteParams',
+  full_name='v5api.DeleteParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.DeleteParams.uuid', index=0,
+      name='uuid', full_name='v5api.DeleteParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='start', full_name='grpcinterface.DeleteParams.start', index=1,
+      name='start', full_name='v5api.DeleteParams.start', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end', full_name='grpcinterface.DeleteParams.end', index=2,
+      name='end', full_name='v5api.DeleteParams.end', index=2,
       number=3, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1435,34 +1435,34 @@ _DELETEPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3205,
-  serialized_end=3261,
+  serialized_start=2911,
+  serialized_end=2967,
 )
 
 
 _DELETERESPONSE = _descriptor.Descriptor(
   name='DeleteResponse',
-  full_name='grpcinterface.DeleteResponse',
+  full_name='v5api.DeleteResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.DeleteResponse.stat', index=0,
+      name='stat', full_name='v5api.DeleteResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.DeleteResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.DeleteResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.DeleteResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.DeleteResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1480,14 +1480,14 @@ _DELETERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3263,
-  serialized_end=3360,
+  serialized_start=2969,
+  serialized_end=3058,
 )
 
 
 _INFOPARAMS = _descriptor.Descriptor(
   name='InfoParams',
-  full_name='grpcinterface.InfoParams',
+  full_name='v5api.InfoParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -1504,55 +1504,55 @@ _INFOPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3362,
-  serialized_end=3374,
+  serialized_start=3060,
+  serialized_end=3072,
 )
 
 
 _INFORESPONSE = _descriptor.Descriptor(
   name='InfoResponse',
-  full_name='grpcinterface.InfoResponse',
+  full_name='v5api.InfoResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.InfoResponse.stat', index=0,
+      name='stat', full_name='v5api.InfoResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='mash', full_name='grpcinterface.InfoResponse.mash', index=1,
+      name='mash', full_name='v5api.InfoResponse.mash', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='majorVersion', full_name='grpcinterface.InfoResponse.majorVersion', index=2,
+      name='majorVersion', full_name='v5api.InfoResponse.majorVersion', index=2,
       number=3, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='minorVersion', full_name='grpcinterface.InfoResponse.minorVersion', index=3,
+      name='minorVersion', full_name='v5api.InfoResponse.minorVersion', index=3,
       number=4, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='build', full_name='grpcinterface.InfoResponse.build', index=4,
+      name='build', full_name='v5api.InfoResponse.build', index=4,
       number=5, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='proxy', full_name='grpcinterface.InfoResponse.proxy', index=5,
+      name='proxy', full_name='v5api.InfoResponse.proxy', index=5,
       number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1570,20 +1570,20 @@ _INFORESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3377,
-  serialized_end=3563,
+  serialized_start=3075,
+  serialized_end=3237,
 )
 
 
 _PROXYINFO = _descriptor.Descriptor(
   name='ProxyInfo',
-  full_name='grpcinterface.ProxyInfo',
+  full_name='v5api.ProxyInfo',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='proxyEndpoints', full_name='grpcinterface.ProxyInfo.proxyEndpoints', index=0,
+      name='proxyEndpoints', full_name='v5api.ProxyInfo.proxyEndpoints', index=0,
       number=1, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1601,27 +1601,27 @@ _PROXYINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3565,
-  serialized_end=3600,
+  serialized_start=3239,
+  serialized_end=3274,
 )
 
 
 _FAULTINJECTPARAMS = _descriptor.Descriptor(
   name='FaultInjectParams',
-  full_name='grpcinterface.FaultInjectParams',
+  full_name='v5api.FaultInjectParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='type', full_name='grpcinterface.FaultInjectParams.type', index=0,
+      name='type', full_name='v5api.FaultInjectParams.type', index=0,
       number=1, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='params', full_name='grpcinterface.FaultInjectParams.params', index=1,
+      name='params', full_name='v5api.FaultInjectParams.params', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -1639,27 +1639,27 @@ _FAULTINJECTPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3602,
-  serialized_end=3651,
+  serialized_start=3276,
+  serialized_end=3325,
 )
 
 
 _FAULTINJECTRESPONSE = _descriptor.Descriptor(
   name='FaultInjectResponse',
-  full_name='grpcinterface.FaultInjectResponse',
+  full_name='v5api.FaultInjectResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.FaultInjectResponse.stat', index=0,
+      name='stat', full_name='v5api.FaultInjectResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='rv', full_name='grpcinterface.FaultInjectResponse.rv', index=1,
+      name='rv', full_name='v5api.FaultInjectResponse.rv', index=1,
       number=2, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -1677,20 +1677,20 @@ _FAULTINJECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3653,
-  serialized_end=3723,
+  serialized_start=3327,
+  serialized_end=3389,
 )
 
 
 _FLUSHPARAMS = _descriptor.Descriptor(
   name='FlushParams',
-  full_name='grpcinterface.FlushParams',
+  full_name='v5api.FlushParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.FlushParams.uuid', index=0,
+      name='uuid', full_name='v5api.FlushParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -1708,34 +1708,34 @@ _FLUSHPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3725,
-  serialized_end=3752,
+  serialized_start=3391,
+  serialized_end=3418,
 )
 
 
 _FLUSHRESPONSE = _descriptor.Descriptor(
   name='FlushResponse',
-  full_name='grpcinterface.FlushResponse',
+  full_name='v5api.FlushResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.FlushResponse.stat', index=0,
+      name='stat', full_name='v5api.FlushResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMajor', full_name='grpcinterface.FlushResponse.versionMajor', index=1,
+      name='versionMajor', full_name='v5api.FlushResponse.versionMajor', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='versionMinor', full_name='grpcinterface.FlushResponse.versionMinor', index=2,
+      name='versionMinor', full_name='v5api.FlushResponse.versionMinor', index=2,
       number=3, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1753,20 +1753,20 @@ _FLUSHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3754,
-  serialized_end=3850,
+  serialized_start=3420,
+  serialized_end=3508,
 )
 
 
 _OBLITERATEPARAMS = _descriptor.Descriptor(
   name='ObliterateParams',
-  full_name='grpcinterface.ObliterateParams',
+  full_name='v5api.ObliterateParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.ObliterateParams.uuid', index=0,
+      name='uuid', full_name='v5api.ObliterateParams.uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -1784,20 +1784,20 @@ _OBLITERATEPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3852,
-  serialized_end=3884,
+  serialized_start=3510,
+  serialized_end=3542,
 )
 
 
 _OBLITERATERESPONSE = _descriptor.Descriptor(
   name='ObliterateResponse',
-  full_name='grpcinterface.ObliterateResponse',
+  full_name='v5api.ObliterateResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.ObliterateResponse.stat', index=0,
+      name='stat', full_name='v5api.ObliterateResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -1815,27 +1815,27 @@ _OBLITERATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3886,
-  serialized_end=3943,
+  serialized_start=3544,
+  serialized_end=3593,
 )
 
 
 _RAWPOINT = _descriptor.Descriptor(
   name='RawPoint',
-  full_name='grpcinterface.RawPoint',
+  full_name='v5api.RawPoint',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='time', full_name='grpcinterface.RawPoint.time', index=0,
+      name='time', full_name='v5api.RawPoint.time', index=0,
       number=1, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='value', full_name='grpcinterface.RawPoint.value', index=1,
+      name='value', full_name='v5api.RawPoint.value', index=1,
       number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -1853,55 +1853,55 @@ _RAWPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3945,
-  serialized_end=3984,
+  serialized_start=3595,
+  serialized_end=3634,
 )
 
 
 _STATPOINT = _descriptor.Descriptor(
   name='StatPoint',
-  full_name='grpcinterface.StatPoint',
+  full_name='v5api.StatPoint',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='time', full_name='grpcinterface.StatPoint.time', index=0,
+      name='time', full_name='v5api.StatPoint.time', index=0,
       number=1, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='min', full_name='grpcinterface.StatPoint.min', index=1,
+      name='min', full_name='v5api.StatPoint.min', index=1,
       number=2, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='mean', full_name='grpcinterface.StatPoint.mean', index=2,
+      name='mean', full_name='v5api.StatPoint.mean', index=2,
       number=3, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='max', full_name='grpcinterface.StatPoint.max', index=3,
+      name='max', full_name='v5api.StatPoint.max', index=3,
       number=4, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='count', full_name='grpcinterface.StatPoint.count', index=4,
+      name='count', full_name='v5api.StatPoint.count', index=4,
       number=5, type=6, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='stddev', full_name='grpcinterface.StatPoint.stddev', index=5,
+      name='stddev', full_name='v5api.StatPoint.stddev', index=5,
       number=6, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -1919,27 +1919,27 @@ _STATPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3986,
-  serialized_end=4082,
+  serialized_start=3636,
+  serialized_end=3732,
 )
 
 
 _CHANGEDRANGE = _descriptor.Descriptor(
   name='ChangedRange',
-  full_name='grpcinterface.ChangedRange',
+  full_name='v5api.ChangedRange',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='start', full_name='grpcinterface.ChangedRange.start', index=0,
+      name='start', full_name='v5api.ChangedRange.start', index=0,
       number=1, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end', full_name='grpcinterface.ChangedRange.end', index=1,
+      name='end', full_name='v5api.ChangedRange.end', index=1,
       number=2, type=16, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -1957,34 +1957,34 @@ _CHANGEDRANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4084,
-  serialized_end=4126,
+  serialized_start=3734,
+  serialized_end=3776,
 )
 
 
 _STATUS = _descriptor.Descriptor(
   name='Status',
-  full_name='grpcinterface.Status',
+  full_name='v5api.Status',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='code', full_name='grpcinterface.Status.code', index=0,
+      name='code', full_name='v5api.Status.code', index=0,
       number=1, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='msg', full_name='grpcinterface.Status.msg', index=1,
+      name='msg', full_name='v5api.Status.msg', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='mash', full_name='grpcinterface.Status.mash', index=2,
+      name='mash', full_name='v5api.Status.mash', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -2002,62 +2002,62 @@ _STATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4128,
-  serialized_end=4198,
+  serialized_start=3778,
+  serialized_end=3840,
 )
 
 
 _MASH = _descriptor.Descriptor(
   name='Mash',
-  full_name='grpcinterface.Mash',
+  full_name='v5api.Mash',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='revision', full_name='grpcinterface.Mash.revision', index=0,
+      name='revision', full_name='v5api.Mash.revision', index=0,
       number=1, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='leader', full_name='grpcinterface.Mash.leader', index=1,
+      name='leader', full_name='v5api.Mash.leader', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='leaderRevision', full_name='grpcinterface.Mash.leaderRevision', index=2,
+      name='leaderRevision', full_name='v5api.Mash.leaderRevision', index=2,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='totalWeight', full_name='grpcinterface.Mash.totalWeight', index=3,
+      name='totalWeight', full_name='v5api.Mash.totalWeight', index=3,
       number=4, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='healthy', full_name='grpcinterface.Mash.healthy', index=4,
+      name='healthy', full_name='v5api.Mash.healthy', index=4,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='unmapped', full_name='grpcinterface.Mash.unmapped', index=5,
+      name='unmapped', full_name='v5api.Mash.unmapped', index=5,
       number=6, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='members', full_name='grpcinterface.Mash.members', index=6,
+      name='members', full_name='v5api.Mash.members', index=6,
       number=7, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -2075,90 +2075,90 @@ _MASH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4201,
-  serialized_end=4361,
+  serialized_start=3843,
+  serialized_end=3995,
 )
 
 
 _MEMBER = _descriptor.Descriptor(
   name='Member',
-  full_name='grpcinterface.Member',
+  full_name='v5api.Member',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='hash', full_name='grpcinterface.Member.hash', index=0,
+      name='hash', full_name='v5api.Member.hash', index=0,
       number=1, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='nodename', full_name='grpcinterface.Member.nodename', index=1,
+      name='nodename', full_name='v5api.Member.nodename', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='up', full_name='grpcinterface.Member.up', index=2,
+      name='up', full_name='v5api.Member.up', index=2,
       number=3, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='in', full_name='grpcinterface.Member.in', index=3,
+      name='in', full_name='v5api.Member.in', index=3,
       number=4, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='enabled', full_name='grpcinterface.Member.enabled', index=4,
+      name='enabled', full_name='v5api.Member.enabled', index=4,
       number=5, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='start', full_name='grpcinterface.Member.start', index=5,
+      name='start', full_name='v5api.Member.start', index=5,
       number=6, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='end', full_name='grpcinterface.Member.end', index=6,
+      name='end', full_name='v5api.Member.end', index=6,
       number=7, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='weight', full_name='grpcinterface.Member.weight', index=7,
+      name='weight', full_name='v5api.Member.weight', index=7,
       number=8, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='readPreference', full_name='grpcinterface.Member.readPreference', index=8,
+      name='readPreference', full_name='v5api.Member.readPreference', index=8,
       number=9, type=1, cpp_type=5, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='httpEndpoints', full_name='grpcinterface.Member.httpEndpoints', index=9,
+      name='httpEndpoints', full_name='v5api.Member.httpEndpoints', index=9,
       number=10, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='grpcEndpoints', full_name='grpcinterface.Member.grpcEndpoints', index=10,
+      name='grpcEndpoints', full_name='v5api.Member.grpcEndpoints', index=10,
       number=11, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -2176,27 +2176,27 @@ _MEMBER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4364,
-  serialized_end=4559,
+  serialized_start=3998,
+  serialized_end=4193,
 )
 
 
 _KEYOPTVALUE = _descriptor.Descriptor(
   name='KeyOptValue',
-  full_name='grpcinterface.KeyOptValue',
+  full_name='v5api.KeyOptValue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='grpcinterface.KeyOptValue.key', index=0,
+      name='key', full_name='v5api.KeyOptValue.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='val', full_name='grpcinterface.KeyOptValue.val', index=1,
+      name='val', full_name='v5api.KeyOptValue.val', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -2214,20 +2214,20 @@ _KEYOPTVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4561,
-  serialized_end=4625,
+  serialized_start=4195,
+  serialized_end=4251,
 )
 
 
 _OPTVALUE = _descriptor.Descriptor(
   name='OptValue',
-  full_name='grpcinterface.OptValue',
+  full_name='v5api.OptValue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='value', full_name='grpcinterface.OptValue.value', index=0,
+      name='value', full_name='v5api.OptValue.value', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -2245,27 +2245,27 @@ _OPTVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4627,
-  serialized_end=4652,
+  serialized_start=4253,
+  serialized_end=4278,
 )
 
 
 _KEYVALUE = _descriptor.Descriptor(
   name='KeyValue',
-  full_name='grpcinterface.KeyValue',
+  full_name='v5api.KeyValue',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='key', full_name='grpcinterface.KeyValue.key', index=0,
+      name='key', full_name='v5api.KeyValue.key', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='value', full_name='grpcinterface.KeyValue.value', index=1,
+      name='value', full_name='v5api.KeyValue.value', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -2283,34 +2283,34 @@ _KEYVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4654,
-  serialized_end=4692,
+  serialized_start=4280,
+  serialized_end=4318,
 )
 
 
 _STREAMCSVCONFIG = _descriptor.Descriptor(
   name='StreamCSVConfig',
-  full_name='grpcinterface.StreamCSVConfig',
+  full_name='v5api.StreamCSVConfig',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='version', full_name='grpcinterface.StreamCSVConfig.version', index=0,
+      name='version', full_name='v5api.StreamCSVConfig.version', index=0,
       number=1, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='label', full_name='grpcinterface.StreamCSVConfig.label', index=1,
+      name='label', full_name='v5api.StreamCSVConfig.label', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='uuid', full_name='grpcinterface.StreamCSVConfig.uuid', index=2,
+      name='uuid', full_name='v5api.StreamCSVConfig.uuid', index=2,
       number=3, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -2328,62 +2328,62 @@ _STREAMCSVCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4694,
-  serialized_end=4757,
+  serialized_start=4320,
+  serialized_end=4383,
 )
 
 
 _GENERATECSVPARAMS = _descriptor.Descriptor(
   name='GenerateCSVParams',
-  full_name='grpcinterface.GenerateCSVParams',
+  full_name='v5api.GenerateCSVParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='queryType', full_name='grpcinterface.GenerateCSVParams.queryType', index=0,
+      name='queryType', full_name='v5api.GenerateCSVParams.queryType', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='startTime', full_name='grpcinterface.GenerateCSVParams.startTime', index=1,
+      name='startTime', full_name='v5api.GenerateCSVParams.startTime', index=1,
       number=2, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='endTime', full_name='grpcinterface.GenerateCSVParams.endTime', index=2,
+      name='endTime', full_name='v5api.GenerateCSVParams.endTime', index=2,
       number=3, type=3, cpp_type=2, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='windowSize', full_name='grpcinterface.GenerateCSVParams.windowSize', index=3,
+      name='windowSize', full_name='v5api.GenerateCSVParams.windowSize', index=3,
       number=4, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='depth', full_name='grpcinterface.GenerateCSVParams.depth', index=4,
+      name='depth', full_name='v5api.GenerateCSVParams.depth', index=4,
       number=5, type=13, cpp_type=3, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='includeVersions', full_name='grpcinterface.GenerateCSVParams.includeVersions', index=5,
+      name='includeVersions', full_name='v5api.GenerateCSVParams.includeVersions', index=5,
       number=6, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='streams', full_name='grpcinterface.GenerateCSVParams.streams', index=6,
+      name='streams', full_name='v5api.GenerateCSVParams.streams', index=6,
       number=7, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -2402,34 +2402,34 @@ _GENERATECSVPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4760,
-  serialized_end=5061,
+  serialized_start=4386,
+  serialized_end=4671,
 )
 
 
 _GENERATECSVRESPONSE = _descriptor.Descriptor(
   name='GenerateCSVResponse',
-  full_name='grpcinterface.GenerateCSVResponse',
+  full_name='v5api.GenerateCSVResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.GenerateCSVResponse.stat', index=0,
+      name='stat', full_name='v5api.GenerateCSVResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='isHeader', full_name='grpcinterface.GenerateCSVResponse.isHeader', index=1,
+      name='isHeader', full_name='v5api.GenerateCSVResponse.isHeader', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='row', full_name='grpcinterface.GenerateCSVResponse.row', index=2,
+      name='row', full_name='v5api.GenerateCSVResponse.row', index=2,
       number=3, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -2447,34 +2447,34 @@ _GENERATECSVRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5063,
-  serialized_end=5152,
+  serialized_start=4673,
+  serialized_end=4754,
 )
 
 
 _SQLQUERYPARAMS = _descriptor.Descriptor(
   name='SQLQueryParams',
-  full_name='grpcinterface.SQLQueryParams',
+  full_name='v5api.SQLQueryParams',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='query', full_name='grpcinterface.SQLQueryParams.query', index=0,
+      name='query', full_name='v5api.SQLQueryParams.query', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='params', full_name='grpcinterface.SQLQueryParams.params', index=1,
+      name='params', full_name='v5api.SQLQueryParams.params', index=1,
       number=2, type=9, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='role', full_name='grpcinterface.SQLQueryParams.role', index=2,
+      name='role', full_name='v5api.SQLQueryParams.role', index=2,
       number=100, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -2492,27 +2492,27 @@ _SQLQUERYPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5154,
-  serialized_end=5236,
+  serialized_start=4756,
+  serialized_end=4830,
 )
 
 
 _SQLQUERYRESPONSE = _descriptor.Descriptor(
   name='SQLQueryResponse',
-  full_name='grpcinterface.SQLQueryResponse',
+  full_name='v5api.SQLQueryResponse',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='stat', full_name='grpcinterface.SQLQueryResponse.stat', index=0,
+      name='stat', full_name='v5api.SQLQueryResponse.stat', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='SQLQueryRow', full_name='grpcinterface.SQLQueryResponse.SQLQueryRow', index=1,
+      name='SQLQueryRow', full_name='v5api.SQLQueryResponse.SQLQueryRow', index=1,
       number=2, type=12, cpp_type=9, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -2530,20 +2530,20 @@ _SQLQUERYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5238,
-  serialized_end=5314,
+  serialized_start=4832,
+  serialized_end=4900,
 )
 
 
 _ROLE = _descriptor.Descriptor(
   name='Role',
-  full_name='grpcinterface.Role',
+  full_name='v5api.Role',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='grpcinterface.Role.name', index=0,
+      name='name', full_name='v5api.Role.name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -2561,8 +2561,8 @@ _ROLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=5316,
-  serialized_end=5336,
+  serialized_start=4902,
+  serialized_end=4922,
 )
 
 _RAWVALUESRESPONSE.fields_by_name['stat'].message_type = _STATUS
@@ -2675,378 +2675,378 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 RawValuesParams = _reflection.GeneratedProtocolMessageType('RawValuesParams', (_message.Message,), dict(
   DESCRIPTOR = _RAWVALUESPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.RawValuesParams)
+  # @@protoc_insertion_point(class_scope:v5api.RawValuesParams)
   ))
 _sym_db.RegisterMessage(RawValuesParams)
 
 RawValuesResponse = _reflection.GeneratedProtocolMessageType('RawValuesResponse', (_message.Message,), dict(
   DESCRIPTOR = _RAWVALUESRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.RawValuesResponse)
+  # @@protoc_insertion_point(class_scope:v5api.RawValuesResponse)
   ))
 _sym_db.RegisterMessage(RawValuesResponse)
 
 AlignedWindowsParams = _reflection.GeneratedProtocolMessageType('AlignedWindowsParams', (_message.Message,), dict(
   DESCRIPTOR = _ALIGNEDWINDOWSPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.AlignedWindowsParams)
+  # @@protoc_insertion_point(class_scope:v5api.AlignedWindowsParams)
   ))
 _sym_db.RegisterMessage(AlignedWindowsParams)
 
 AlignedWindowsResponse = _reflection.GeneratedProtocolMessageType('AlignedWindowsResponse', (_message.Message,), dict(
   DESCRIPTOR = _ALIGNEDWINDOWSRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.AlignedWindowsResponse)
+  # @@protoc_insertion_point(class_scope:v5api.AlignedWindowsResponse)
   ))
 _sym_db.RegisterMessage(AlignedWindowsResponse)
 
 WindowsParams = _reflection.GeneratedProtocolMessageType('WindowsParams', (_message.Message,), dict(
   DESCRIPTOR = _WINDOWSPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.WindowsParams)
+  # @@protoc_insertion_point(class_scope:v5api.WindowsParams)
   ))
 _sym_db.RegisterMessage(WindowsParams)
 
 WindowsResponse = _reflection.GeneratedProtocolMessageType('WindowsResponse', (_message.Message,), dict(
   DESCRIPTOR = _WINDOWSRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.WindowsResponse)
+  # @@protoc_insertion_point(class_scope:v5api.WindowsResponse)
   ))
 _sym_db.RegisterMessage(WindowsResponse)
 
 StreamInfoParams = _reflection.GeneratedProtocolMessageType('StreamInfoParams', (_message.Message,), dict(
   DESCRIPTOR = _STREAMINFOPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.StreamInfoParams)
+  # @@protoc_insertion_point(class_scope:v5api.StreamInfoParams)
   ))
 _sym_db.RegisterMessage(StreamInfoParams)
 
 StreamInfoResponse = _reflection.GeneratedProtocolMessageType('StreamInfoResponse', (_message.Message,), dict(
   DESCRIPTOR = _STREAMINFORESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.StreamInfoResponse)
+  # @@protoc_insertion_point(class_scope:v5api.StreamInfoResponse)
   ))
 _sym_db.RegisterMessage(StreamInfoResponse)
 
 StreamDescriptor = _reflection.GeneratedProtocolMessageType('StreamDescriptor', (_message.Message,), dict(
   DESCRIPTOR = _STREAMDESCRIPTOR,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.StreamDescriptor)
+  # @@protoc_insertion_point(class_scope:v5api.StreamDescriptor)
   ))
 _sym_db.RegisterMessage(StreamDescriptor)
 
 SetStreamAnnotationsParams = _reflection.GeneratedProtocolMessageType('SetStreamAnnotationsParams', (_message.Message,), dict(
   DESCRIPTOR = _SETSTREAMANNOTATIONSPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.SetStreamAnnotationsParams)
+  # @@protoc_insertion_point(class_scope:v5api.SetStreamAnnotationsParams)
   ))
 _sym_db.RegisterMessage(SetStreamAnnotationsParams)
 
 SetStreamAnnotationsResponse = _reflection.GeneratedProtocolMessageType('SetStreamAnnotationsResponse', (_message.Message,), dict(
   DESCRIPTOR = _SETSTREAMANNOTATIONSRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.SetStreamAnnotationsResponse)
+  # @@protoc_insertion_point(class_scope:v5api.SetStreamAnnotationsResponse)
   ))
 _sym_db.RegisterMessage(SetStreamAnnotationsResponse)
 
 SetStreamTagsParams = _reflection.GeneratedProtocolMessageType('SetStreamTagsParams', (_message.Message,), dict(
   DESCRIPTOR = _SETSTREAMTAGSPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.SetStreamTagsParams)
+  # @@protoc_insertion_point(class_scope:v5api.SetStreamTagsParams)
   ))
 _sym_db.RegisterMessage(SetStreamTagsParams)
 
 SetStreamTagsResponse = _reflection.GeneratedProtocolMessageType('SetStreamTagsResponse', (_message.Message,), dict(
   DESCRIPTOR = _SETSTREAMTAGSRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.SetStreamTagsResponse)
+  # @@protoc_insertion_point(class_scope:v5api.SetStreamTagsResponse)
   ))
 _sym_db.RegisterMessage(SetStreamTagsResponse)
 
 CreateParams = _reflection.GeneratedProtocolMessageType('CreateParams', (_message.Message,), dict(
   DESCRIPTOR = _CREATEPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.CreateParams)
+  # @@protoc_insertion_point(class_scope:v5api.CreateParams)
   ))
 _sym_db.RegisterMessage(CreateParams)
 
 CreateResponse = _reflection.GeneratedProtocolMessageType('CreateResponse', (_message.Message,), dict(
   DESCRIPTOR = _CREATERESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.CreateResponse)
+  # @@protoc_insertion_point(class_scope:v5api.CreateResponse)
   ))
 _sym_db.RegisterMessage(CreateResponse)
 
 MetadataUsageParams = _reflection.GeneratedProtocolMessageType('MetadataUsageParams', (_message.Message,), dict(
   DESCRIPTOR = _METADATAUSAGEPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.MetadataUsageParams)
+  # @@protoc_insertion_point(class_scope:v5api.MetadataUsageParams)
   ))
 _sym_db.RegisterMessage(MetadataUsageParams)
 
 MetadataUsageResponse = _reflection.GeneratedProtocolMessageType('MetadataUsageResponse', (_message.Message,), dict(
   DESCRIPTOR = _METADATAUSAGERESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.MetadataUsageResponse)
+  # @@protoc_insertion_point(class_scope:v5api.MetadataUsageResponse)
   ))
 _sym_db.RegisterMessage(MetadataUsageResponse)
 
 KeyCount = _reflection.GeneratedProtocolMessageType('KeyCount', (_message.Message,), dict(
   DESCRIPTOR = _KEYCOUNT,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.KeyCount)
+  # @@protoc_insertion_point(class_scope:v5api.KeyCount)
   ))
 _sym_db.RegisterMessage(KeyCount)
 
 ListCollectionsParams = _reflection.GeneratedProtocolMessageType('ListCollectionsParams', (_message.Message,), dict(
   DESCRIPTOR = _LISTCOLLECTIONSPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ListCollectionsParams)
+  # @@protoc_insertion_point(class_scope:v5api.ListCollectionsParams)
   ))
 _sym_db.RegisterMessage(ListCollectionsParams)
 
 ListCollectionsResponse = _reflection.GeneratedProtocolMessageType('ListCollectionsResponse', (_message.Message,), dict(
   DESCRIPTOR = _LISTCOLLECTIONSRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ListCollectionsResponse)
+  # @@protoc_insertion_point(class_scope:v5api.ListCollectionsResponse)
   ))
 _sym_db.RegisterMessage(ListCollectionsResponse)
 
 LookupStreamsParams = _reflection.GeneratedProtocolMessageType('LookupStreamsParams', (_message.Message,), dict(
   DESCRIPTOR = _LOOKUPSTREAMSPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.LookupStreamsParams)
+  # @@protoc_insertion_point(class_scope:v5api.LookupStreamsParams)
   ))
 _sym_db.RegisterMessage(LookupStreamsParams)
 
 LookupStreamsResponse = _reflection.GeneratedProtocolMessageType('LookupStreamsResponse', (_message.Message,), dict(
   DESCRIPTOR = _LOOKUPSTREAMSRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.LookupStreamsResponse)
+  # @@protoc_insertion_point(class_scope:v5api.LookupStreamsResponse)
   ))
 _sym_db.RegisterMessage(LookupStreamsResponse)
 
 NearestParams = _reflection.GeneratedProtocolMessageType('NearestParams', (_message.Message,), dict(
   DESCRIPTOR = _NEARESTPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.NearestParams)
+  # @@protoc_insertion_point(class_scope:v5api.NearestParams)
   ))
 _sym_db.RegisterMessage(NearestParams)
 
 NearestResponse = _reflection.GeneratedProtocolMessageType('NearestResponse', (_message.Message,), dict(
   DESCRIPTOR = _NEARESTRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.NearestResponse)
+  # @@protoc_insertion_point(class_scope:v5api.NearestResponse)
   ))
 _sym_db.RegisterMessage(NearestResponse)
 
 ChangesParams = _reflection.GeneratedProtocolMessageType('ChangesParams', (_message.Message,), dict(
   DESCRIPTOR = _CHANGESPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ChangesParams)
+  # @@protoc_insertion_point(class_scope:v5api.ChangesParams)
   ))
 _sym_db.RegisterMessage(ChangesParams)
 
 ChangesResponse = _reflection.GeneratedProtocolMessageType('ChangesResponse', (_message.Message,), dict(
   DESCRIPTOR = _CHANGESRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ChangesResponse)
+  # @@protoc_insertion_point(class_scope:v5api.ChangesResponse)
   ))
 _sym_db.RegisterMessage(ChangesResponse)
 
 InsertParams = _reflection.GeneratedProtocolMessageType('InsertParams', (_message.Message,), dict(
   DESCRIPTOR = _INSERTPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.InsertParams)
+  # @@protoc_insertion_point(class_scope:v5api.InsertParams)
   ))
 _sym_db.RegisterMessage(InsertParams)
 
 InsertResponse = _reflection.GeneratedProtocolMessageType('InsertResponse', (_message.Message,), dict(
   DESCRIPTOR = _INSERTRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.InsertResponse)
+  # @@protoc_insertion_point(class_scope:v5api.InsertResponse)
   ))
 _sym_db.RegisterMessage(InsertResponse)
 
 DeleteParams = _reflection.GeneratedProtocolMessageType('DeleteParams', (_message.Message,), dict(
   DESCRIPTOR = _DELETEPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.DeleteParams)
+  # @@protoc_insertion_point(class_scope:v5api.DeleteParams)
   ))
 _sym_db.RegisterMessage(DeleteParams)
 
 DeleteResponse = _reflection.GeneratedProtocolMessageType('DeleteResponse', (_message.Message,), dict(
   DESCRIPTOR = _DELETERESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.DeleteResponse)
+  # @@protoc_insertion_point(class_scope:v5api.DeleteResponse)
   ))
 _sym_db.RegisterMessage(DeleteResponse)
 
 InfoParams = _reflection.GeneratedProtocolMessageType('InfoParams', (_message.Message,), dict(
   DESCRIPTOR = _INFOPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.InfoParams)
+  # @@protoc_insertion_point(class_scope:v5api.InfoParams)
   ))
 _sym_db.RegisterMessage(InfoParams)
 
 InfoResponse = _reflection.GeneratedProtocolMessageType('InfoResponse', (_message.Message,), dict(
   DESCRIPTOR = _INFORESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.InfoResponse)
+  # @@protoc_insertion_point(class_scope:v5api.InfoResponse)
   ))
 _sym_db.RegisterMessage(InfoResponse)
 
 ProxyInfo = _reflection.GeneratedProtocolMessageType('ProxyInfo', (_message.Message,), dict(
   DESCRIPTOR = _PROXYINFO,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ProxyInfo)
+  # @@protoc_insertion_point(class_scope:v5api.ProxyInfo)
   ))
 _sym_db.RegisterMessage(ProxyInfo)
 
 FaultInjectParams = _reflection.GeneratedProtocolMessageType('FaultInjectParams', (_message.Message,), dict(
   DESCRIPTOR = _FAULTINJECTPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.FaultInjectParams)
+  # @@protoc_insertion_point(class_scope:v5api.FaultInjectParams)
   ))
 _sym_db.RegisterMessage(FaultInjectParams)
 
 FaultInjectResponse = _reflection.GeneratedProtocolMessageType('FaultInjectResponse', (_message.Message,), dict(
   DESCRIPTOR = _FAULTINJECTRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.FaultInjectResponse)
+  # @@protoc_insertion_point(class_scope:v5api.FaultInjectResponse)
   ))
 _sym_db.RegisterMessage(FaultInjectResponse)
 
 FlushParams = _reflection.GeneratedProtocolMessageType('FlushParams', (_message.Message,), dict(
   DESCRIPTOR = _FLUSHPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.FlushParams)
+  # @@protoc_insertion_point(class_scope:v5api.FlushParams)
   ))
 _sym_db.RegisterMessage(FlushParams)
 
 FlushResponse = _reflection.GeneratedProtocolMessageType('FlushResponse', (_message.Message,), dict(
   DESCRIPTOR = _FLUSHRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.FlushResponse)
+  # @@protoc_insertion_point(class_scope:v5api.FlushResponse)
   ))
 _sym_db.RegisterMessage(FlushResponse)
 
 ObliterateParams = _reflection.GeneratedProtocolMessageType('ObliterateParams', (_message.Message,), dict(
   DESCRIPTOR = _OBLITERATEPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ObliterateParams)
+  # @@protoc_insertion_point(class_scope:v5api.ObliterateParams)
   ))
 _sym_db.RegisterMessage(ObliterateParams)
 
 ObliterateResponse = _reflection.GeneratedProtocolMessageType('ObliterateResponse', (_message.Message,), dict(
   DESCRIPTOR = _OBLITERATERESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ObliterateResponse)
+  # @@protoc_insertion_point(class_scope:v5api.ObliterateResponse)
   ))
 _sym_db.RegisterMessage(ObliterateResponse)
 
 RawPoint = _reflection.GeneratedProtocolMessageType('RawPoint', (_message.Message,), dict(
   DESCRIPTOR = _RAWPOINT,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.RawPoint)
+  # @@protoc_insertion_point(class_scope:v5api.RawPoint)
   ))
 _sym_db.RegisterMessage(RawPoint)
 
 StatPoint = _reflection.GeneratedProtocolMessageType('StatPoint', (_message.Message,), dict(
   DESCRIPTOR = _STATPOINT,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.StatPoint)
+  # @@protoc_insertion_point(class_scope:v5api.StatPoint)
   ))
 _sym_db.RegisterMessage(StatPoint)
 
 ChangedRange = _reflection.GeneratedProtocolMessageType('ChangedRange', (_message.Message,), dict(
   DESCRIPTOR = _CHANGEDRANGE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.ChangedRange)
+  # @@protoc_insertion_point(class_scope:v5api.ChangedRange)
   ))
 _sym_db.RegisterMessage(ChangedRange)
 
 Status = _reflection.GeneratedProtocolMessageType('Status', (_message.Message,), dict(
   DESCRIPTOR = _STATUS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.Status)
+  # @@protoc_insertion_point(class_scope:v5api.Status)
   ))
 _sym_db.RegisterMessage(Status)
 
 Mash = _reflection.GeneratedProtocolMessageType('Mash', (_message.Message,), dict(
   DESCRIPTOR = _MASH,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.Mash)
+  # @@protoc_insertion_point(class_scope:v5api.Mash)
   ))
 _sym_db.RegisterMessage(Mash)
 
 Member = _reflection.GeneratedProtocolMessageType('Member', (_message.Message,), dict(
   DESCRIPTOR = _MEMBER,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.Member)
+  # @@protoc_insertion_point(class_scope:v5api.Member)
   ))
 _sym_db.RegisterMessage(Member)
 
 KeyOptValue = _reflection.GeneratedProtocolMessageType('KeyOptValue', (_message.Message,), dict(
   DESCRIPTOR = _KEYOPTVALUE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.KeyOptValue)
+  # @@protoc_insertion_point(class_scope:v5api.KeyOptValue)
   ))
 _sym_db.RegisterMessage(KeyOptValue)
 
 OptValue = _reflection.GeneratedProtocolMessageType('OptValue', (_message.Message,), dict(
   DESCRIPTOR = _OPTVALUE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.OptValue)
+  # @@protoc_insertion_point(class_scope:v5api.OptValue)
   ))
 _sym_db.RegisterMessage(OptValue)
 
 KeyValue = _reflection.GeneratedProtocolMessageType('KeyValue', (_message.Message,), dict(
   DESCRIPTOR = _KEYVALUE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.KeyValue)
+  # @@protoc_insertion_point(class_scope:v5api.KeyValue)
   ))
 _sym_db.RegisterMessage(KeyValue)
 
 StreamCSVConfig = _reflection.GeneratedProtocolMessageType('StreamCSVConfig', (_message.Message,), dict(
   DESCRIPTOR = _STREAMCSVCONFIG,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.StreamCSVConfig)
+  # @@protoc_insertion_point(class_scope:v5api.StreamCSVConfig)
   ))
 _sym_db.RegisterMessage(StreamCSVConfig)
 
 GenerateCSVParams = _reflection.GeneratedProtocolMessageType('GenerateCSVParams', (_message.Message,), dict(
   DESCRIPTOR = _GENERATECSVPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.GenerateCSVParams)
+  # @@protoc_insertion_point(class_scope:v5api.GenerateCSVParams)
   ))
 _sym_db.RegisterMessage(GenerateCSVParams)
 
 GenerateCSVResponse = _reflection.GeneratedProtocolMessageType('GenerateCSVResponse', (_message.Message,), dict(
   DESCRIPTOR = _GENERATECSVRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.GenerateCSVResponse)
+  # @@protoc_insertion_point(class_scope:v5api.GenerateCSVResponse)
   ))
 _sym_db.RegisterMessage(GenerateCSVResponse)
 
 SQLQueryParams = _reflection.GeneratedProtocolMessageType('SQLQueryParams', (_message.Message,), dict(
   DESCRIPTOR = _SQLQUERYPARAMS,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.SQLQueryParams)
+  # @@protoc_insertion_point(class_scope:v5api.SQLQueryParams)
   ))
 _sym_db.RegisterMessage(SQLQueryParams)
 
 SQLQueryResponse = _reflection.GeneratedProtocolMessageType('SQLQueryResponse', (_message.Message,), dict(
   DESCRIPTOR = _SQLQUERYRESPONSE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.SQLQueryResponse)
+  # @@protoc_insertion_point(class_scope:v5api.SQLQueryResponse)
   ))
 _sym_db.RegisterMessage(SQLQueryResponse)
 
 Role = _reflection.GeneratedProtocolMessageType('Role', (_message.Message,), dict(
   DESCRIPTOR = _ROLE,
   __module__ = 'btrdb_pb2'
-  # @@protoc_insertion_point(class_scope:grpcinterface.Role)
+  # @@protoc_insertion_point(class_scope:v5api.Role)
   ))
 _sym_db.RegisterMessage(Role)
 
@@ -3054,16 +3054,16 @@ _sym_db.RegisterMessage(Role)
 
 _BTRDB = _descriptor.ServiceDescriptor(
   name='BTrDB',
-  full_name='grpcinterface.BTrDB',
+  full_name='v5api.BTrDB',
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=5339,
-  serialized_end=6990,
+  serialized_start=4925,
+  serialized_end=6256,
   methods=[
   _descriptor.MethodDescriptor(
     name='RawValues',
-    full_name='grpcinterface.BTrDB.RawValues',
+    full_name='v5api.BTrDB.RawValues',
     index=0,
     containing_service=None,
     input_type=_RAWVALUESPARAMS,
@@ -3072,7 +3072,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='AlignedWindows',
-    full_name='grpcinterface.BTrDB.AlignedWindows',
+    full_name='v5api.BTrDB.AlignedWindows',
     index=1,
     containing_service=None,
     input_type=_ALIGNEDWINDOWSPARAMS,
@@ -3081,7 +3081,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Windows',
-    full_name='grpcinterface.BTrDB.Windows',
+    full_name='v5api.BTrDB.Windows',
     index=2,
     containing_service=None,
     input_type=_WINDOWSPARAMS,
@@ -3090,7 +3090,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='StreamInfo',
-    full_name='grpcinterface.BTrDB.StreamInfo',
+    full_name='v5api.BTrDB.StreamInfo',
     index=3,
     containing_service=None,
     input_type=_STREAMINFOPARAMS,
@@ -3099,7 +3099,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='SetStreamAnnotations',
-    full_name='grpcinterface.BTrDB.SetStreamAnnotations',
+    full_name='v5api.BTrDB.SetStreamAnnotations',
     index=4,
     containing_service=None,
     input_type=_SETSTREAMANNOTATIONSPARAMS,
@@ -3108,7 +3108,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='SetStreamTags',
-    full_name='grpcinterface.BTrDB.SetStreamTags',
+    full_name='v5api.BTrDB.SetStreamTags',
     index=5,
     containing_service=None,
     input_type=_SETSTREAMTAGSPARAMS,
@@ -3117,7 +3117,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Create',
-    full_name='grpcinterface.BTrDB.Create',
+    full_name='v5api.BTrDB.Create',
     index=6,
     containing_service=None,
     input_type=_CREATEPARAMS,
@@ -3126,7 +3126,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='ListCollections',
-    full_name='grpcinterface.BTrDB.ListCollections',
+    full_name='v5api.BTrDB.ListCollections',
     index=7,
     containing_service=None,
     input_type=_LISTCOLLECTIONSPARAMS,
@@ -3135,7 +3135,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='LookupStreams',
-    full_name='grpcinterface.BTrDB.LookupStreams',
+    full_name='v5api.BTrDB.LookupStreams',
     index=8,
     containing_service=None,
     input_type=_LOOKUPSTREAMSPARAMS,
@@ -3144,7 +3144,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Nearest',
-    full_name='grpcinterface.BTrDB.Nearest',
+    full_name='v5api.BTrDB.Nearest',
     index=9,
     containing_service=None,
     input_type=_NEARESTPARAMS,
@@ -3153,7 +3153,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Changes',
-    full_name='grpcinterface.BTrDB.Changes',
+    full_name='v5api.BTrDB.Changes',
     index=10,
     containing_service=None,
     input_type=_CHANGESPARAMS,
@@ -3162,7 +3162,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Insert',
-    full_name='grpcinterface.BTrDB.Insert',
+    full_name='v5api.BTrDB.Insert',
     index=11,
     containing_service=None,
     input_type=_INSERTPARAMS,
@@ -3171,7 +3171,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Delete',
-    full_name='grpcinterface.BTrDB.Delete',
+    full_name='v5api.BTrDB.Delete',
     index=12,
     containing_service=None,
     input_type=_DELETEPARAMS,
@@ -3180,7 +3180,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Info',
-    full_name='grpcinterface.BTrDB.Info',
+    full_name='v5api.BTrDB.Info',
     index=13,
     containing_service=None,
     input_type=_INFOPARAMS,
@@ -3189,7 +3189,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='FaultInject',
-    full_name='grpcinterface.BTrDB.FaultInject',
+    full_name='v5api.BTrDB.FaultInject',
     index=14,
     containing_service=None,
     input_type=_FAULTINJECTPARAMS,
@@ -3198,7 +3198,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Flush',
-    full_name='grpcinterface.BTrDB.Flush',
+    full_name='v5api.BTrDB.Flush',
     index=15,
     containing_service=None,
     input_type=_FLUSHPARAMS,
@@ -3207,7 +3207,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='Obliterate',
-    full_name='grpcinterface.BTrDB.Obliterate',
+    full_name='v5api.BTrDB.Obliterate',
     index=16,
     containing_service=None,
     input_type=_OBLITERATEPARAMS,
@@ -3216,7 +3216,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='GetMetadataUsage',
-    full_name='grpcinterface.BTrDB.GetMetadataUsage',
+    full_name='v5api.BTrDB.GetMetadataUsage',
     index=17,
     containing_service=None,
     input_type=_METADATAUSAGEPARAMS,
@@ -3225,7 +3225,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='GenerateCSV',
-    full_name='grpcinterface.BTrDB.GenerateCSV',
+    full_name='v5api.BTrDB.GenerateCSV',
     index=18,
     containing_service=None,
     input_type=_GENERATECSVPARAMS,
@@ -3234,7 +3234,7 @@ _BTRDB = _descriptor.ServiceDescriptor(
   ),
   _descriptor.MethodDescriptor(
     name='SQLQuery',
-    full_name='grpcinterface.BTrDB.SQLQuery',
+    full_name='v5api.BTrDB.SQLQuery',
     index=19,
     containing_service=None,
     input_type=_SQLQUERYPARAMS,
