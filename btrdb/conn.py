@@ -208,7 +208,7 @@ class BTrDB(object):
         return {
             "majorVersion": info.majorVersion,
             "build": info.build,
-            "proxy": { "proxyEndpoints": info.proxy.proxyEndpoints[0] },
+            "proxy": { "proxyEndpoints": info.proxy.proxyEndpoints },
         }
 
     def list_collections(self, starts_with=""):

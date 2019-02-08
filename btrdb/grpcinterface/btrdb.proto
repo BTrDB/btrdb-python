@@ -1,6 +1,6 @@
 syntax = "proto3";
 //Version 5.0
-package grpcinterface;
+package v5api;
 
 service BTrDB {
   rpc RawValues(RawValuesParams) returns (stream RawValuesResponse);
