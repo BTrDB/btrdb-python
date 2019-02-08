@@ -206,7 +206,6 @@ class Stream(object):
             The version of the stream for the RawPoint supplied
 
         """
-        earliest = None
         start = 0
         return self.nearest(start, version=version, backward=False)
 
@@ -227,7 +226,6 @@ class Stream(object):
             the value was retrieved at.
 
         """
-        latest = None
         start = currently_as_ns()
         return self.nearest(start, version=version, backward=True)
 
