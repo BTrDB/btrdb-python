@@ -5,3 +5,5 @@ freezegun==0.3.11
 
 # dependencies for conversions
 numpy>=1.15
+pandas
+tabulate==0.8.3

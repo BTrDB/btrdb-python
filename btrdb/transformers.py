@@ -16,6 +16,8 @@ Value transformation utilities
 ##########################################################################
 
 import csv
+import contextlib
+from collections import OrderedDict
 
 ##########################################################################
 ## Helper Functions
@@ -40,7 +42,7 @@ def _stream_names(stream_set):
 
 def to_series(stream_set):
     """
-    Returns a list of Pandas series objects
+    Returns a list of Pandas Series objects indexed by time
     """
     try:
         import pandas as pd
@@ -58,9 +60,13 @@ def to_series(stream_set):
 
 def to_dataframe(stream_set, columns=None):
     """
-    Returns a Pandas DataFrame object.
+    Returns a Pandas DataFrame object indexed by time and using the values of a
+    stream for each column.
 
-    @param columns (list) iterable of column names to use for dataframe
+    Parameters
+    ----------
+    columns: sequence
+        column names to use for DataFrame
     """
     try:
         import pandas as pd
@@ -69,12 +75,12 @@ def to_dataframe(stream_set, columns=None):
 
     stream_names = _stream_names(stream_set)
     columns = columns if columns else ["time"] + list(stream_names)
-    return pd.DataFrame(to_dict(stream_set), columns=columns)
+    return pd.DataFrame(to_dict(stream_set), columns=columns).set_index("time")
 
 
 def to_array(stream_set):
     """
-    Returns a list of Numpy arrays
+    Returns a list of Numpy arrays (one per stream) containing point classes.
     """
     try:
         import numpy as np
@@ -86,30 +92,58 @@ def to_array(stream_set):
 
 def to_dict(stream_set):
     """
-    Returns a list of dictionary objects for each time code with the appropriate
+    Returns a list of OrderedDict for each time code with the appropriate
     stream data attached.
     """
     data = []
     stream_names = _stream_names(stream_set)
     for row in stream_set.rows():
-        item = {
+        item = OrderedDict({
             "time": _get_time_from_row(row),
-        }
+        })
         for idx, col in enumerate(stream_names):
             item[col] = row[idx].value if row[idx] else None
         data.append(item)
     return data
 
 
-def to_csv(stream_set, path, dialect=None, headers=None):
+def to_csv(stream_set, fobj, dialect=None, fieldnames=None):
     """
-    Saves stream data as csv
-    """
-    with open(path, "w") as csvfile:
-        stream_names = _stream_names(stream_set)
-        headers = headers if headers else ["time"] + list(stream_names)
+    Saves stream data as a CSV file.
 
-        writer = csv.DictWriter(csvfile, fieldnames=headers, dialect=dialect)
+    Parameters
+    ----------
+    fobj: str or file-like object
+        Path to use for saving CSV file or a file-like object to use to write to.
+
+    dialect: csv.Dialect
+        CSV dialect object from Python csv module.  See Python's csv module for
+        more information.
+
+    fieldnames: sequence
+        A sequence of strings to use as fieldnames in the CSV header.  See
+        Python's csv module for more information.
+
+    """
+
+    @contextlib.contextmanager
+    def open_path_or_file(path_or_file):
+        if isinstance(path_or_file, str):
+            f = file_to_close = open(path_or_file, 'w')
+        else:
+            f = path_or_file
+            file_to_close = None
+        try:
+            yield f
+        finally:
+            if file_to_close:
+                file_to_close.close()
+
+    with open_path_or_file(fobj) as csvfile:
+        stream_names = _stream_names(stream_set)
+        fieldnames = fieldnames if fieldnames else ["time"] + list(stream_names)
+
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect=dialect)
         writer.writeheader()
 
         for item in to_dict(stream_set):
@@ -118,7 +152,8 @@ def to_csv(stream_set, path, dialect=None, headers=None):
 
 def to_table(stream_set):
     """
-    Returns string of table
+    Returns string representation of the data in tabular form using the tabulate
+    library.
     """
     try:
         from tabulate import tabulate
