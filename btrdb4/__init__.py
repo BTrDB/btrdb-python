@@ -733,16 +733,13 @@ class Stream(object):
         rp, version = ep.nearest(self.uu, time, version, backward)
         return RawPoint.fromProto(rp), version
 
-    """
-    This function does not work so is getting commented out. 1/12/18
-
     def changes(self, fromVersion, toVersion, resolution):
+        # type (int, int, int) -> Tuple[ChangedRange, int]
         ep = self.b.ep
         crs = ep.changes(self.uu, fromVersion, toVersion, resolution)
         for crlist, version in crs:
             for cr in crlist:
-                yield ChangeRange.fromProto(cr), version
-    """
+                yield ChangedRange.fromProto(cr), version
 
     def flush(self):
         # type: () -> None
