@@ -79,7 +79,7 @@ class ChangedRange(object):
             raise IndexError("ChangedRange index out of range")
 
     def __repr__(self):
-        return "ChangedRange({0}, {1})".format(repr(self.time), repr(self.value))
+        return "ChangedRange({0}, {1})".format(repr(self.start), repr(self.end))
 
 class RawPoint(object):
     def __init__(self, time, value):
