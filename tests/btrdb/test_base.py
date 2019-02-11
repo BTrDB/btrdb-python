@@ -26,7 +26,7 @@ from btrdb.exceptions import ConnectionError
 ## Test Constants
 ##########################################################################
 
-EXPECTED_VERSION = "5.0"
+EXPECTED_VERSION = "5.1"
 
 
 ##########################################################################
@@ -45,7 +45,7 @@ class TestPackage(object):
         """
         Assert that the test version matches the library version.
         """
-        __version__ == EXPECTED_VERSION
+        assert __version__ == EXPECTED_VERSION
 
     def test_connect_raises_err(self):
         """
