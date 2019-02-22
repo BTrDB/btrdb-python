@@ -646,6 +646,9 @@ class Stream(object):
         """
         self._btrdb.ep.flush(self._uuid)
 
+    def __repr__(self):
+        return "<Stream collection={} name={}>".format(self.collection,
+            self.name)
 
 ##########################################################################
 ## StreamSet  Classes

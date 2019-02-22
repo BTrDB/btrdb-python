@@ -70,6 +70,23 @@ class TestStream(object):
         Stream(None, "FAKE")
 
 
+    def test_repr_str(self):
+        """
+        Assert the repr and str output are correct
+        """
+        COLLECTION = "relay/foo"
+        NAME = "LINE222VA-ANG"
+        stream = Stream(None, "FAKE")
+        stream._collection = COLLECTION
+        stream._tags = {"name": NAME}
+
+        expected = "<Stream collection={} name={}>".format(
+            COLLECTION, NAME
+        )
+        assert stream.__repr__() == expected
+        assert stream.__str__() == expected
+
+
     def test_refresh_metadata(self):
         """
         Assert refresh_metadata calls Endpoint.streamInfo
