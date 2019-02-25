@@ -904,6 +904,45 @@ class StreamSetBase(object):
         self.pointwidth = int(pointwidth)
         return self
 
+    def _streamset_data(self, as_iterators=False):
+        """
+        Private method to return a list of lists representing the data from each
+        stream within the StreamSetself.
+
+        Parameters
+        ----------
+        as_iterators : bool
+            Returns each single stream's data as an iterator.  Defaults to False.
+        """
+        params = self._params_from_filters()
+        versions = self.versions()
+        data = []
+
+        if self.pointwidth is not None:
+            # create list of stream.aligned_windows data
+            params.update({"pointwidth": self.pointwidth})
+            for s in self._streams:
+                params.update({"version": versions[s.uuid]})
+                data.append(s.aligned_windows(**params))
+
+
+        elif None not in [self.width, self.depth]:
+            # create list of stream.windows data
+            params.update({"width": self.width, "depth": self.depth})
+            for s in self._streams:
+                params.update({"version": versions[s.uuid]})
+                data.append(s.windows(**params))
+
+        else:
+            # create list of stream.values
+            data = [s.values(**params) for s in self._streams]
+
+        if as_iterators:
+            return [iter(ii) for ii in data]
+
+        return data
+
+
     def rows(self):
         """
         Returns a materialized list of tuples where each tuple contains the
@@ -922,37 +961,14 @@ class StreamSetBase(object):
 
         """
         result = []
-        versions = self.versions()
-        params = self._params_from_filters()
+        streamset_data = self._streamset_data(as_iterators=True)
         buffer = PointBuffer(len(self._streams))
-
-        if self.pointwidth is not None:
-            # obtain list of stream.aligned_windows handles
-            stream_output_iterables = []
-            params.update({"pointwidth": self.pointwidth})
-            for s in self._streams:
-                params.update({"version": versions[s.uuid]})
-                stream_output_iterables.append(iter(s.aligned_windows(**params)))
-
-
-        elif None not in [self.width, self.depth]:
-            # obtain list of stream.windows handles
-            stream_output_iterables = []
-            params.update({"width": self.width, "depth": self.depth})
-            for s in self._streams:
-                params.update({"version": versions[s.uuid]})
-                stream_output_iterables.append(iter(s.windows(**params)))
-
-        else:
-            # obtain list of stream.windows handles
-            stream_output_iterables = [iter(s.values(**params)) for s in self._streams]
-
 
         while True:
             streams_empty = True
-            # import pdb; pdb.set_trace()
+
             # add next values from streams into buffer
-            for stream_idx, data in enumerate(stream_output_iterables):
+            for stream_idx, data in enumerate(streamset_data):
 
                 if buffer.active[stream_idx]:
                     try:
@@ -992,33 +1008,9 @@ class StreamSetBase(object):
         Returns a fully materialized list of lists for the stream values/points
         """
         result = []
-        params = self._params_from_filters()
-        versions = self.versions()
-
-        if self.pointwidth is not None:
-            # obtain list of stream.aligned_windows handles
-            stream_output_iterables = []
-            params.update({"pointwidth": self.pointwidth})
-            for s in self._streams:
-                params.update({"version": versions[s.uuid]})
-                stream_output_iterables.append(s.aligned_windows(**params))
-
-
-        elif None not in [self.width, self.depth]:
-            # obtain list of stream.windows handles
-            stream_output_iterables = []
-            params.update({"width": self.width, "depth": self.depth})
-            for s in self._streams:
-                params.update({"version": versions[s.uuid]})
-                stream_output_iterables.append(s.windows(**params))
-
-        else:
-            # obtain list of stream.windows handles
-            stream_output_iterables = [s.values(**params) for s in self._streams]
-
-
-        for stream_output in stream_output_iterables:
-            result.append([point[0] for point in stream_output])
+        streamset_data = self._streamset_data()
+        for stream_data in streamset_data:
+            result.append([point[0] for point in stream_data])
 
         return result
 
