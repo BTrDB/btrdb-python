@@ -970,7 +970,29 @@ class StreamSetBase(object):
         """
         result = []
         params = self._params_from_filters()
-        stream_output_iterables = [s.values(**params) for s in self._streams]
+        versions = self.versions()
+
+        if self.pointwidth is not None:
+            # obtain list of stream.aligned_windows handles
+            stream_output_iterables = []
+            params.update({"pointwidth": self.pointwidth})
+            for s in self._streams:
+                params.update({"version": versions[s.uuid]})
+                stream_output_iterables.append(s.aligned_windows(**params))
+
+
+        elif None not in [self.width, self.depth]:
+            # obtain list of stream.windows handles
+            stream_output_iterables = []
+            params.update({"width": self.width, "depth": self.depth})
+            for s in self._streams:
+                params.update({"version": versions[s.uuid]})
+                stream_output_iterables.append(s.windows(**params))
+
+        else:
+            # obtain list of stream.windows handles
+            stream_output_iterables = [s.values(**params) for s in self._streams]
+
 
         for stream_output in stream_output_iterables:
             result.append([point[0] for point in stream_output])

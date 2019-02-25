@@ -19,8 +19,7 @@ import uuid
 import pytz
 import datetime
 import pytest
-from unittest.mock import Mock, PropertyMock
-from unittest.mock import patch
+from unittest.mock import Mock, PropertyMock, patch, call
 
 from btrdb.conn import BTrDB
 from btrdb.endpoint import Endpoint
@@ -870,7 +869,7 @@ class TestStreamSet(object):
         assert result is streams
 
 
-    def test_windows(self, stream1):
+    def test_windows_stores_values(self, stream1):
         """
         Assert windows stores values
         """
@@ -880,6 +879,41 @@ class TestStreamSet(object):
         # assert stores values
         assert streams.width == 10
         assert streams.depth == 20
+
+
+    def test_windows_values_and_calls_to_endpoint(self):
+        """
+        assert windows result and endpoint calls are correct
+        """
+        endpoint = Mock(Endpoint)
+        window1 = [[(StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6),), 11]]
+        window2 = [[(StatPointProto(time=2,min=3,mean=4,max=5,count=6,stddev=7),), 12]]
+        endpoint.windows = Mock(side_effect=[ window1, window2 ])
+
+        uu1 = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        uu2 = uuid.UUID('5d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        s1 = Stream(btrdb=BTrDB(endpoint), uuid=uu1)
+        s2 = Stream(btrdb=BTrDB(endpoint), uuid=uu2)
+        versions = {uu1: 11, uu2: 12}
+
+        start, end, width, depth = 1, 100, 1000, 25
+        streams = StreamSet([s1, s2])
+        streams.pin_versions(versions)
+        values = streams.filter(start=start, end=end).windows(width=width, depth=depth).values()
+
+        # assert endpoint calls have correct arguments, version
+        expected = [
+            call(uu1, start, end, width, depth, versions[uu1]),
+            call(uu2, start, end, width, depth, versions[uu2])
+        ]
+        assert endpoint.windows.call_args_list == expected
+
+        # assert expected output
+        expected = [
+            [StatPoint.from_proto(window1[0][0][0])],
+            [StatPoint.from_proto(window2[0][0][0])],
+        ]
+        assert values == expected
 
 
     ##########################################################################
@@ -924,6 +958,41 @@ class TestStreamSet(object):
         streams = StreamSet([stream1])
         result = streams.aligned_windows(20)
         assert result is streams
+
+
+    def test_aligned_windows_values_and_calls_to_endpoint(self):
+        """
+        assert aligned_windows result and endpoint calls are correct
+        """
+        endpoint = Mock(Endpoint)
+        window1 = [[(StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6),), 11]]
+        window2 = [[(StatPointProto(time=2,min=3,mean=4,max=5,count=6,stddev=7),), 12]]
+        endpoint.alignedWindows = Mock(side_effect=[ window1, window2 ])
+
+        uu1 = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        uu2 = uuid.UUID('5d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        s1 = Stream(btrdb=BTrDB(endpoint), uuid=uu1)
+        s2 = Stream(btrdb=BTrDB(endpoint), uuid=uu2)
+        versions = {uu1: 11, uu2: 12}
+
+        start, end, pointwidth = 1, 100, 25
+        streams = StreamSet([s1, s2])
+        streams.pin_versions(versions)
+        values = streams.filter(start=start, end=end).aligned_windows(pointwidth=pointwidth).values()
+
+        # assert endpoint calls have correct arguments, version
+        expected = [
+            call(uu1, start, end, pointwidth, versions[uu1]),
+            call(uu2, start, end, pointwidth, versions[uu2])
+        ]
+        assert endpoint.alignedWindows.call_args_list == expected
+
+        # assert expected output
+        expected = [
+            [StatPoint.from_proto(window1[0][0][0])],
+            [StatPoint.from_proto(window2[0][0][0])],
+        ]
+        assert values == expected
 
 
     ##########################################################################
