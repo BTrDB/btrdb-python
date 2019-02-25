@@ -910,8 +910,8 @@ class TestStreamSet(object):
 
         # assert expected output
         expected = [
-            [StatPoint.from_proto(window1[0][0][0])],
-            [StatPoint.from_proto(window2[0][0][0])],
+            [StatPoint(1, 2.0, 3.0, 4.0, 5, 6.0)],
+            [StatPoint(2, 3.0, 4.0, 5.0, 6, 7.0)],
         ]
         assert values == expected
 
@@ -1024,8 +1024,8 @@ class TestStreamSet(object):
 
         # assert expected output
         expected = [
-            [StatPoint.from_proto(window1[0][0][0])],
-            [StatPoint.from_proto(window2[0][0][0])],
+            [StatPoint(1, 2.0, 3.0, 4.0, 5, 6.0)],
+            [StatPoint(2, 3.0, 4.0, 5.0, 6, 7.0)],
         ]
         assert values == expected
 
