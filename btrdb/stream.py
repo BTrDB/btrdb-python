@@ -922,15 +922,38 @@ class StreamSetBase(object):
 
         """
         result = []
+        versions = self.versions()
         params = self._params_from_filters()
-        result_iterables = [iter(s.values(**params)) for s in self._streams]
         buffer = PointBuffer(len(self._streams))
+
+        if self.pointwidth is not None:
+            # obtain list of stream.aligned_windows handles
+            stream_output_iterables = []
+            params.update({"pointwidth": self.pointwidth})
+            for s in self._streams:
+                params.update({"version": versions[s.uuid]})
+                stream_output_iterables.append(iter(s.aligned_windows(**params)))
+
+
+        elif None not in [self.width, self.depth]:
+            # obtain list of stream.windows handles
+            stream_output_iterables = []
+            params.update({"width": self.width, "depth": self.depth})
+            for s in self._streams:
+                params.update({"version": versions[s.uuid]})
+                stream_output_iterables.append(iter(s.windows(**params)))
+
+        else:
+            # obtain list of stream.windows handles
+            stream_output_iterables = [iter(s.values(**params)) for s in self._streams]
+
 
         while True:
             streams_empty = True
-
+            # import pdb; pdb.set_trace()
             # add next values from streams into buffer
-            for stream_idx, data in enumerate(result_iterables):
+            for stream_idx, data in enumerate(stream_output_iterables):
+
                 if buffer.active[stream_idx]:
                     try:
                         point, _ = next(data)
