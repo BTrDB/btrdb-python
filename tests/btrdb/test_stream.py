@@ -623,6 +623,36 @@ class TestStreamSet(object):
     ## builtin / magic methods tests
     ##########################################################################
 
+    def test_repr(self):
+        """
+        Assert StreamSet instance repr output
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        expected = "<StreamSet(4 streams)>"
+        assert streams.__repr__() == expected
+
+        data = [1]
+        streams = StreamSet(data)
+        expected = "<StreamSet(1 stream)>"
+        assert streams.__repr__() == expected
+
+
+    def test_str(self):
+        """
+        Assert StreamSet instance str output
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        expected = "StreamSet with 4 streams"
+        assert str(streams) == expected
+
+        data = [1]
+        streams = StreamSet(data)
+        expected = "StreamSet with 1 stream"
+        assert str(streams) == expected
+
+
     def test_subscriptable(self):
         """
         Assert StreamSet instance is subscriptable
@@ -652,34 +682,31 @@ class TestStreamSet(object):
             assert data[index] == stream
 
 
-    def test_repr(self):
+    def test_contains(self):
         """
-        Assert StreamSet instance repr output
-        """
-        data = [11,22,"dog","cat"]
-        streams = StreamSet(data)
-        expected = "<StreamSet(4 streams)>"
-        assert streams.__repr__() == expected
-
-        data = [1]
-        streams = StreamSet(data)
-        expected = "<StreamSet(1 stream)>"
-        assert streams.__repr__() == expected
-
-
-    def test_str(self):
-        """
-        Assert StreamSet instance str output
+        Assert StreamSet instance supports contains
         """
         data = [11,22,"dog","cat"]
         streams = StreamSet(data)
-        expected = "StreamSet with 4 streams"
-        assert str(streams) == expected
+        assert "dog" in streams
 
-        data = [1]
+
+    def test_reverse(self):
+        """
+        Assert StreamSet instance supports reversal
+        """
+        data = [11,22,"dog","cat"]
         streams = StreamSet(data)
-        expected = "StreamSet with 1 stream"
-        assert str(streams) == expected
+        assert list(reversed(streams)) == list(reversed(data))
+
+
+    def test_to_list(self):
+        """
+        Assert StreamSet instance cast to list
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        assert list(streams) == data
 
 
     ##########################################################################
