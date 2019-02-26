@@ -620,6 +620,69 @@ class TestStreamSet(object):
 
 
     ##########################################################################
+    ## builtin / magic methods tests
+    ##########################################################################
+
+    def test_subscriptable(self):
+        """
+        Assert StreamSet instance is subscriptable
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        for index, val in enumerate(data):
+            assert streams[index] == val
+
+
+    def test_len(self):
+        """
+        Assert StreamSet instance support len
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        assert len(streams) == len(data)
+
+
+    def test_iter(self):
+        """
+        Assert StreamSet instance support iteration
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        for index, stream in enumerate(streams):
+            assert data[index] == stream
+
+
+    def test_repr(self):
+        """
+        Assert StreamSet instance repr output
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        expected = "<StreamSet(4 streams)>"
+        assert streams.__repr__() == expected
+
+        data = [1]
+        streams = StreamSet(data)
+        expected = "<StreamSet(1 stream)>"
+        assert streams.__repr__() == expected
+
+
+    def test_str(self):
+        """
+        Assert StreamSet instance str output
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+        expected = "StreamSet with 4 streams"
+        assert str(streams) == expected
+
+        data = [1]
+        streams = StreamSet(data)
+        expected = "StreamSet with 1 stream"
+        assert str(streams) == expected
+
+
+    ##########################################################################
     ## allow_window tests
     ##########################################################################
 

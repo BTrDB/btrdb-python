@@ -985,10 +985,22 @@ class StreamSetBase(object):
             yield stream
 
     def __repr__(self):
-        return "<{}({} streams)>".format(self.__class__.__name__, len(self._streams))
+        token = "stream" if len(self) == 1 else "streams"
+        return "<{}({} {})>".format(
+            self.__class__.__name__, len(self._streams), token
+        )
 
     def __str__(self):
-        return "{} with {} streams".format(self.__class__.__name__, len(self._streams))
+        token = "stream" if len(self) == 1 else "streams"
+        return "{} with {} {}".format(
+            self.__class__.__name__, len(self._streams), token
+        )
+
+    def __getitem__(self, item):
+        return self._streams[item]
+
+    def __len__(self):
+        return len(self._streams)
 
 
 class StreamSet(StreamSetBase, StreamSetTransformer):
