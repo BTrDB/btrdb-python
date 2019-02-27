@@ -128,6 +128,11 @@ class TestToNanoseconds(object):
         assert dt.tzinfo is not None
         assert to_nanoseconds(dt_str) == expected
 
+        dt_str = "2018-01-15 07:32:49"
+        dt = datetime.datetime(2018,1,15,7,32,49, tzinfo=pytz.utc)
+        expected = int(dt.timestamp() * 1e9)
+        assert to_nanoseconds(dt_str) == expected
+
     def test_str_raise_valueerror(self):
         """
         Assert to_nanoseconds raises on invalid str
