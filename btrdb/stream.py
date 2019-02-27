@@ -926,8 +926,9 @@ class StreamSetBase(object):
                 data.append(s.aligned_windows(**params))
 
 
-        elif None not in [self.width, self.depth]:
-            # create list of stream.windows data
+        elif self.width is not None and self.depth is not None:
+            # create list of stream.windows data (the windows method should
+            # prevent the possibility that only one of these is None)
             params.update({"width": self.width, "depth": self.depth})
             for s in self._streams:
                 params.update({"version": versions[s.uuid]})
