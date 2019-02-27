@@ -114,16 +114,16 @@ class TestToNanoseconds(object):
 
     def test_str(self):
         """
-        Assert to_nanoseconds handles str
+        Assert to_nanoseconds handles RFC3339 format
         """
         dt = datetime.datetime(2018,1,1,12, tzinfo=pytz.utc)
         expected = int(dt.timestamp() * 1e9)
 
-        dt_str = "01 Jan 2018 12:00:00 -0000"
+        dt_str = "2018-1-1 12:00:00.0-0000"
         assert dt.tzinfo is not None
         assert to_nanoseconds(dt_str) == expected
 
-        dt_str = "01 Jan 2018 7:00:00 -0500"
+        dt_str = "2018-1-1 7:00:00.0-0500"
         dt = datetime.datetime(2018,1,1,12, tzinfo=pytz.timezone("US/Eastern"))
         assert dt.tzinfo is not None
         assert to_nanoseconds(dt_str) == expected
@@ -132,10 +132,9 @@ class TestToNanoseconds(object):
         """
         Assert to_nanoseconds raises on invalid str
         """
-        dt_str = "2019-01-08T21:41:30Z"
-        with pytest.raises(ValueError) as exc:
+        dt_str = "01 Jan 2018 12:00:00 -0000"
+        with pytest.raises(ValueError, match="RFC3339") as exc:
             to_nanoseconds(dt_str)
-        assert "must conform to RFC 2822" in str(exc)
 
     def test_int(self):
         """
