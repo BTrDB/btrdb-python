@@ -151,14 +151,35 @@ class TestTransformers(object):
             assert (result[idx] == expected["to_array"][idx]).all()
 
     def test_to_series(self, streamset):
+        """
+        Asserts to_series produces correct results including series name
+        """
         expected = []
+        expected_names = [s.collection + "/" + s.name for s in streamset]
         for points in streamset.values():
             values, times = list(zip(*[(p.value, p.time) for p in points]))
             expected.append(Series(values, times))
 
         result = to_series(streamset)
         for idx in range(4):
-            assert (result[idx] == expected[idx]).all()
+            assert (result[idx] == expected[idx]).all()     # verify data
+            assert result[idx].name == expected_names[idx]  # verify name
+
+    def test_to_series_index_type(self, streamset):
+        """
+        assert default index type is 'datetime64[ns]'
+        """
+        result = to_series(streamset)
+        for series in result:
+            assert series.index.dtype.name == 'datetime64[ns]'
+
+    def test_to_series_index_as_int(self, streamset):
+        """
+        assert datetime64_index: False produces 'int64' index
+        """
+        result = to_series(streamset, False)
+        for series in result:
+            assert series.index.dtype.name == 'int64'
 
     def test_to_dataframe(self, streamset):
         columns = ["time", "test/stream0", "test/stream1", "test/stream2", "test/stream3"]
