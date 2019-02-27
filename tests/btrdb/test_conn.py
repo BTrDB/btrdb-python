@@ -106,7 +106,11 @@ class TestBTrDB(object):
             "build": "5.0.0",
             "proxy": { "proxyEndpoints": ["localhost:4410"], },
         }
-        assert conn.info() == truth
+        info = conn.info()
+        assert info == truth
+
+        # verify RepeatedScalarContainer is converted to list
+        assert info["proxy"]["proxyEndpoints"].__class__ == list
 
     def test_list_collections(self):
         """
