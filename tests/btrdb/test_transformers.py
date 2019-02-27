@@ -21,7 +21,7 @@ from io import StringIO, BytesIO
 import pytest
 from unittest.mock import Mock, PropertyMock
 import numpy as np
-from pandas import Series, DataFrame
+from pandas import Series, DataFrame, Index
 
 from btrdb.stream import Stream, StreamSet
 from btrdb.point import RawPoint
@@ -158,6 +158,7 @@ class TestTransformers(object):
         expected_names = [s.collection + "/" + s.name for s in streamset]
         for idx, points in enumerate(streamset.values()):
             values, times = list(zip(*[(p.value, p.time) for p in points]))
+            times = Index(times, dtype='datetime64[ns]')
             expected.append(Series(values, times, name=expected_names[idx]))
 
         result = to_series(streamset)
