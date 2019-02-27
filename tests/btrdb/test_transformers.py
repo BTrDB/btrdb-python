@@ -156,9 +156,9 @@ class TestTransformers(object):
         """
         expected = []
         expected_names = [s.collection + "/" + s.name for s in streamset]
-        for points in streamset.values():
+        for idx, points in enumerate(streamset.values()):
             values, times = list(zip(*[(p.value, p.time) for p in points]))
-            expected.append(Series(values, times))
+            expected.append(Series(values, times, name=expected_names[idx]))
 
         result = to_series(streamset)
         for idx in range(4):
