@@ -17,8 +17,6 @@ Module for buffering utilities
 
 from collections import defaultdict
 
-from btrdb.point import RawPoint
-
 
 ##########################################################################
 ## Classes
@@ -34,9 +32,6 @@ class PointBuffer(defaultdict):
 
 
     def add_point(self, stream_index, point):
-        if not isinstance(point, RawPoint):
-            raise TypeError("Expected RawPoint instance")
-
         self.last_known_time[stream_index] = max(
             (self.last_known_time[stream_index] or -1), point.time
         )
