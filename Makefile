@@ -22,6 +22,7 @@ clean:
 	find . -name ".DS_Store" -print0 | xargs -0 rm -rf
 	-rm -rf docs/build
 	-rm -rf htmlcov
+	-rm -rf .pytest_cache
 	-rm -rf .coverage
 	-rm -rf build
 	-rm -rf dist

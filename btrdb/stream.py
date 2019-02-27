@@ -17,6 +17,7 @@ Module for Stream and related classes
 
 import uuid as uuidlib
 from copy import deepcopy
+from collections.abc import Sequence
 
 from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import StreamSetTransformer
@@ -654,7 +655,7 @@ class Stream(object):
 ## StreamSet  Classes
 ##########################################################################
 
-class StreamSetBase(object):
+class StreamSetBase(Sequence):
     """
     A lighweight wrapper around a list of stream objects
     """
@@ -980,15 +981,23 @@ class StreamSetBase(object):
 
         return result
 
-    def __iter__(self):
-        for stream in self._streams:
-            yield stream
-
     def __repr__(self):
-        return "<{}({} streams)>".format(self.__class__.__name__, len(self._streams))
+        token = "stream" if len(self) == 1 else "streams"
+        return "<{}({} {})>".format(
+            self.__class__.__name__, len(self._streams), token
+        )
 
     def __str__(self):
-        return "{} with {} streams".format(self.__class__.__name__, len(self._streams))
+        token = "stream" if len(self) == 1 else "streams"
+        return "{} with {} {}".format(
+            self.__class__.__name__, len(self._streams), token
+        )
+
+    def __getitem__(self, item):
+        return self._streams[item]
+
+    def __len__(self):
+        return len(self._streams)
 
 
 class StreamSet(StreamSetBase, StreamSetTransformer):
