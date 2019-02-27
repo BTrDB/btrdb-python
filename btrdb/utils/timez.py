@@ -17,13 +17,28 @@ Time related utilities
 ## Imports
 ##########################################################################
 
-import datetime
+from datetime import datetime
 
 from operator import mul
 from decimal import Decimal
-from email.utils import parsedate_to_datetime
 
 import pytz
+
+
+##########################################################################
+## Module Variables
+##########################################################################
+
+DATETIME_FORMATS = (
+	"%Y-%m-%d %H:%M:%S.%f%z", # most common RFC3339 nanoseconds
+	"%Y-%m-%d %H:%M:%S.%f",   # expects UTC default timezone
+	"%Y-%m-%dT%H:%M:%S.%fZ",  # JSON encoding, UTC timezone
+	"%Y-%m-%dT%H:%M:%SZ",	  # JSON encoding, UTC timezone
+	"%Y-%m-%dT%H:%M:%S.%f%z", # less common JSON-ish encoding
+	"%Y-%m-%dT%H:%M:%S.%f",   # for completeness, UTC default timezone
+	"%Y-%m-%d %H:%M:%S%z",	  # human readable date time with TZ
+	"%Y-%m-%d %H:%M:%S",	  # human readable date time UTC default
+)
 
 ##########################################################################
 ## Functions
@@ -33,7 +48,7 @@ def currently_as_ns():
     """
     Returns the current UTC time as nanoseconds since epoch
     """
-    dt = datetime.datetime.utcnow()
+    dt = datetime.utcnow()
     return int(dt.timestamp() * 1e9)
 
 
@@ -51,7 +66,7 @@ def ns_to_datetime(ns):
     nanoseconds since epoch as a datetime object : datetime
 
     """
-    dt = datetime.datetime.utcfromtimestamp(ns / 1e9)
+    dt = datetime.utcfromtimestamp(ns / 1e9)
     return dt.replace(tzinfo=pytz.utc)
 
 
@@ -90,6 +105,31 @@ def to_nanoseconds(val):
     Returns
     -------
     object converted to nanoseconds : int
+
+    Notes
+    ----
+    The following string formats are supported for conversion.
+
+    +--------------------------------+------------------------------------------+
+    | Format String                  | Description                              |
+    +================================+==========================================+
+    | %Y-%m-%d %H:%M:%S.%f%z         | RFC3339 format                           |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%d %H:%M:%S.%f           | RFC3339 with UTC default timezone        |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%dT%H:%M:%S.%fZ          | JSON encoding, UTC timezone              |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%dT%H:%M:%SZ             | JSON encoding, UTC timezone, without μs  |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%dT%H:%M:%S.%f%z         | JSON-like encoding                       |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%dT%H:%M:%S.%f           | JSON-like encoding, UTC default timezone |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%d %H:%M:%S%z            | human readable date time with TZ         |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%d %H:%M:%S              | human readable date time UTC default     |
+    +--------------------------------+------------------------------------------+
+
     """
     if val is None or isinstance(val, int):
         return val
@@ -97,7 +137,7 @@ def to_nanoseconds(val):
     try:
         import numpy as np
         if isinstance(val, np.datetime64):
-            val = val.astype(datetime.datetime)
+            val = val.astype(datetime)
     except ImportError:
         pass
 
@@ -107,12 +147,17 @@ def to_nanoseconds(val):
             return int(val)
 
         # handle datetime as string
-        try:
-            val = parsedate_to_datetime(val)
-        except TypeError:
-            raise ValueError("string arguments must conform to RFC 2822")
+        for format in DATETIME_FORMATS:
+            try:
+                val = datetime.strptime(val, format)
+                break
+            except ValueError:
+                pass
 
-    if isinstance(val, datetime.datetime):
+        if isinstance(val, str):
+            raise ValueError("unsupported string format, please use RFC3339")
+
+    if isinstance(val, datetime):
         return datetime_to_ns(val)
 
     if isinstance(val, float):
