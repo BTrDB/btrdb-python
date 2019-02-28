@@ -23,7 +23,7 @@ from unittest.mock import Mock, PropertyMock, patch, call
 
 from btrdb.conn import BTrDB
 from btrdb.endpoint import Endpoint
-from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
+from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE, _to_regex
 from btrdb.point import RawPoint, StatPoint
 from btrdb.exceptions import BTrDBError, InvalidOperation
 from btrdb.grpcinterface import btrdb_pb2
@@ -43,6 +43,10 @@ def stream1():
     stream.version = Mock(return_value=11)
     stream.uuid = Mock(return_value=uu)
     stream.nearest = Mock(return_value=(RawPoint(time=10, value=1), 11))
+    type(stream).collection = PropertyMock(return_value="fruits/apple")
+    type(stream).name = PropertyMock(return_value="gala")
+    stream.tags = Mock(return_value={"name": "gala", "unit": "volts"})
+    stream.annotations = Mock(return_value={"owner": "ABC", "color": "red"})
     return stream
 
 
@@ -53,6 +57,10 @@ def stream2():
     stream.version = Mock(return_value=22)
     stream.uuid = Mock(return_value=uu)
     stream.nearest = Mock(return_value=(RawPoint(time=20, value=1), 22))
+    type(stream).collection = PropertyMock(return_value="fruits/orange")
+    type(stream).name = PropertyMock(return_value="blood")
+    stream.tags = Mock(return_value={"name": "blood", "unit": "amps"})
+    stream.annotations = Mock(return_value={"owner": "ABC", "color": "orange"})
     return stream
 
 
@@ -900,15 +908,15 @@ class TestStreamSet(object):
         assert isinstance(streams.filters[0], StreamFilter)
 
 
-    def test_filter_raises(self, stream1):
-        """
-        Assert filter raises ValueError
-        """
-        streams = StreamSet([stream1])
-
-        with pytest.raises(ValueError) as exc:
-            streams = streams.filter(start=None, end=None)
-        assert "must be supplied" in str(exc).lower()
+    # def test_filter_raises(self, stream1):
+    #     """
+    #     Assert filter raises ValueError
+    #     """
+    #     streams = StreamSet([stream1])
+    #
+    #     with pytest.raises(ValueError) as exc:
+    #         streams = streams.filter(start=None, end=None)
+    #     assert "must be supplied" in str(exc).lower()
 
 
     def test_filter_returns_new_instance(self, stream1):
@@ -921,6 +929,98 @@ class TestStreamSet(object):
 
         assert other is not streams
         assert isinstance(other, streams.__class__)
+
+
+    def test_to_regex_exc(self):
+        """
+        Assert _to_regex raises ValueError
+        """
+        with pytest.raises(ValueError, match="could not convert name to regex"):
+            _to_regex("*oo*", "name")
+
+
+    def test_filter_collection(self, stream1, stream2):
+        """
+        Assert filter collection works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        other = streams.filter(collection="fruits")
+        assert other._streams == [stream1, stream2]
+
+        other = streams.filter(collection="FRUITS")
+        assert other._streams == [stream1, stream2]
+
+        other = streams.filter(collection="apple")
+        assert other._streams == [stream1]
+
+        other = streams.filter(collection="app*")
+        assert other._streams == [stream1]
+
+
+    def test_filter_name(self, stream1, stream2):
+        """
+        Assert filter name works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        other = streams.filter(name="blood")
+        assert other._streams == [stream2]
+
+        other = streams.filter(name="BLOOD")
+        assert other._streams == [stream2]
+
+        other = streams.filter(name="oo*")
+        assert other._streams == [stream2]
+
+
+    def test_filter_unit(self, stream1, stream2):
+        """
+        Assert filter unit works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        other = streams.filter(unit="foo")
+        assert other._streams == []
+
+        other = streams.filter(unit="volts")
+        assert other._streams == [stream1]
+
+        other = streams.filter(unit="VOLTS")
+        assert other._streams == [stream1]
+
+
+    def test_filter_tags(self, stream1, stream2):
+        """
+        Assert filter annotations works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        other = streams.filter(tags={"unit": "meters"})
+        assert other._streams == []
+
+        other = streams.filter(tags={"unit": "volts"})
+        assert other._streams == [stream1]
+
+
+    def test_filter_annotations(self, stream1, stream2):
+        """
+        Assert filter annotations works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        other = streams.filter(annotations={"owner": ""})
+        assert other._streams == []
+
+        other = streams.filter(annotations={"owner": "ABC"})
+        assert other._streams == [stream1, stream2]
+
+        other = streams.filter(annotations={"color": "red"})
+        assert other._streams == [stream1]
+
+
+
+
 
     ##########################################################################
     ## clone tests
