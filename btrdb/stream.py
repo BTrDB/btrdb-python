@@ -15,6 +15,7 @@ Module for Stream and related classes
 ## Imports
 ##########################################################################
 
+import re
 import uuid as uuidlib
 from copy import deepcopy
 from collections.abc import Sequence
@@ -31,6 +32,17 @@ from btrdb.exceptions import BTrDBError, InvalidOperation
 ##########################################################################
 
 INSERT_BATCH_SIZE = 5000
+
+
+##########################################################################
+## Helpers
+##########################################################################
+
+def _to_regex(val, name):
+    try:
+        return re.compile(val, re.IGNORECASE)
+    except (re.error, RecursionError) as exc:
+        raise ValueError("could not convert {} to regex".format(name)) from exc
 
 
 ##########################################################################
@@ -243,7 +255,7 @@ class Stream(object):
 
         Returns
         -------
-        Dict[str, str]
+        dict[str, str]
             A dictionary containing the tags.
 
         """
@@ -271,7 +283,7 @@ class Stream(object):
 
         Returns
         -------
-        Tuple[Dict[str, str], int]
+        Tuple[dict[str, str], int]
             A tuple containing a dictionary of annotations and an integer representing
             the version of the metadata.
 
@@ -358,9 +370,9 @@ class Stream(object):
         Parameters
         ----------
         tags: dict
-            Dict of tag information for the stream.
+            dict of tag information for the stream.
         annotations: dict
-            Dict of annotation information for the stream.
+            dict of annotation information for the stream.
         collection: str
             The collection prefix for a stream
 
@@ -684,7 +696,7 @@ class StreamSetBase(Sequence):
 
         Parameters
         ----------
-        versions : Dict[UUID: int]
+        versions : dict[UUID: int]
             A dict containing the stream UUID and version ints as key/values
 
         Returns
@@ -718,7 +730,7 @@ class StreamSetBase(Sequence):
 
         Returns
         -------
-        Dict[UUID: int]
+        dict[UUID: int]
             A dict containing the stream UUID and version ints as key/values
 
         """
@@ -778,32 +790,79 @@ class StreamSetBase(Sequence):
 
         return tuple(latest)
 
-    def filter(self, start=None, end=None):
+    def filter(self, start=None, end=None, collection=None, name=None, unit=None,
+               tags=None, annotations=None):
         """
-        Stores filtering attributes for queries to be eventually materialized
-        from the database.  This method will return a new StreamSet instance.
+        Provides a new StreamSet instance containing stored query parameters and
+        stream objects that match filtering criteria.
+
+        The collection, name, and unit arguments will be used to select streams
+        from the original StreamSet object based on a case-insensitive regex
+        search.
+
+        The tags and annotations arguments expect dictionaries for the desired
+        key/value pairs.  Any stream in the original instance that has the exact
+        key/values will be included in the new StreamSet instance.
 
         Parameters
         ----------
         start : int or datetime like object
-            The time indicating the inclusive start of the query. (see
-            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+            the inclusive start of the query (see :meth:`btrdb.utils.timez.to_nanoseconds`
+            for valid input types)
         end : int or datetime like object
-            The time indicating the exclusive end of the query. (see
-            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+            the exclusive end of the query (see :func:`btrdb.utils.timez.to_nanoseconds`
+            for valid input types)
+        collection : str or regex
+            pattern (case-insensitive) for filtering streams based on collection
+        name : str or regex
+            pattern (case-insensitive) for filtering streams based on name
+        unit : str or regex
+            pattern (case-insensitive) for filtering streams based on unit
+        tags : dict
+            key/value pairs for filtering streams based on tags
+        annotations : dict
+            key/value pairs for filtering streams based on annotations
 
         Returns
         -------
         StreamSet
-            Returns a new copy of the instance
+            a new copy of the instance
 
         """
 
-        if start is None and end is None:
-            raise ValueError("A valid `start` or `end` must be supplied")
-
         obj = self.clone()
-        obj.filters.append(StreamFilter(start, end))
+        if start is not None or end is not None:
+            obj.filters.append(StreamFilter(start, end))
+
+        # filter by collection
+        if collection is not None:
+            reg = _to_regex(collection, "collection")
+            obj._streams = [s for s in obj._streams for m in [reg.search(s.collection)] if m]
+
+        # filter by name
+        if name is not None:
+            reg = _to_regex(name, "name")
+            obj._streams = [s for s in obj._streams for m in [reg.search(s.name)] if m]
+
+        # filter by unit
+        if unit is not None:
+            reg = _to_regex(unit, "unit")
+            obj._streams = [s for s in obj._streams for m in [reg.search(s.tags()["unit"])] if m]
+
+        # filter by tags
+        if tags:
+            obj._streams = [
+                s for s in obj._streams
+                if tags.items() <= s.tags().items()
+            ]
+
+        # filter by annotations
+        if annotations:
+            obj._streams = [
+                s for s in obj._streams
+                if annotations.items() <= s.annotations().items()
+            ]
+
         return obj
 
     def clone(self):
