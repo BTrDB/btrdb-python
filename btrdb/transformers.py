@@ -40,9 +40,16 @@ def _stream_names(stream_set):
 ## Transform Functions
 ##########################################################################
 
-def to_series(stream_set):
+def to_series(stream_set, datetime64_index=True):
     """
     Returns a list of Pandas Series objects indexed by time
+
+    Parameters
+    ----------
+    datetime64_index: bool
+        Directs function to convert Series index to np.datetime64[ns] or
+        leave as np.int64.
+
     """
     try:
         import pandas as pd
@@ -50,12 +57,20 @@ def to_series(stream_set):
         raise ImportError("Please install Pandas to use this transformation function.")
 
     result = []
-    for output in stream_set.values():
+    stream_names = _stream_names(stream_set)
+
+    for idx, output in enumerate(stream_set.values()):
         times, values = [], []
         for item in output:
             times.append(item.time)
             values.append(item.value)
-        result.append(pd.Series(data=values, index=times))
+
+        if datetime64_index:
+            times = pd.Index(times, dtype='datetime64[ns]')
+
+        result.append(pd.Series(
+            data=values, index=times, name=stream_names[idx]
+        ))
     return result
 
 def to_dataframe(stream_set, columns=None):
