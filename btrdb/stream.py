@@ -41,7 +41,7 @@ INSERT_BATCH_SIZE = 5000
 def _to_regex(val, name):
     try:
         return re.compile(val, re.IGNORECASE)
-    except (re.error, RecursionError) as exc:
+    except re.error, RuntimeError as exc:
         raise ValueError("could not convert {} to regex".format(name)) from exc
 
 
