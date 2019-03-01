@@ -223,7 +223,7 @@ class BTrDB(object):
         """
         return [c for some in self.ep.listCollections(starts_with) for c in some]
 
-    def streams_in_collection(self, collection, is_collection_prefix=True, tags=None, annotations=None):
+    def streams_in_collection(self, *collection, is_collection_prefix=True, tags=None, annotations=None):
         """
         Search for streams matching given parameters
 
@@ -232,7 +232,7 @@ class BTrDB(object):
         Parameters
         ----------
         collection: str
-            The name of the collection to be found, case sensitive.
+            collections to use when searching for streams, case sensitive.
         is_collection_prefix: bool
             Whether the collection is a prefix.
         tags: Dict[str, str]
@@ -246,6 +246,7 @@ class BTrDB(object):
             A stream generator that iterates over the search results.
 
         """
+        result = []
 
         if tags is None:
             tags = {}
@@ -253,13 +254,19 @@ class BTrDB(object):
         if annotations is None:
             annotations = {}
 
-        streams = self.ep.lookupStreams(collection, is_collection_prefix, tags, annotations)
-        for desclist in streams:
-            for desc in desclist:
-                tagsanns = unpack_stream_descriptor(desc)
-                yield Stream(self, uuidlib.UUID(bytes = desc.uuid), known_to_exist=True,
-                    collection=desc.collection, tags=tagsanns[0], annotations=tagsanns[1],
-                    property_version=desc.propertyVersion)
+        for item in collection:
+            streams = self.ep.lookupStreams(item, is_collection_prefix, tags, annotations)
+            for desclist in streams:
+                for desc in desclist:
+                    tagsanns = unpack_stream_descriptor(desc)
+                    result.append(Stream(
+                        self, uuidlib.UUID(bytes = desc.uuid),
+                        known_to_exist=True, collection=desc.collection,
+                        tags=tagsanns[0], annotations=tagsanns[1],
+                        property_version=desc.propertyVersion
+                    ))
+
+        return result
 
     def collection_metadata(self, prefix):
         # type: (csv.writer, QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> Tuple[Dict[str, int], Dict[str, int]]

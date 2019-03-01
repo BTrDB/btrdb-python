@@ -17,7 +17,7 @@ Testing package for the btrdb connection module
 
 import uuid as uuidlib
 import pytest
-from unittest.mock import Mock, PropertyMock
+from unittest.mock import Mock, PropertyMock, patch, call
 
 from btrdb.conn import Connection, BTrDB
 from btrdb.endpoint import Endpoint
@@ -125,3 +125,30 @@ class TestBTrDB(object):
 
         truth = ['allen/automated', 'allen/bindings']
         assert conn.list_collections() == truth
+
+    @patch('btrdb.conn.unpack_stream_descriptor')
+    def test_streams_in_collections_args(self, mock_util):
+        """
+        Assert streams_in_collections correctly sends *collection, tags, annotations
+        to the endpoint method
+        """
+        descriptor = Mock()
+        type(descriptor).uuid = PropertyMock(return_value=uuidlib.uuid4().bytes)
+        type(descriptor).collection = PropertyMock(return_value="fruit/apple")
+        type(descriptor).propertyVersion = PropertyMock(return_value=22)
+        mock_util.side_effect = [({"name": "gala"}, {}), ({"name": "fuji"}, {})]
+
+        endpoint = Mock(Endpoint)
+        endpoint.lookupStreams = Mock(side_effect=[[[descriptor]], [[descriptor]]])
+
+        conn = BTrDB(endpoint)
+        tags = {"unit": "volts"}
+        annotations = {"size": "large"}
+        streams = conn.streams_in_collection("a", "b", is_collection_prefix=False,
+            tags=tags, annotations=annotations)
+
+        assert streams[0].name == "gala"
+        assert streams[1].name == "fuji"
+
+        expected = [call('a', False, tags, annotations), call('b', False, tags, annotations)]
+        assert endpoint.lookupStreams.call_args_list == expected
