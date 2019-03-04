@@ -66,7 +66,6 @@ class Stream(object):
 
 
     def refresh_metadata(self):
-        # type: () -> ()
         """
         Refreshes the locally cached meta data for a stream
 
@@ -87,7 +86,6 @@ class Stream(object):
         self._known_to_exist = True
 
     def exists(self):
-        # type: () -> bool
         """
         Check if stream exists
 
@@ -256,7 +254,6 @@ class Stream(object):
 
     def annotations(self, refresh=False):
         """
-
         Returns a stream's annotations
 
         Annotations returns the annotations of the stream (and the annotation
@@ -265,7 +262,6 @@ class Stream(object):
         Stream.CachedAnnotations().
 
         Do not modify the resulting map.
-
 
         Parameters
         ----------
@@ -286,7 +282,6 @@ class Stream(object):
         return deepcopy(self._annotations), deepcopy(self._property_version)
 
     def version(self):
-        # type: () -> int
         """
         Returns the current data version of the stream.
 
@@ -408,10 +403,12 @@ class Stream(object):
 
         Parameters
         ----------
-        start : int
-            The start time in nanoseconds for the range to be deleted
-        end : int
-            The end time in nanoseconds for the range to be deleted
+        start : int or datetime like object
+            The start time in nanoseconds for the range to be deleted. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+        end : int or datetime like object
+            The end time in nanoseconds for the range to be deleted. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
 
         Returns
         -------
@@ -419,10 +416,10 @@ class Stream(object):
             The version of the new stream created
 
         """
-        return self._btrdb.ep.deleteRange(self._uuid, start, end)
+        return self._btrdb.ep.deleteRange(self._uuid, to_nanoseconds(start),
+            to_nanoseconds(end))
 
     def values(self, start, end, version=0):
-        # type: (int, int, int) -> Tuple[RawPoint, int]
         """
         Read raw values from BTrDB between time [a, b) in nanoseconds.
 
@@ -432,10 +429,12 @@ class Stream(object):
 
         Parameters
         ----------
-        start: int
-            The start time in nanoseconds for the range to be retrieved
-        end : int
-            The end time in nanoseconds for the range to be deleted
+        start : int or datetime like object
+            The start time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+        end : int or datetime like object
+            The end time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         version: int
             The version of the stream to be queried
 
@@ -465,8 +464,6 @@ class Stream(object):
         return materialized
 
     def aligned_windows(self, start, end, pointwidth, version=0):
-        # type: (int, int, int, int) -> Tuple[StatPoint, int]
-
         """
         Read statistical aggregates of windows of data from BTrDB.
 
@@ -486,10 +483,12 @@ class Stream(object):
 
         Parameters
         ----------
-        start : int
-            The start time in nanoseconds for the range to be queried
-        end : int
-            The end time in nanoseconds for the range to be queried
+        start : int or datetime like object
+            The start time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+        end : int or datetime like object
+            The end time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         pointwidth : int
             Specify the number of ns between data points (2**pointwidth)
         version : int
@@ -519,17 +518,18 @@ class Stream(object):
         return tuple(materialized)
 
     def windows(self, start, end, width, depth=0, version=0):
-        # type: (int, int, int, int, int) -> Tuple[StatPoint, int]
-
         """
-        Read arbitrarily-sized windows of data from BTrDB.
+        Read arbitrarily-sized windows of data from BTrDB.  StatPoint objects
+        will be returned representing the data for each window.
 
         Parameters
         ----------
-        start : int
-            The start time in nanoseconds for the range to be queried.
-        end : int
-            The end time in nanoseconds for the range to be queried.
+        start : int or datetime like object
+            The start time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+        end : int or datetime like object
+            The end time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         width : int
             The number of nanoseconds in each window, subject to the depth
             parameter.
@@ -578,8 +578,6 @@ class Stream(object):
         return tuple(materialized)
 
     def nearest(self, time, version, backward=False):
-        # type: (int, int, bool) -> Tuple[RawPoint, int]
-
         """
         Finds the closest point in the stream to a specified time.
 
@@ -591,8 +589,9 @@ class Stream(object):
 
         Parameters
         ----------
-        time : int
-            The time (in nanoseconds since Epoch) to search near
+        time : int or datetime like object
+            The time (in nanoseconds since Epoch) to search near (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         version : int
             Version of the stream to use in search
         backward : boolean
@@ -608,7 +607,8 @@ class Stream(object):
         """
 
         try:
-            rp, version = self._btrdb.ep.nearest(self._uuid, time, version, backward)
+            rp, version = self._btrdb.ep.nearest(self._uuid,
+                to_nanoseconds(time), version, backward)
         except BTrDBError as exc:
             if exc.code != 401:
                 raise
@@ -618,7 +618,6 @@ class Stream(object):
 
 
     def obliterate(self):
-        # type: () -> None
         """
         Obliterate deletes a stream from the BTrDB server.  An exception will be
         raised if the stream could not be found.
@@ -632,7 +631,6 @@ class Stream(object):
         self._btrdb.ep.obliterate(self._uuid)
 
     def flush(self):
-        # type: () -> None
         """
         Flush writes the stream buffers out to persistent storage.
 
@@ -787,10 +785,12 @@ class StreamSetBase(Sequence):
 
         Parameters
         ----------
-        start : int
-            A int indicating the inclusive start of the query
-        end : int
-            A int indicating the exclusive end of the query
+        start : int or datetime like object
+            The time indicating the inclusive start of the query. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+        end : int or datetime like object
+            The time indicating the exclusive end of the query. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
 
         Returns
         -------

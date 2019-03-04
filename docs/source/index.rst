@@ -20,6 +20,10 @@ Welcome to btrdb docs!
   was not made lightly but is necessary to keep compatibility with underlying
   packages.
 
+  In addition, this software is only compatible with version 5.x of the BTrDB
+  server.  To communicate with a 4.x server, please install an earlier version
+  of this software.
+
 Welcome to btrdb-python's documentation.  We provide Python access to the Berkeley
 Tree Database (BTrBD) along with some select convenience methods.  If you are
 familiar with other NoSQL libraries such as pymongo then you will likely feel
