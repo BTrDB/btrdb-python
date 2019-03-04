@@ -404,10 +404,10 @@ class Stream(object):
         Parameters
         ----------
         start : int or datetime like object
-            The start time in nanoseconds for the range to be queried. (see
+            The start time in nanoseconds for the range to be deleted. (see
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         end : int or datetime like object
-            The end time in nanoseconds for the range to be queried. (see
+            The end time in nanoseconds for the range to be deleted. (see
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
 
         Returns
