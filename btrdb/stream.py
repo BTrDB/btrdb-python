@@ -851,6 +851,7 @@ class StreamSetBase(Sequence):
 
         # filter by tags
         if tags:
+            # filters if the subset of the tags matches the given tags
             obj._streams = [
                 s for s in obj._streams
                 if tags.items() <= s.tags().items()
@@ -858,6 +859,7 @@ class StreamSetBase(Sequence):
 
         # filter by annotations
         if annotations:
+            # filters if the subset of the annotations matches the given annotations
             obj._streams = [
                 s for s in obj._streams
                 if annotations.items() <= s.annotations().items()
