@@ -42,7 +42,7 @@ def _to_regex(val, name):
     try:
         return re.compile(val, re.IGNORECASE)
     except (re.error, RuntimeError) as exc:
-        raise ValueError("could not convert {} to regex".format(name)) from exc
+        raise ValueError("could not convert {} to regex: {}".format(name, exc)) from exc
 
 
 ##########################################################################
@@ -283,7 +283,7 @@ class Stream(object):
 
         Returns
         -------
-        Tuple[dict[str, str], int]
+        tuple[dict[str, str], int]
             A tuple containing a dictionary of annotations and an integer representing
             the version of the metadata.
 
@@ -325,7 +325,7 @@ class Stream(object):
 
         Parameters
         ----------
-        data: List[Tuple[int, float]]
+        data: list[tuple[int, float]]
             A list of tuples in which each tuple contains a time (int) and
             value (float) for insertion to the database
 
@@ -807,7 +807,7 @@ class StreamSetBase(Sequence):
         Parameters
         ----------
         start : int or datetime like object
-            the inclusive start of the query (see :meth:`btrdb.utils.timez.to_nanoseconds`
+            the inclusive start of the query (see :func:`btrdb.utils.timez.to_nanoseconds`
             for valid input types)
         end : int or datetime like object
             the exclusive end of the query (see :func:`btrdb.utils.timez.to_nanoseconds`
@@ -826,7 +826,7 @@ class StreamSetBase(Sequence):
         Returns
         -------
         StreamSet
-            a new copy of the instance
+            a new instance cloned from the original with filters applied
 
         """
 

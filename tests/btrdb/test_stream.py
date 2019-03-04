@@ -908,17 +908,6 @@ class TestStreamSet(object):
         assert isinstance(streams.filters[0], StreamFilter)
 
 
-    # def test_filter_raises(self, stream1):
-    #     """
-    #     Assert filter raises ValueError
-    #     """
-    #     streams = StreamSet([stream1])
-    #
-    #     with pytest.raises(ValueError) as exc:
-    #         streams = streams.filter(start=None, end=None)
-    #     assert "must be supplied" in str(exc).lower()
-
-
     def test_filter_returns_new_instance(self, stream1):
         """
         Assert filter returns new instance
@@ -1001,6 +990,10 @@ class TestStreamSet(object):
 
         other = streams.filter(tags={"unit": "volts"})
         assert other._streams == [stream1]
+
+        stream2.tags.return_value = {"name": "blood", "unit": "volts"}
+        other = streams.filter(tags={"unit": "volts"})
+        assert other._streams == [stream1, stream2]
 
 
     def test_filter_annotations(self, stream1, stream2):
