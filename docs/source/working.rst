@@ -14,3 +14,4 @@ to interact with the BTrDB database.
   working/stream-manage-metadata
   working/stream-view-data
   working/streamsets
+  working/multiprocessing

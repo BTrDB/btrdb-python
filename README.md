@@ -85,6 +85,17 @@ This project includes a suite of automated tests based upon [pytest](https://doc
 
 Aside from basic unit tests, the test suite is configured to use [pyflakes](https://github.com/PyCQA/pyflakes) for linting and style checking as well as [coverage](https://coverage.readthedocs.io) for measuring test coverage.
 
+Note that the test suite has additional dependencies that must be installed for them to successfully run: `pip install -r tests/requirements.txt`.
+
+## Documentation
+
+The project documentation is written in reStructuredText and is built using Sphinx, which also includes the docstring documentation from the `btrdb` Python package. For your convenience, the `Makefile` includes a target for building the documentation:
+
+    $ make html
+
+This will build the HTML documentation in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built when pushed to GitHub and hosted on [Read The Docs](https://btrdb.readthedocs.io/en/latest/).
+
+Note that the documentation also requires Sphix and other dependencies to successfully build: `pip install -r docs/requirements.txt`.
 
 ## Branches / Git Workflow
 
