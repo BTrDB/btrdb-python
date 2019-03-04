@@ -66,7 +66,6 @@ class Stream(object):
 
 
     def refresh_metadata(self):
-        # type: () -> ()
         """
         Refreshes the locally cached meta data for a stream
 
@@ -87,7 +86,6 @@ class Stream(object):
         self._known_to_exist = True
 
     def exists(self):
-        # type: () -> bool
         """
         Check if stream exists
 
@@ -256,7 +254,6 @@ class Stream(object):
 
     def annotations(self, refresh=False):
         """
-
         Returns a stream's annotations
 
         Annotations returns the annotations of the stream (and the annotation
@@ -265,7 +262,6 @@ class Stream(object):
         Stream.CachedAnnotations().
 
         Do not modify the resulting map.
-
 
         Parameters
         ----------
@@ -286,7 +282,6 @@ class Stream(object):
         return deepcopy(self._annotations), deepcopy(self._property_version)
 
     def version(self):
-        # type: () -> int
         """
         Returns the current data version of the stream.
 
@@ -422,7 +417,6 @@ class Stream(object):
         return self._btrdb.ep.deleteRange(self._uuid, start, end)
 
     def values(self, start, end, version=0):
-        # type: (int, int, int) -> Tuple[RawPoint, int]
         """
         Read raw values from BTrDB between time [a, b) in nanoseconds.
 
@@ -465,8 +459,6 @@ class Stream(object):
         return materialized
 
     def aligned_windows(self, start, end, pointwidth, version=0):
-        # type: (int, int, int, int) -> Tuple[StatPoint, int]
-
         """
         Read statistical aggregates of windows of data from BTrDB.
 
@@ -519,8 +511,6 @@ class Stream(object):
         return tuple(materialized)
 
     def windows(self, start, end, width, depth=0, version=0):
-        # type: (int, int, int, int, int) -> Tuple[StatPoint, int]
-
         """
         Read arbitrarily-sized windows of data from BTrDB.
 
@@ -578,8 +568,6 @@ class Stream(object):
         return tuple(materialized)
 
     def nearest(self, time, version, backward=False):
-        # type: (int, int, bool) -> Tuple[RawPoint, int]
-
         """
         Finds the closest point in the stream to a specified time.
 
@@ -618,7 +606,6 @@ class Stream(object):
 
 
     def obliterate(self):
-        # type: () -> None
         """
         Obliterate deletes a stream from the BTrDB server.  An exception will be
         raised if the stream could not be found.
@@ -632,7 +619,6 @@ class Stream(object):
         self._btrdb.ep.obliterate(self._uuid)
 
     def flush(self):
-        # type: () -> None
         """
         Flush writes the stream buffers out to persistent storage.
 
