@@ -946,6 +946,20 @@ class TestStreamSet(object):
         other = streams.filter(collection="app*")
         assert other._streams == [stream1]
 
+        type(stream1).collection = PropertyMock(return_value="foo/region-north")
+        other = streams.filter(collection="region-")
+        assert other._streams == [stream1]
+        other = streams.filter(collection=r"^region-")
+        assert other._streams == []
+        other = streams.filter(collection="foo/")
+        assert other._streams == [stream1]
+        other = streams.filter(collection="foo/z")
+        assert other._streams == []
+
+        type(stream1).collection = PropertyMock(return_value="region.north/foo")
+        other = streams.filter(collection=r"region\.")
+        assert other._streams == [stream1]
+
 
     def test_filter_name(self, stream1, stream2):
         """
@@ -961,6 +975,16 @@ class TestStreamSet(object):
 
         other = streams.filter(name="oo*")
         assert other._streams == [stream2]
+
+        type(stream1).name = PropertyMock(return_value="region-north")
+        other = streams.filter(name="region-")
+        assert other._streams == [stream1]
+        other = streams.filter(name=r"region\.")
+        assert other._streams == []
+
+        type(stream1).name = PropertyMock(return_value="region.north")
+        other = streams.filter(name=r"region\.")
+        assert other._streams == [stream1]
 
 
     def test_filter_unit(self, stream1, stream2):
