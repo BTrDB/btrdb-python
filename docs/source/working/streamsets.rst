@@ -25,6 +25,14 @@ providing collection or tag matching parameters.
 
     streams = conn.streams(*UUIDs)
 
+If you've already obtained a list of :code:`Stream` objects, you may create
+a StreamSet directly by providing a list of streams for initialization.
+
+.. code-block:: python
+
+    streams = StreamSet([stream1, stream2, stream3])
+
+
 Filtering
 ----------
 To apply query parameters to your request, you should use the :code:`filter`
