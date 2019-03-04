@@ -1016,6 +1016,8 @@ class TestStreamSet(object):
         assert other._streams == [stream1]
 
         stream2.tags.return_value = {"name": "blood", "unit": "volts"}
+        other = streams.filter(tags={"name": "blood", "unit": "volts"})
+        assert other._streams == [stream2]
         other = streams.filter(tags={"unit": "volts"})
         assert other._streams == [stream1, stream2]
 
@@ -1035,8 +1037,8 @@ class TestStreamSet(object):
         other = streams.filter(annotations={"color": "red"})
         assert other._streams == [stream1]
 
-
-
+        other = streams.filter(annotations={"owner": "ABC", "color": "red"})
+        assert other._streams == [stream1]
 
 
     ##########################################################################
