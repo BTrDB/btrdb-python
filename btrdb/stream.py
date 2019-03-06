@@ -35,17 +35,6 @@ INSERT_BATCH_SIZE = 5000
 
 
 ##########################################################################
-## Helpers
-##########################################################################
-
-def _to_regex(val, name):
-    try:
-        return re.compile(val, re.IGNORECASE)
-    except (re.error, RuntimeError) as exc:
-        raise ValueError("could not convert {} to regex: {}".format(name, exc)) from None
-
-
-##########################################################################
 ## Stream Classes
 ##########################################################################
 
@@ -797,8 +786,9 @@ class StreamSetBase(Sequence):
         stream objects that match filtering criteria.
 
         The collection, name, and unit arguments will be used to select streams
-        from the original StreamSet object based on a case-insensitive regex
-        search.
+        from the original StreamSet object.  If a string is supplied, then a
+        case-insensitive exact match is used to select streams.  Otherwise, you
+        may supply a compiled regex pattern that will be used with `re.search`.
 
         The tags and annotations arguments expect dictionaries for the desired
         key/value pairs.  Any stream in the original instance that has the exact
@@ -813,11 +803,14 @@ class StreamSetBase(Sequence):
             the exclusive end of the query (see :func:`btrdb.utils.timez.to_nanoseconds`
             for valid input types)
         collection : str or regex
-            pattern (case-insensitive) for filtering streams based on collection
+            string for exact (case-insensitive) matching of collection when filtering streams
+            or a compiled regex expression for re.search of stream collections.
         name : str or regex
-            pattern (case-insensitive) for filtering streams based on name
+            string for exact (case-insensitive) matching of name when filtering streams
+            or a compiled regex expression for re.search of stream names.
         unit : str or regex
-            pattern (case-insensitive) for filtering streams based on unit
+            string for exact (case-insensitive) matching of unit when filtering streams
+            or a compiled regex expression for re.search of stream units.
         tags : dict
             key/value pairs for filtering streams based on tags
         annotations : dict
@@ -836,18 +829,30 @@ class StreamSetBase(Sequence):
 
         # filter by collection
         if collection is not None:
-            reg = _to_regex(collection, "collection")
-            obj._streams = [s for s in obj._streams for m in [reg.search(s.collection)] if m]
+            if isinstance(collection, re._pattern_type):
+                obj._streams = [s for s in obj._streams for m in [collection.search(s.collection)] if m]
+            elif isinstance(collection, str):
+                obj._streams = [s for s in obj._streams if s.collection.lower() == collection.lower()]
+            else:
+                raise TypeError("collection must be string or compiled regex")
 
         # filter by name
         if name is not None:
-            reg = _to_regex(name, "name")
-            obj._streams = [s for s in obj._streams for m in [reg.search(s.name)] if m]
+            if isinstance(name, re._pattern_type):
+                obj._streams = [s for s in obj._streams for m in [name.search(s.name)] if m]
+            elif isinstance(name, str):
+                obj._streams = [s for s in obj._streams if s.name.lower() == name.lower()]
+            else:
+                raise TypeError("name must be string or compiled regex")
 
         # filter by unit
         if unit is not None:
-            reg = _to_regex(unit, "unit")
-            obj._streams = [s for s in obj._streams for m in [reg.search(s.tags()["unit"])] if m]
+            if isinstance(unit, re._pattern_type):
+                obj._streams = [s for s in obj._streams for m in [unit.search(s.tags()["unit"])] if m]
+            elif isinstance(unit, str):
+                obj._streams = [s for s in obj._streams if s.tags().get("unit", "").lower() == unit.lower()]
+            else:
+                raise TypeError("unit must be string or compiled regex")
 
         # filter by tags
         if tags:

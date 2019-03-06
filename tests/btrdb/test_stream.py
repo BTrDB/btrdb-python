@@ -15,6 +15,7 @@ Testing package for the btrdb stream module
 ## Imports
 ##########################################################################
 
+import re
 import uuid
 import pytz
 import datetime
@@ -23,7 +24,7 @@ from unittest.mock import Mock, PropertyMock, patch, call
 
 from btrdb.conn import BTrDB
 from btrdb.endpoint import Endpoint
-from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE, _to_regex
+from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
 from btrdb.point import RawPoint, StatPoint
 from btrdb.exceptions import BTrDBError, InvalidOperation
 from btrdb.grpcinterface import btrdb_pb2
@@ -920,44 +921,40 @@ class TestStreamSet(object):
         assert isinstance(other, streams.__class__)
 
 
-    def test_to_regex_exc(self):
-        """
-        Assert _to_regex raises ValueError
-        """
-        with pytest.raises(ValueError, match="could not convert name to regex"):
-            _to_regex("*oo*", "name")
-
-
     def test_filter_collection(self, stream1, stream2):
         """
         Assert filter collection works as intended
         """
         streams = StreamSet([stream1, stream2])
 
+        # string arguments
         other = streams.filter(collection="fruits")
-        assert other._streams == [stream1, stream2]
-
-        other = streams.filter(collection="FRUITS")
-        assert other._streams == [stream1, stream2]
-
-        other = streams.filter(collection="apple")
+        assert other._streams == []
+        other = streams.filter(collection="fruits/apple")
         assert other._streams == [stream1]
-
-        other = streams.filter(collection="app*")
+        other = streams.filter(collection="FRUITS/APPLE")
         assert other._streams == [stream1]
+        other = streams.filter(collection="fruits*")
+        assert other._streams == []
+
+        # regex arguments
+        other = streams.filter(collection=re.compile("fruits"))
+        assert other._streams == [stream1, stream2]
+        other = streams.filter(collection=re.compile("fruits.*"))
+        assert other._streams == [stream1, stream2]
 
         type(stream1).collection = PropertyMock(return_value="foo/region-north")
-        other = streams.filter(collection="region-")
+        other = streams.filter(collection=re.compile("region-"))
         assert other._streams == [stream1]
-        other = streams.filter(collection=r"^region-")
+        other = streams.filter(collection=re.compile("^region-"))
         assert other._streams == []
-        other = streams.filter(collection="foo/")
+        other = streams.filter(collection=re.compile("foo/"))
         assert other._streams == [stream1]
-        other = streams.filter(collection="foo/z")
+        other = streams.filter(collection=re.compile("foo/z"))
         assert other._streams == []
 
         type(stream1).collection = PropertyMock(return_value="region.north/foo")
-        other = streams.filter(collection=r"region\.")
+        other = streams.filter(collection=re.compile(r"region\."))
         assert other._streams == [stream1]
 
 
@@ -967,23 +964,32 @@ class TestStreamSet(object):
         """
         streams = StreamSet([stream1, stream2])
 
+        # string arguments
         other = streams.filter(name="blood")
         assert other._streams == [stream2]
-
         other = streams.filter(name="BLOOD")
         assert other._streams == [stream2]
+        other = streams.filter(name="not_found")
+        assert other._streams == []
 
-        other = streams.filter(name="oo*")
+        # regex arguments
+        other = streams.filter(name=re.compile("blood"))
         assert other._streams == [stream2]
+        other = streams.filter(name=re.compile("^blood$"))
+        assert other._streams == [stream2]
+        other = streams.filter(name=re.compile("oo"))
+        assert other._streams == [stream2]
+        other = streams.filter(name=re.compile("not_found"))
+        assert other._streams == []
 
         type(stream1).name = PropertyMock(return_value="region-north")
-        other = streams.filter(name="region-")
+        other = streams.filter(name=re.compile("region-"))
         assert other._streams == [stream1]
-        other = streams.filter(name=r"region\.")
+        other = streams.filter(name=re.compile(r"region\."))
         assert other._streams == []
 
         type(stream1).name = PropertyMock(return_value="region.north")
-        other = streams.filter(name=r"region\.")
+        other = streams.filter(name=re.compile(r"region\."))
         assert other._streams == [stream1]
 
 
@@ -993,14 +999,23 @@ class TestStreamSet(object):
         """
         streams = StreamSet([stream1, stream2])
 
-        other = streams.filter(unit="foo")
-        assert other._streams == []
-
+        # string arguments
         other = streams.filter(unit="volts")
         assert other._streams == [stream1]
-
         other = streams.filter(unit="VOLTS")
         assert other._streams == [stream1]
+        other = streams.filter(unit="not_found")
+        assert other._streams == []
+
+        # regex arguments
+        other = streams.filter(unit=re.compile("volts|amps"))
+        assert other._streams == [stream1, stream2]
+        other = streams.filter(unit=re.compile("volts"))
+        assert other._streams == [stream1]
+        other = streams.filter(unit=re.compile("v"))
+        assert other._streams == [stream1]
+        other = streams.filter(unit=re.compile("meters"))
+        assert other._streams == []
 
 
     def test_filter_tags(self, stream1, stream2):
