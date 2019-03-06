@@ -15,6 +15,7 @@ Testing package for the btrdb stream module
 ## Imports
 ##########################################################################
 
+import re
 import uuid
 import pytz
 import datetime
@@ -43,6 +44,10 @@ def stream1():
     stream.version = Mock(return_value=11)
     stream.uuid = Mock(return_value=uu)
     stream.nearest = Mock(return_value=(RawPoint(time=10, value=1), 11))
+    type(stream).collection = PropertyMock(return_value="fruits/apple")
+    type(stream).name = PropertyMock(return_value="gala")
+    stream.tags = Mock(return_value={"name": "gala", "unit": "volts"})
+    stream.annotations = Mock(return_value={"owner": "ABC", "color": "red"})
     return stream
 
 
@@ -53,6 +58,10 @@ def stream2():
     stream.version = Mock(return_value=22)
     stream.uuid = Mock(return_value=uu)
     stream.nearest = Mock(return_value=(RawPoint(time=20, value=1), 22))
+    type(stream).collection = PropertyMock(return_value="fruits/orange")
+    type(stream).name = PropertyMock(return_value="blood")
+    stream.tags = Mock(return_value={"name": "blood", "unit": "amps"})
+    stream.annotations = Mock(return_value={"owner": "ABC", "color": "orange"})
     return stream
 
 
@@ -900,17 +909,6 @@ class TestStreamSet(object):
         assert isinstance(streams.filters[0], StreamFilter)
 
 
-    def test_filter_raises(self, stream1):
-        """
-        Assert filter raises ValueError
-        """
-        streams = StreamSet([stream1])
-
-        with pytest.raises(ValueError) as exc:
-            streams = streams.filter(start=None, end=None)
-        assert "must be supplied" in str(exc).lower()
-
-
     def test_filter_returns_new_instance(self, stream1):
         """
         Assert filter returns new instance
@@ -921,6 +919,142 @@ class TestStreamSet(object):
 
         assert other is not streams
         assert isinstance(other, streams.__class__)
+
+
+    def test_filter_collection(self, stream1, stream2):
+        """
+        Assert filter collection works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        # string arguments
+        other = streams.filter(collection="fruits")
+        assert other._streams == []
+        other = streams.filter(collection="fruits/apple")
+        assert other._streams == [stream1]
+        other = streams.filter(collection="FRUITS/APPLE")
+        assert other._streams == [stream1]
+        other = streams.filter(collection="fruits*")
+        assert other._streams == []
+
+        # regex arguments
+        other = streams.filter(collection=re.compile("fruits"))
+        assert other._streams == [stream1, stream2]
+        other = streams.filter(collection=re.compile("fruits.*"))
+        assert other._streams == [stream1, stream2]
+
+        type(stream1).collection = PropertyMock(return_value="foo/region-north")
+        other = streams.filter(collection=re.compile("region-"))
+        assert other._streams == [stream1]
+        other = streams.filter(collection=re.compile("^region-"))
+        assert other._streams == []
+        other = streams.filter(collection=re.compile("foo/"))
+        assert other._streams == [stream1]
+        other = streams.filter(collection=re.compile("foo/z"))
+        assert other._streams == []
+
+        type(stream1).collection = PropertyMock(return_value="region.north/foo")
+        other = streams.filter(collection=re.compile(r"region\."))
+        assert other._streams == [stream1]
+
+
+    def test_filter_name(self, stream1, stream2):
+        """
+        Assert filter name works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        # string arguments
+        other = streams.filter(name="blood")
+        assert other._streams == [stream2]
+        other = streams.filter(name="BLOOD")
+        assert other._streams == [stream2]
+        other = streams.filter(name="not_found")
+        assert other._streams == []
+
+        # regex arguments
+        other = streams.filter(name=re.compile("blood"))
+        assert other._streams == [stream2]
+        other = streams.filter(name=re.compile("^blood$"))
+        assert other._streams == [stream2]
+        other = streams.filter(name=re.compile("oo"))
+        assert other._streams == [stream2]
+        other = streams.filter(name=re.compile("not_found"))
+        assert other._streams == []
+
+        type(stream1).name = PropertyMock(return_value="region-north")
+        other = streams.filter(name=re.compile("region-"))
+        assert other._streams == [stream1]
+        other = streams.filter(name=re.compile(r"region\."))
+        assert other._streams == []
+
+        type(stream1).name = PropertyMock(return_value="region.north")
+        other = streams.filter(name=re.compile(r"region\."))
+        assert other._streams == [stream1]
+
+
+    def test_filter_unit(self, stream1, stream2):
+        """
+        Assert filter unit works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        # string arguments
+        other = streams.filter(unit="volts")
+        assert other._streams == [stream1]
+        other = streams.filter(unit="VOLTS")
+        assert other._streams == [stream1]
+        other = streams.filter(unit="not_found")
+        assert other._streams == []
+
+        # regex arguments
+        other = streams.filter(unit=re.compile("volts|amps"))
+        assert other._streams == [stream1, stream2]
+        other = streams.filter(unit=re.compile("volts"))
+        assert other._streams == [stream1]
+        other = streams.filter(unit=re.compile("v"))
+        assert other._streams == [stream1]
+        other = streams.filter(unit=re.compile("meters"))
+        assert other._streams == []
+
+
+    def test_filter_tags(self, stream1, stream2):
+        """
+        Assert filter annotations works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        other = streams.filter(tags={"unit": "meters"})
+        assert other._streams == []
+
+        other = streams.filter(tags={"unit": "volts"})
+        assert other._streams == [stream1]
+
+        stream2.tags.return_value = {"name": "blood", "unit": "volts"}
+        other = streams.filter(tags={"name": "blood", "unit": "volts"})
+        assert other._streams == [stream2]
+        other = streams.filter(tags={"unit": "volts"})
+        assert other._streams == [stream1, stream2]
+
+
+    def test_filter_annotations(self, stream1, stream2):
+        """
+        Assert filter annotations works as intended
+        """
+        streams = StreamSet([stream1, stream2])
+
+        other = streams.filter(annotations={"owner": ""})
+        assert other._streams == []
+
+        other = streams.filter(annotations={"owner": "ABC"})
+        assert other._streams == [stream1, stream2]
+
+        other = streams.filter(annotations={"color": "red"})
+        assert other._streams == [stream1]
+
+        other = streams.filter(annotations={"owner": "ABC", "color": "red"})
+        assert other._streams == [stream1]
+
 
     ##########################################################################
     ## clone tests

@@ -36,11 +36,9 @@ a StreamSet directly by providing a list of streams for initialization.
 Filtering
 ----------
 To apply query parameters to your request, you should use the :code:`filter`
-method.  At the moment, this method accepts a :code:`start` and :code:`start`
-argument however this may be expanded in the future to include more options
-such as matching annotations or tags.
+method to supply a :code:`start` or :code:`end` argument.
 
-Keep in mind that :code:`filter` will return a new object so that you can keep
+Keep in mind that :code:`filter` will return a new object so you can keep
 multiple filtered StreamSets in memory while you explore your data.  The
 :code:`filter` method may be called multiple times but only the final values
 will be used when it is time to fulfill the request by the server.
@@ -62,6 +60,24 @@ will be used when it is time to fulfill the request by the server.
     # the end parameters
     alt = streams.filter(start=0, end=currently_as_ns())
 
+Aside from filtering results at query execution, you may also filter the streams
+that should be included in the new object.  For instance, you may wish to create
+a new StreamSet containing only voltage streams or only from a specific
+collection.
+
+To filter the available streams, you may provide a :code:`collection`,
+:code:`name`, or :code:`unit` argument.  If you provide a string, then a
+case-insensitive exact match will be used to select the desired streams.  You
+may instead provide a compiled regex expression which will be used with
+re.search to choose the streams to include.
+
+.. code-block:: python
+
+    # select only voltage streams
+    voltage_streams = streams.filter(unit="volts")
+
+    # select only voltage or amperage streams using regex pattern
+    other_streams = streams.filter(unit=re.compile("volts|amps"))
 
 
 Retrieving Data
