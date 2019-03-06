@@ -1,49 +1,123 @@
-BTrDB Bindings for Python
-=========================
-These are BTrDB Bindings for Python meant to be used with Python's multithreading library. Documentation can be generated using pydoc.
+# BTrDB Bindings for Python
 
-Here is an example:
-```python
+These are BTrDB Bindings for Python allowing you painless and productive access to the Berkeley Tree Database (BTrDB).  BTrDB is a time series database focusing on blazing speed with respect to univariate time series data at the nanosecond scale.
 
->>> # This works for both Python 2 and Python 3
-...
->>> import btrdb4
->>> import time
->>> import uuid
->>>
->>> # This is the UUID of the stream we are going to interact with
-... uu = uuid.uuid4()
->>> uu
-UUID('a5fba242-74c8-4e59-ad89-c1565ee3229c')
->>>
->>> # Connect to BTrDB and obtain a BTrDB handle
-... conn = btrdb4.Connection("my.server:4410")
->>> # Connection with an API key. Note port 4411, the secure API
-... conn = btrdb4.Connection("my.server:4411", apikey="255C59A06BB698681E3580D2")
->>> b = conn.newContext()
->>>
->>> # Connect using environment variables $BTRDB_ENDPOINTS and $BTRDB_API_KEY
->>> # Note that this returns a context directly rather than a connection.
->>> b = btrdb4.connect()
->>>
->>> # Obtain a stream handle
-... s = b.streamFromUUID(uu)
->>> s.exists()
-False
->>>
->>> # Create the stream
-... s = b.create(uu, "a/b/c", {"created_by": b"me", "time_created": bytes(str(time.time()).encode("utf-8"))})
->>> s.exists()
-True
->>>
->>> # Insert some data
-... version = s.insert(((1, 10), (3, 14), (5, 19), (9, 13)))
->>> version
-0
->>>
->>> # Query some data
-... for rawpoint, version in s.rawValues(0, 7):
-...     print("{0}: {1}".format(rawpoint, version))
-...
->>>
-```
+
+## Sample Code
+
+Our goal is to make BTrDB as easy to use as possible, focusing on integration with other tools and the productivity of our users.  In keeping with this we continue to add new features such as easy transformation to numpy arrays, pandas Series, etc.  See the sample code below and then checkout our [documentation](https://btrdb.readthedocs.io/en/latest/) for more in depth instructions.
+
+
+    import btrdb
+
+    # connect to database
+    conn = btrdb.connect("192.168.1.101:4410")
+
+    # view time series streams found at provided collection path
+    streams = conn.streams_in_collection("USEAST_NOC1/90807")
+    for stream in streams:
+        print(stream.name)
+
+    # retrieve a given stream by UUID and print out data points.  In value
+    # queries you will receive RawPoint instances which contain a time and value
+    # attribute
+    stream = conn.stream_from_uuid("71466a91-dcfe-42ea-9e88-87c51f847942")
+    for point, _ in stream.values(start, end):
+        print(point)
+    >> RawPoint(1500000000000000000, 1.0)
+    >> RawPoint(1500000000100000000, 2.0)
+    >> RawPoint(1500000000200000000, 3.0)
+    ...
+
+    # view windowed data.  Each StatPoint contains the time of the window and
+    # common statistical data such as min, mean, max, count, and standard
+    # deviation of values the window covers.  See docs for more details.
+    width = 300000000
+    depth = 20
+    for point, _ in stream.windows(start=start, end=end,
+                                   width=width, depth=depth):
+    >> StatPoint(1500000000000000000, 1.0, 2.0, 3.0, 3, 0.816496580927726)
+    >> StatPoint(1500000000300000000, 4.0, 5.0, 6.0, 3, 0.816496580927726)
+    >> StatPoint(1500000000600000000, 7.0, 8.0, 9.0, 3, 0.816496580927726)
+
+
+
+You can also easily work with a group of streams for when you need to evaluate data across multiple time series or serialize to disk.
+
+    from btrdb.utils.timez import to_nanoseconds
+
+    start = to_nanoseconds(datetime(2018,1,1,9,0,0))
+    streams = db.streams(*uuid_list)
+
+    # convert stream data to numpy arrays
+    data = streams.filter(start=start).to_array()
+
+    # serialize stream data to disk as CSV
+    streams.filter(start=start).to_csv("data.csv")
+
+    # convert stream data to a pandas DataFrame
+    streams.filter(start=start).to_dataframe()
+    >>                    time  NOC_1/stream0  NOC_1/stream1
+        0  1500000000000000000            NaN            1.0
+        1  1500000000100000000            2.0            NaN
+        2  1500000000200000000            NaN            3.0
+        3  1500000000300000000            4.0            NaN
+        4  1500000000400000000            NaN            5.0
+        5  1500000000500000000            6.0            NaN
+        6  1500000000600000000            NaN            7.0
+        7  1500000000700000000            8.0            NaN
+        8  1500000000800000000            NaN            9.0
+        9  1500000000900000000           10.0            NaN
+
+
+## Installation
+
+See our documentation on [installing](https://btrdb.readthedocs.io/en/latest/installing.html) the bindings for more detailed instructions.  However, to quickly get started using the latest available versions you can use `pip` to install from pypi with `conda` support coming in the near future.
+
+    $ pip install btrdb
+
+
+## Tests
+
+This project includes a suite of automated tests based upon [pytest](https://docs.pytest.org/en/latest/).  For your convenience, a `Makefile` has been provided with a target for evaluating the test suite.  Use the following command to run the tests.
+
+    $ make test
+
+Aside from basic unit tests, the test suite is configured to use [pyflakes](https://github.com/PyCQA/pyflakes) for linting and style checking as well as [coverage](https://coverage.readthedocs.io) for measuring test coverage.
+
+Note that the test suite has additional dependencies that must be installed for them to successfully run: `pip install -r tests/requirements.txt`.
+
+## Documentation
+
+The project documentation is written in reStructuredText and is built using Sphinx, which also includes the docstring documentation from the `btrdb` Python package. For your convenience, the `Makefile` includes a target for building the documentation:
+
+    $ make html
+
+This will build the HTML documentation in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built when pushed to GitHub and hosted on [Read The Docs](https://btrdb.readthedocs.io/en/latest/).
+
+Note that the documentation also requires Sphix and other dependencies to successfully build: `pip install -r docs/requirements.txt`.
+
+## Branches / Git Workflow
+
+When working on this codebase, keep in mind that the project is set up in a typical production/release/development cycle as described in _[A Successful Git Branching Model](http://nvie.com/posts/a-successful-git-branching-model/)_. A typical workflow is as follows:
+
+1. Select an issue from the [issues page](https://github.com/BTrDB/btrdb-python/issues) - preferably one that is "ready" then move it to "in-progress" using labels or just comment that you are working on it.
+
+2. Create a branch off of develop called "feature-[feature name]", work and commit into that branch.
+
+        ~$ git checkout -b feature-myfeature develop
+
+3. Once you are done working (and everything is tested) merge your feature into develop.
+
+        ~$ git checkout develop
+        ~$ git merge --no-ff feature-myfeature
+        ~$ git branch -d feature-myfeature
+        ~$ git push origin develop
+
+4. Repeat. Releases will be routinely pushed into master via release branches, then deployed to the server.
+
+Note that this process may change with the next major release of BTrDB with development moving to version branches and develop/integration branches from each version branch.
+
+## Versioning
+
+This codebases uses a form of [Semantic Versioning](http://semver.org/) to structure version numbers.  In general, the major version number will track with the BTrDB codebase to transparently maintain version compatibility.  Planned features between major versions will increment the minor version while any special releases (bug fixes, etc.) will increment the patch number.

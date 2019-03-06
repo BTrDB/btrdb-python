@@ -1,0 +1,33 @@
+language: python
+
+dist: xenial
+
+python:
+  - '3.4'
+  - '3.5'
+  - '3.6'
+  - '3.7'
+
+before_install:
+  - sudo apt-get update
+
+install:
+  - pip install -r requirements.txt
+  - pip install -r tests/requirements.txt
+
+script: make test
+
+after_success: coveralls
+
+notifications:
+  email:
+    recipients:
+      - allen@pingthings.io
+    on_success: change
+    on_failure: always
+  slack:
+    rooms:
+      secure: DcEpB6BjLlb78nsQSBNHDVMBlpJSMu0fZF0UMdcejd3YQl8sHHVG0BzduZPW9ewt0RP+H/s7NYSLn1LpJ5hOsHLlhsi/Ln4PuvuChAujWnpPBSbIExE2DK8s7rL4NSLUrqFN+3L8ZK+4FGIi8wP0tlF7qUZ9zzIB3qeUNqlGlxRzcw6ORliCDlMumHMzjRJajEpIusmOfJwnwLyFW8pCVYEgNmOg8LxsbEz7Z/6YLYGcHRE2TaeNOy1e3tjgo/1pSoZTTnBZh2fcVfVeGyy/PjzFQWudgvqJX3PUuF1MxoCwPb+E6TRAEHkncJcSqPyqFcj2+OzqaRg5Kry9FCnfXvuJBtSSnfETHDxT/ARRZOmVzwRz6gjw0qK+M5ZPeSSzh4WkX0acJgkkk2Q1pRpGQ+Cjty4GUqtN+3R6+qWXLjCTZ0om0xohTYGnyzH+t046WX8n6e4Oj/e0QJAxwOqTANEKWMDkKmJgqn14HO+8VbSEAosagU0HKWOrlhzqlnqz3Mno2jY1CjdRlIRPibGPQkpYSdlaGrMp34Y0ClzYBgUEkvwbwiJ06UFAZ3uH26mt5SNuqHMwxRVf52eJLvOOX5WebOJHWQezgewLoJEqU48JSDIyrb/QDut17/NhKTPkEfdYOaBt0Ej+1ypsM/X6mdX75JnTNBVheTQR9zH9xDg=
+    on_success: change
+    on_failure: always
+    on_pull_requests: true
