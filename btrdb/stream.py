@@ -33,6 +33,11 @@ from btrdb.exceptions import BTrDBError, InvalidOperation
 
 INSERT_BATCH_SIZE = 5000
 
+try:
+    RE_PATTERN = re._pattern_type
+except:
+    RE_PATTERN = re.Pattern
+
 
 ##########################################################################
 ## Stream Classes
@@ -829,7 +834,7 @@ class StreamSetBase(Sequence):
 
         # filter by collection
         if collection is not None:
-            if isinstance(collection, re._pattern_type):
+            if isinstance(collection, RE_PATTERN):
                 obj._streams = [s for s in obj._streams for m in [collection.search(s.collection)] if m]
             elif isinstance(collection, str):
                 obj._streams = [s for s in obj._streams if s.collection.lower() == collection.lower()]
@@ -838,7 +843,7 @@ class StreamSetBase(Sequence):
 
         # filter by name
         if name is not None:
-            if isinstance(name, re._pattern_type):
+            if isinstance(name, RE_PATTERN):
                 obj._streams = [s for s in obj._streams for m in [name.search(s.name)] if m]
             elif isinstance(name, str):
                 obj._streams = [s for s in obj._streams if s.name.lower() == name.lower()]
@@ -847,7 +852,7 @@ class StreamSetBase(Sequence):
 
         # filter by unit
         if unit is not None:
-            if isinstance(unit, re._pattern_type):
+            if isinstance(unit, RE_PATTERN):
                 obj._streams = [s for s in obj._streams for m in [unit.search(s.tags()["unit"])] if m]
             elif isinstance(unit, str):
                 obj._streams = [s for s in obj._streams if s.tags().get("unit", "").lower() == unit.lower()]
