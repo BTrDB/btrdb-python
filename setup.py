@@ -36,6 +36,7 @@ LICENSE      = "BSD-3-Clause"
 REPOSITORY   = "https://github.com/BTrDB/btrdb-python"
 PACKAGE      = "btrdb"
 URL          = "http://btrdb.io/"
+DOCS_URL     = "https://btrdb.readthedocs.io/en/latest/"
 
 ## Define the keywords
 KEYWORDS     = ('btrdb', 'berkeley', 'timeseries', 'database', 'bindings' 'gRPC')
@@ -137,7 +138,7 @@ config = {
     "maintainer": MAINTAINER,
     "maintainer_email": EMAIL,
     "project_urls": {
-        "Documentation": URL,
+        "Documentation": DOCS_URL,
         "Download": "{}/tarball/v{}".format(REPOSITORY, get_version()),
         "Source": REPOSITORY,
         "Tracker": "{}/issues".format(REPOSITORY),
