@@ -33,8 +33,7 @@ clean:
 
 # Targets for testing
 test:
-	# python setup.py test
-	pytest --cov=btrdb --flakes
+	python setup.py test
 
 # Publish to gh-pages
 publish:
