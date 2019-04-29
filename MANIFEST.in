@@ -1,0 +1,23 @@
+include *.md
+include *.rst
+include *.txt
+include *.yml
+include *.yaml
+include *.cfg
+include Makefile
+include MANIFEST.in
+
+graft docs
+prune docs/build
+
+graft tests
+
+graft btrdb
+graft btrdb4
+
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .ipynb_checkpoints
+global-exclude .DS_Store
+global-exclude .env
+global-exclude .coverage.*
