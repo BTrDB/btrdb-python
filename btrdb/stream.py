@@ -1103,6 +1103,15 @@ class StreamSetBase(Sequence):
         )
 
     def __getitem__(self, item):
+        if isinstance(item, str):
+            item = uuidlib.UUID(item)
+
+        if isinstance(item, uuidlib.UUID):
+            for stream in self._streams:
+                if stream.uuid == item:
+                    return stream
+            raise KeyError("Stream with uuid `{}` not found.".format(str(item)))
+
         return self._streams[item]
 
     def __len__(self):
