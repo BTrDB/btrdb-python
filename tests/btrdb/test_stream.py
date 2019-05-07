@@ -690,6 +690,45 @@ class TestStreamSet(object):
             assert data[index] == stream
 
 
+    def test_indexing(self):
+        """
+        Assert StreamSet instance supports indexing
+        """
+        data = [11,22,"dog","cat"]
+        streams = StreamSet(data)
+
+        # verify index lookup
+        assert streams[-1] == data[-1]
+        for idx in range(len(streams)):
+            assert data[idx] == streams[idx]
+
+        # verify slicing works
+        assert streams[:2] == data[:2]
+
+
+    def test_mapping(self):
+        """
+        Assert StreamSet instance support key mapping
+        """
+        uuids = [uuid.uuid4() for _ in range(4)]
+        data = [Stream(None, uu) for uu in uuids]
+        streams = StreamSet(data)
+
+        # verify lookup with UUID
+        for uu in uuids:
+            assert streams[uu].uuid == uu
+
+        # verify lookup with str
+        for uu in uuids:
+            assert streams[str(uu)].uuid == uu
+
+        # verify raises KeyError
+        missing = uuid.uuid4()
+        with pytest.raises(KeyError) as e:
+            streams[missing]
+        assert str(missing) in str(e)
+
+
     def test_contains(self):
         """
         Assert StreamSet instance supports contains
