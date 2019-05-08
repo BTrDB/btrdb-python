@@ -31,4 +31,15 @@ To upgrade using pip:
 
 Installing with Anaconda
 ------------------------
-TBD
+
+If you'd like to use Anaconda, you'll need to download the library from the pingthings
+channel as shown below.
+
+Note however that only the version 5 bindings are available in Anaconda Cloud.  If you'd
+like to install the version 4 bindings you will need to use `pip` as shown above.
+
+.. code-block:: bash
+
+    $ conda install -c pingthings btrdb
+
+
