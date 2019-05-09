@@ -56,7 +56,7 @@ def connect(conn_str=None, apikey=None, profile=None):
     profile: str, default=None
         The name of a profile containing the required connection information as
         found in the user's predictive grid credentials file
-        `~/.predictivegrid/credentials.yml`.
+        `~/.predictivegrid/credentials.yaml`.
 
     Returns
     -------

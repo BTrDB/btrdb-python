@@ -48,7 +48,7 @@ Using Profiles
 
 In addition to providing the endpoint and API key directly (or through environment
 variables), you may provide a profile name which looks into your PredictiveGrid
-credentials file at `$HOME/.predictivegrid/credentials.yml`.  Using profiles
+credentials file at `$HOME/.predictivegrid/credentials.yaml`.  Using profiles
 is meant as a (optional) convenience device and may also be supplied through
 the environmental variable `$BTRDB_PROFILE`.
 

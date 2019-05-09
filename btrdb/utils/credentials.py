@@ -25,7 +25,7 @@ from btrdb.exceptions import ProfileNotFound, CredentialsFileNotFound
 ##########################################################################
 
 CONFIG_DIR = ".predictivegrid"
-CREDENTIALS_FILENAME = "credentials.yml"
+CREDENTIALS_FILENAME = "credentials.yaml"
 
 
 ##########################################################################
@@ -69,7 +69,7 @@ def load_profile(name="default"):
     Raises
     ------
     CredentialsFileNotFound
-        The expected credentials file `~/.predictivegrid/credentials.yml` could not be found.
+        The expected credentials file `~/.predictivegrid/credentials.yaml` could not be found.
 
     ProfileNotFound
         The requested profile could not be found in the credentials file
