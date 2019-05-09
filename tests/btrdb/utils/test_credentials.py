@@ -8,7 +8,7 @@
 # ID: test_credentials.py [] allen@pingthings.io $
 
 """
-Testing for the btrdb.utils.credentials
+Testing for the btrdb.utils.credentials module
 """
 
 ##########################################################################
@@ -16,7 +16,7 @@ Testing for the btrdb.utils.credentials
 ##########################################################################
 
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from btrdb.exceptions import *
 from btrdb.utils.credentials import *

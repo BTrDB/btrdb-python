@@ -1,5 +1,5 @@
 # btrdb.utils.credentials
-# Package for the btrdb database library.
+# Package for interacting with the PredictiveGrid credentials file.
 #
 # Author:   PingThings
 # Created:  Thu May 09 11:36:53 2019 -0400
@@ -8,7 +8,7 @@
 # ID: credentials.py [] allen@pingthings.io $
 
 """
-Package for the btrdb database library.
+Package for interacting with the PredictiveGrid credentials file.
 """
 
 ##########################################################################
