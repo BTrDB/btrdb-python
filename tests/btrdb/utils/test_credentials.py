@@ -29,7 +29,7 @@ from btrdb.utils.credentials import *
 
 class TestLoadCredentials(object):
 
-    @patch('btrdb.utils.credentials.open')
+    @patch('builtins.open')
     def test_raises_err_if_credentials_not_found(self, mock_open):
         """
         Assert CredentialsFileNotFound is raised if credentials.yaml is not found
