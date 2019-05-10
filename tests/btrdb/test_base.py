@@ -35,24 +35,62 @@ EXPECTED_VERSION = "5.4"
 
 class TestPackage(object):
 
-    def test_sanity(self):
-        """
-        Test that tests work by confirming 7-3 = 4
-        """
-        assert 7-3 == 4, "The world went wrong!!"
-
     def test_version(self):
         """
         Assert that the test version matches the library version.
         """
         assert __version__ == EXPECTED_VERSION
 
-    def test_connect_raises_err(self):
+class TestConnect(object):
+
+    def setup(self):
+        for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE"]:
+            try:
+                del os.environ[env]
+            except KeyError:
+                pass
+
+    @patch('btrdb.utils.credentials.load_credentials')
+    def test_raises_err_with_no_inputs(self, mock_load_credentials):
         """
-        Assert ConnectionError raised if no connection arg or ENV
+        Assert ConnectionError raised if no connection arg, ENV, profile
         """
-        with pytest.raises(ConnectionError):
+        mock_load_credentials.return_value = {}
+        msg = "Could not determine credentials to use."
+        with pytest.raises(ConnectionError, match=msg):
             connect()
+
+    def test_raises_err_if_both_profile_and_credentials(self):
+        """
+        Assert error is raised if both profile and credentials are sent
+        """
+        with pytest.raises(ValueError):
+            connect("192.168.1.100:4410",None,"default")
+
+    def test_raises_err_if_both_profile_and_credentials_in_env(self):
+        """
+        Assert error is raised if both profile and credentials in ENV
+        """
+        os.environ["BTRDB_ENDPOINTS"] = "192.168.1.100:4410"
+        os.environ["BTRDB_PROFILE"] = "husky"
+        msg = "Found both BTRDB_PROFILE and BTRDB_ENDPOINTS in ENV"
+
+        with pytest.raises(ValueError, match=msg):
+            connect()
+
+    @patch('btrdb.utils.credentials.load_credentials')
+    @patch('btrdb._connect')
+    def test_uses_args_over_env(self, mock_connect, mock_load_credentials):
+        """
+        Assert uses profile arg over profile env
+        """
+        os.environ["BTRDB_PROFILE"] = "dog"
+        mock_load_credentials.return_value = {
+            "cat": {"name": "cat", "btrdb": {"endpoints": "a", "api_key": "b"}},
+            "dog": {"name": "dog", "btrdb": {"endpoints": "c", "api_key": "d"}},
+        }
+        connect(profile="cat")
+        mock_connect.assert_called_once_with("a", "b")
 
     @patch('btrdb.Connection')
     def test_connect_with_env(self, mock_conn):

@@ -8,7 +8,7 @@ use as well as the access port.
 By default BTrDB servers expose port 4410 for unencrypted access and 4411 for
 encrypted access using TLS.  You may also opt for authentication using an API key
 which can be provided to you by the BTrDB server administrators.  Using such a
-key will require the TLS port (4411) and attempting to use a different port with
+key will require the TLS port (4411) as attempting to use a different port with
 an API key will raise an exception.
 
 Connecting to servers
@@ -43,6 +43,36 @@ Several connection options are shown in the code below:
     # connect with API key
     conn = btrdb.connect("192.168.1.101:4411", apikey="123456789123456789")
 
+Using Profiles
+~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to providing the endpoint and API key directly (or through environment
+variables), you may provide a profile name which looks into your PredictiveGrid
+credentials file at `$HOME/.predictivegrid/credentials.yaml`.  Using profiles
+is meant as a (optional) convenience device and may also be supplied through
+the environmental variable `$BTRDB_PROFILE`.
+
+.. code-block:: python
+
+    import btrdb
+
+    # connect using your own "research" profile
+    conn = btrdb.connect(profile="research")
+
+The credentials file is in YAML format as shown below.
+
+.. code-block:: yaml
+
+    research:
+      name: "research"
+      btrdb:
+        endpoints: "research.example.com:4411"
+        api_key: "d976a2d61103feb2235441fd6887955c"
+    default:
+      name: "default"
+      btrdb:
+        endpoints: "btrdb.example.com:4411"
+        api_key: "e666a2d61103feb2235441fd68879440"
 
 
 Viewing server status

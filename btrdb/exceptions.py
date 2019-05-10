@@ -73,3 +73,15 @@ class BTRDBTypeError(TypeError):
     A problem interacting with the BTrDB server.
     """
     pass
+
+class CredentialsFileNotFound(FileNotFoundError):
+    """
+    The credentials file could not be found.
+    """
+    pass
+
+class ProfileNotFound(Exception):
+    """
+    A requested profile could not be found in the credentials file.
+    """
+    pass
