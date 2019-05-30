@@ -77,7 +77,7 @@ class Endpoint(object):
                 ov = btrdb_pb2.OptValue(value = v)
             kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
             annkvlist.append(kv)
-        params = btrdb_pb2.SetStreamAnnotationsParams(uuid = uu.bytes, expectedAnnotationVersion = expected, annotations = annkvlist)
+        params = btrdb_pb2.SetStreamAnnotationsParams(uuid=uu.bytes, expectedPropertyVersion=expected, annotations=annkvlist)
         result = self.stub.SetStreamAnnotations(params)
         BTrDBError.checkProtoStat(result.stat)
 
