@@ -25,12 +25,11 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import grpc
-
-from btrdb4 import btrdb_pb2
-from btrdb4 import btrdb_pb2_grpc
-
-from btrdb4.utils import *
+from btrdb.grpcinterface import btrdb_pb2
+from btrdb.grpcinterface import btrdb_pb2_grpc
+from btrdb.point import RawPoint
+from btrdb.exceptions import BTrDBError
+from btrdb.utils.general import unpack_stream_descriptor
 
 class Endpoint(object):
     def __init__(self, channel):
@@ -59,8 +58,13 @@ class Endpoint(object):
         result = self.stub.StreamInfo(params)
         desc = result.descriptor
         BTrDBError.checkProtoStat(result.stat)
-        tagsanns = unpackProtoStreamDescriptor(desc)
-        return desc.collection, desc.annotationVersion, tagsanns[0], tagsanns[1], result.versionMajor
+        tagsanns = unpack_stream_descriptor(desc)
+        return desc.collection, desc.propertyVersion, tagsanns[0], tagsanns[1], result.versionMajor
+
+    def obliterate(self, uu):
+        params = btrdb_pb2.ObliterateParams(uuid = uu.bytes)
+        result = self.stub.Obliterate(params)
+        BTrDBError.checkProtoStat(result.stat)
 
     def setStreamAnnotations(self, uu, expected, changes):
         annkvlist = []
@@ -73,28 +77,50 @@ class Endpoint(object):
                 ov = btrdb_pb2.OptValue(value = v)
             kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
             annkvlist.append(kv)
-        params = btrdb_pb2.SetStreamAnnotationsParams(uuid = uu.bytes, expectedAnnotationVersion = expected, annotations = annkvlist)
+        params = btrdb_pb2.SetStreamAnnotationsParams(uuid=uu.bytes, expectedPropertyVersion=expected, annotations=annkvlist)
         result = self.stub.SetStreamAnnotations(params)
+        BTrDBError.checkProtoStat(result.stat)
+
+    def setStreamTags(self, uu, expected, tags, collection):
+        tag_data = []
+        for k, v in tags.items():
+            if v is None:
+                ov = None
+            else:
+                if isinstance(v, str):
+                    v = v.encode("utf-8")
+                ov = btrdb_pb2.OptValue(value = v)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
+            tag_data.append(kv)
+        params = btrdb_pb2.SetStreamTagsParams(uuid=uu.bytes, expectedPropertyVersion=expected, tags=tag_data, collection=collection)
+        result = self.stub.SetStreamTags(params)
         BTrDBError.checkProtoStat(result.stat)
 
     def create(self, uu, collection, tags, annotations):
         tagkvlist = []
         for k, v in tags.items():
-            kv = btrdb_pb2.KeyValue(key = k, value = v)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = btrdb_pb2.OptValue(value=v))
             tagkvlist.append(kv)
         annkvlist = []
         for k, v in annotations.items():
-            kv = btrdb_pb2.KeyValue(key = k, value = v)
+            kv = btrdb_pb2.KeyOptValue(key = k, val = btrdb_pb2.OptValue(value=v))
             annkvlist.append(kv)
         params = btrdb_pb2.CreateParams(uuid = uu.bytes, collection = collection, tags = tagkvlist, annotations = annkvlist)
         result = self.stub.Create(params)
         BTrDBError.checkProtoStat(result.stat)
 
-    def listCollections(self, prefix, startingAt, limit):
-        params = btrdb_pb2.ListCollectionsParams(prefix = prefix, startWith = startingAt, limit = limit)
-        result = self.stub.ListCollections(params)
-        BTrDBError.checkProtoStat(result.stat)
-        return result.collections
+    def listCollections(self, prefix):
+        """
+        Returns a generator for windows of collection paths matching search
+
+        Yields
+        ------
+        collection paths : list[str]
+        """
+        params = btrdb_pb2.ListCollectionsParams(prefix=prefix)
+        for msg in self.stub.ListCollections(params):
+            BTrDBError.checkProtoStat(msg.stat)
+            yield msg.collections
 
     def lookupStreams(self, collection, isCollectionPrefix, tags, annotations):
         tagkvlist = []
@@ -135,7 +161,7 @@ class Endpoint(object):
             yield result.ranges, result.versionMajor
 
     def insert(self, uu, values):
-        protoValues = RawPoint.toProtoList(values)
+        protoValues = RawPoint.to_proto_list(values)
         params = btrdb_pb2.InsertParams(uuid = uu.bytes, sync = False, values = protoValues)
         result = self.stub.Insert(params)
         BTrDBError.checkProtoStat(result.stat)
@@ -171,11 +197,11 @@ class Endpoint(object):
         return result.tags, result.annotations
 
     def generateCSV(self, queryType, start, end, width, depth, includeVersions, *streams):
-        protoStreams = [btrdb_pb2.StreamCSVConfig(version = stream[0], 
+        protoStreams = [btrdb_pb2.StreamCSVConfig(version = stream[0],
                                                   label = stream[1],
-                                                  uuid = stream[2].bytes) 
+                                                  uuid = stream[2].bytes)
                         for stream in streams]
-        params = btrdb_pb2.GenerateCSVParams(queryType = queryType.toProto(),
+        params = btrdb_pb2.GenerateCSVParams(queryType = queryType.to_proto(),
                                              startTime = start,
                                              endTime = end,
                                              windowSize = width,
