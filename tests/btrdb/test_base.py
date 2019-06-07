@@ -26,7 +26,7 @@ from btrdb.exceptions import ConnectionError
 ## Test Constants
 ##########################################################################
 
-EXPECTED_VERSION = "5.4"
+EXPECTED_VERSION = "5.4.2"
 
 
 ##########################################################################
@@ -44,7 +44,7 @@ class TestPackage(object):
 class TestConnect(object):
 
     def setup(self):
-        for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE"]:
+        for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE", "BTRDB_API_KEY"]:
             try:
                 del os.environ[env]
             except KeyError:
