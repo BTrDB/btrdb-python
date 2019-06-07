@@ -17,6 +17,7 @@ Package for interacting with the PredictiveGrid credentials file.
 
 import os
 import yaml
+from functools import wraps
 
 from btrdb.exceptions import ProfileNotFound, CredentialsFileNotFound
 
@@ -26,16 +27,22 @@ from btrdb.exceptions import ProfileNotFound, CredentialsFileNotFound
 
 CONFIG_DIR = ".predictivegrid"
 CREDENTIALS_FILENAME = "credentials.yaml"
-
+CREDENTIALS_PATH = os.path.join(os.environ["HOME"], CONFIG_DIR, CREDENTIALS_FILENAME)
 
 ##########################################################################
 ## Functions
 ##########################################################################
 
-def _credentials_path():
-    return os.path.join(os.environ["HOME"], CONFIG_DIR, CREDENTIALS_FILENAME)
+def filter_none(f):
+    """
+    decorator for removing dict items with None as value
+    """
+    @wraps(f)
+    def inner(*args, **kwargs):
+        return  { k: v for k, v in f(*args, **kwargs).items() if v is not None }
+    return inner
 
-def load_credentials():
+def load_credentials_from_file():
     """
     Returns a dict of the credentials file contents
 
@@ -44,14 +51,14 @@ def load_credentials():
     dict
         A dictionary of profile connection information
     """
-    path = _credentials_path()
     try:
-        with open(path, 'r') as stream:
+        with open(CREDENTIALS_PATH, 'r') as stream:
             return yaml.safe_load(stream)
     except FileNotFoundError as exc:
-        raise CredentialsFileNotFound("Cound not find `{}`".format(path)) from exc
+        raise CredentialsFileNotFound("Cound not find `{}`".format(CREDENTIALS_PATH)) from exc
 
-def load_profile(name="default"):
+@filter_none
+def credentials_by_profile(name=None):
     """
     Returns the BTrDB connection information (as dict) for a requested profile
     from the user's credentials file.
@@ -74,7 +81,50 @@ def load_profile(name="default"):
     ProfileNotFound
         The requested profile could not be found in the credentials file
     """
-    credentials = load_credentials()
+    if not name:
+        name = os.environ.get("BTRDB_PROFILE", 'default')
+
+    credentials = load_credentials_from_file()
     if name not in credentials.keys():
         raise ProfileNotFound("Profile `{}` not found in credentials file.".format(name))
     return credentials[name]["btrdb"]
+
+@filter_none
+def credentials_by_env():
+    """
+    Returns the BTrDB connection information (as dict) using BTRDB_ENDPOINTS and
+    BTRDB_API_KEY ENV variables.
+
+    Returns
+    -------
+    dict
+        A dictionary containing connection information
+    """
+    return {
+        "endpoints": os.environ.get("BTRDB_ENDPOINTS", None),
+        "api_key": os.environ.get("BTRDB_API_KEY",  None),
+    }
+
+
+def credentials(endpoints=None, api_key=None):
+    """
+    Returns the BTrDB connection information (as dict) for a requested profile
+    from the user's credentials file.
+
+    Parameters
+    ----------
+    name: str
+        The name of the profile to retrieve
+
+    Returns
+    -------
+    dict
+        A dictionary of the requested profile's connection information
+
+    """
+    creds = {}
+    credentials_by_arg = filter_none(lambda: { "endpoints": endpoints, "api_key": api_key, })
+    pipeline = (credentials_by_profile, credentials_by_env, credentials_by_arg)
+    [creds.update(func()) for func in pipeline]
+    return creds
+

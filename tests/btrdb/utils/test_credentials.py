@@ -36,12 +36,12 @@ class TestLoadCredentials(object):
         """
         mock_open.side_effect = FileNotFoundError("foo")
         with pytest.raises(CredentialsFileNotFound):
-            load_credentials()
+            load_credentials_from_file()
 
 
 class TestLoadProfile(object):
 
-    @patch('btrdb.utils.credentials.load_credentials')
+    @patch('btrdb.utils.credentials.load_credentials_from_file')
     def test_raises_err_if_profile_not_found(self, mock_credentials):
         """
         Assert ProfileNotFound is raised if profile is asked for but not found
@@ -55,9 +55,9 @@ class TestLoadProfile(object):
             }
         }
         with pytest.raises(ProfileNotFound):
-            load_profile("horse")
+            credentials_by_profile("horse")
 
-    @patch('btrdb.utils.credentials.load_credentials')
+    @patch('btrdb.utils.credentials.load_credentials_from_file')
     def test_returns_requested_profile(self, mock_credentials):
         """
         Assert returns correct profile
@@ -66,9 +66,9 @@ class TestLoadProfile(object):
             "default": {"btrdb": {"endpoints": "default"}},
             "duck": {"btrdb": {"endpoints": "duck"}},
         }
-        assert load_profile("duck")["endpoints"] == "duck"
+        assert credentials_by_profile("duck")["endpoints"] == "duck"
 
-    @patch('btrdb.utils.credentials.load_credentials')
+    @patch('btrdb.utils.credentials.load_credentials_from_file')
     def test_returns_default_profile(self, mock_credentials):
         """
         Assert default profile is returned
@@ -89,4 +89,4 @@ class TestLoadProfile(object):
                 "name": "default"
             },
         }
-        assert load_profile()["api_key"] == "333222111"
+        assert credentials_by_profile()["api_key"] == "333222111"

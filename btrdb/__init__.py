@@ -15,13 +15,11 @@ Package for the btrdb database library.
 ## Imports
 ##########################################################################
 
-import os
 from btrdb.conn import Connection, BTrDB
 from btrdb.endpoint import Endpoint
-from btrdb.exceptions import ConnectionError, CredentialsFileNotFound, \
-    ProfileNotFound
+from btrdb.exceptions import ConnectionError
 from btrdb.version import get_version
-from btrdb.utils.credentials import load_profile
+from btrdb.utils.credentials import credentials_by_profile, credentials
 
 ##########################################################################
 ## Module Variables
@@ -37,8 +35,8 @@ BTRDB_PROFILE = "BTRDB_PROFILE"
 ## Functions
 ##########################################################################
 
-def _connect(conn_str=None, apikey=None):
-    return BTrDB(Endpoint(Connection(conn_str, apikey=apikey).channel))
+def _connect(endpoints=None, api_key=None):
+    return BTrDB(Endpoint(Connection(endpoints, apikey=api_key).channel))
 
 def connect(conn_str=None, apikey=None, profile=None):
     """
@@ -64,39 +62,18 @@ def connect(conn_str=None, apikey=None, profile=None):
         An instance of the BTrDB context to directly interact with the database.
 
     """
-    # Check function arguments
-
+    # do not allow user to provide both address and profile
     if conn_str and profile:
         raise ValueError("Received both conn_str and profile arguments.")
 
+    # use specific profile if requested
     if profile:
-        credentials = load_profile(profile)
-        return _connect(credentials["endpoints"], credentials["api_key"])
+        return _connect(**credentials_by_profile(profile))
 
-    if conn_str:
-        return _connect(conn_str, apikey)
-
-    # Check ENV variables
-
-    keys = os.environ.keys()
-    if BTRDB_PROFILE in keys and BTRDB_ENDPOINTS in keys:
-        raise ValueError("Found both BTRDB_PROFILE and BTRDB_ENDPOINTS in ENV. "
-            "Only one is allowed.")
-
-    if BTRDB_PROFILE in keys:
-        credentials = load_profile(os.environ[BTRDB_PROFILE])
-        return _connect(credentials["endpoints"], credentials["api_key"])
-
-    if BTRDB_ENDPOINTS in keys:
-        return _connect(os.environ[BTRDB_ENDPOINTS], os.environ.get(BTRDB_API_KEY, None))
-
-
-    # Attempt default profile (no arguments or ENV found)
-
-    try:
-        credentials = load_profile("default")
-        return _connect(credentials["endpoints"], credentials["api_key"])
-    except (CredentialsFileNotFound, ProfileNotFound):
-        pass
+    # resolve credentials using combination of arguments, env
+    creds = credentials(conn_str, apikey)
+    if "endpoints" in creds:
+        return _connect(**creds)
 
     raise ConnectionError("Could not determine credentials to use.")
+
