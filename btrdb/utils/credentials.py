@@ -84,10 +84,16 @@ def credentials_by_profile(name=None):
     if not name:
         name = os.environ.get("BTRDB_PROFILE", 'default')
 
-    credentials = load_credentials_from_file()
-    if name not in credentials.keys():
+    # load from credentials yaml file
+    creds = load_credentials_from_file()
+    if name not in creds.keys():
         raise ProfileNotFound("Profile `{}` not found in credentials file.".format(name))
-    return credentials[name]["btrdb"]
+
+    # rename api_key if needed and return
+    fragment = creds[name]["btrdb"]
+    if "api_key" in fragment:
+        fragment["apikey"] = fragment.pop("api_key")
+    return fragment
 
 @filter_none
 def credentials_by_env():
@@ -102,11 +108,11 @@ def credentials_by_env():
     """
     return {
         "endpoints": os.environ.get("BTRDB_ENDPOINTS", None),
-        "api_key": os.environ.get("BTRDB_API_KEY",  None),
+        "apikey": os.environ.get("BTRDB_API_KEY",  None),
     }
 
 
-def credentials(endpoints=None, api_key=None):
+def credentials(endpoints=None, apikey=None):
     """
     Returns the BTrDB connection information (as dict) for a requested profile
     from the user's credentials file.
@@ -123,7 +129,7 @@ def credentials(endpoints=None, api_key=None):
 
     """
     creds = {}
-    credentials_by_arg = filter_none(lambda: { "endpoints": endpoints, "api_key": api_key, })
+    credentials_by_arg = filter_none(lambda: { "endpoints": endpoints, "apikey": apikey, })
     pipeline = (credentials_by_profile, credentials_by_env, credentials_by_arg)
     [creds.update(func()) for func in pipeline]
     return creds

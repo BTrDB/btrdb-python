@@ -89,4 +89,4 @@ class TestLoadProfile(object):
                 "name": "default"
             },
         }
-        assert credentials_by_profile()["api_key"] == "333222111"
+        assert credentials_by_profile()["apikey"] == "333222111"

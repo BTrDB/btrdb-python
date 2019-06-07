@@ -74,10 +74,10 @@ class TestConnect(object):
         Assert uses connect args over env
         """
         mock_credentials_by_env.return_value = {
-            "endpoints": "a", "api_key": "b"
+            "endpoints": "a", "apikey": "b"
         }
         connect("cat", "dog")
-        mock_connect.assert_called_once_with(endpoints="cat", api_key="dog")
+        mock_connect.assert_called_once_with(endpoints="cat", apikey="dog")
 
     @patch('btrdb.utils.credentials.credentials_by_profile')
     @patch('btrdb.utils.credentials.credentials_by_env')
@@ -87,13 +87,13 @@ class TestConnect(object):
         Assert connect uses env over profile info
         """
         mock_credentials_by_profile.return_value = {
-            "endpoints": "a", "api_key": "b"
+            "endpoints": "a", "apikey": "b"
         }
         mock_credentials_by_env.return_value = {
-            "endpoints": "c", "api_key": "d"
+            "endpoints": "c", "apikey": "d"
         }
         connect()
-        mock_connect.assert_called_once_with(endpoints="c", api_key="d")
+        mock_connect.assert_called_once_with(endpoints="c", apikey="d")
 
     @patch('btrdb.utils.credentials.credentials_by_profile')
     @patch('btrdb.Connection')
