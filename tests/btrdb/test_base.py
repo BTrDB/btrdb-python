@@ -67,12 +67,14 @@ class TestConnect(object):
         with pytest.raises(ValueError):
             connect("192.168.1.100:4410",None,"default")
 
+    @patch('btrdb.utils.credentials.credentials_by_profile')
     @patch('btrdb.utils.credentials.credentials_by_env')
     @patch('btrdb._connect')
-    def test_uses_args_over_env(self, mock_connect, mock_credentials_by_env):
+    def test_uses_args_over_env(self, mock_connect, mock_credentials_by_env, mock_credentials_by_profile):
         """
         Assert uses connect args over env
         """
+        mock_credentials_by_profile.return_value = {}
         mock_credentials_by_env.return_value = {
             "endpoints": "a", "apikey": "b"
         }
