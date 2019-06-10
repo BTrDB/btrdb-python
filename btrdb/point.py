@@ -152,38 +152,41 @@ class StatPoint(object):
         The mean value of the time series point within a range of time
         """
         return self._time
+
     @property
     def min(self):
         """
         The minimum value of the time series within a range of time
         """
         return self._min
+
     @property
     def mean(self):
         """
         The mean value of the time series within a range of time
         """
         return self._mean
+
     @property
     def max(self):
         """
         The maximum value of the time series within a range of time
         """
         return self._max
+
     @property
     def count(self):
         """
         The number of values within the time series for a range of time
         """
         return self._count
+
     @property
     def stddev(self):
         """
         The standard deviation of the values of a time series within a range of time
         """
         return self._stddev
-
-
 
     def __getitem__(self, index):
         if index == 0:
