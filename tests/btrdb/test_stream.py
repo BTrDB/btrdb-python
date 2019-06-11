@@ -16,6 +16,8 @@ Testing package for the btrdb stream module
 ##########################################################################
 
 import re
+import sys
+import json
 import uuid
 import pytz
 import datetime
@@ -236,16 +238,24 @@ class TestStream(object):
 
         stream.refresh_metadata()
         stream.update(annotations=annotations)
-        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
-            uu=uu,
-            expected=42,
-            changes={
-                'num': '10',
-                'float': '1.3',
-                'string': '"the quick brown fox is 10"',
-                'nested': '{"num": 11, "float": 1.3, "string": "the quick brown fox is 11", "nested": {"num": 12, "float": 1.3, "string": "the quick brown fox is 12"}}'
-            }
-        )
+
+        # spot check a nested value for Python 3.4 and 3.5 compatability
+        changes = stream._btrdb.ep.setStreamAnnotations.call_args[1]['changes']
+        assert changes['nested'].__class__ == str
+        assert json.loads(changes['nested']) == annotations['nested']
+
+        # check all args if Python > 3.5
+        if sys.version_info[0] > 3.5:
+            stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+                uu=uu,
+                expected=42,
+                changes={
+                    'num': '10',
+                    'float': '1.3',
+                    'string': '"the quick brown fox is 10"',
+                    'nested': '{"num": 11, "float": 1.3, "string": "the quick brown fox is 11", "nested": {"num": 12, "float": 1.3, "string": "the quick brown fox is 12"}}'
+                }
+            )
 
 
 
