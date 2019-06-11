@@ -26,7 +26,7 @@ from btrdb.exceptions import ConnectionError
 ## Test Constants
 ##########################################################################
 
-EXPECTED_VERSION = "5.4"
+EXPECTED_VERSION = "5.5"
 
 
 ##########################################################################
@@ -44,18 +44,18 @@ class TestPackage(object):
 class TestConnect(object):
 
     def setup(self):
-        for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE"]:
+        for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE", "BTRDB_API_KEY"]:
             try:
                 del os.environ[env]
             except KeyError:
                 pass
 
-    @patch('btrdb.utils.credentials.load_credentials')
-    def test_raises_err_with_no_inputs(self, mock_load_credentials):
+    @patch('btrdb.credentials')
+    def test_raises_err_with_no_inputs(self, mock_credentials):
         """
         Assert ConnectionError raised if no connection arg, ENV, profile
         """
-        mock_load_credentials.return_value = {}
+        mock_credentials.return_value = {}
         msg = "Could not determine credentials to use."
         with pytest.raises(ConnectionError, match=msg):
             connect()
@@ -67,44 +67,51 @@ class TestConnect(object):
         with pytest.raises(ValueError):
             connect("192.168.1.100:4410",None,"default")
 
-    def test_raises_err_if_both_profile_and_credentials_in_env(self):
-        """
-        Assert error is raised if both profile and credentials in ENV
-        """
-        os.environ["BTRDB_ENDPOINTS"] = "192.168.1.100:4410"
-        os.environ["BTRDB_PROFILE"] = "husky"
-        msg = "Found both BTRDB_PROFILE and BTRDB_ENDPOINTS in ENV"
-
-        with pytest.raises(ValueError, match=msg):
-            connect()
-
-    @patch('btrdb.utils.credentials.load_credentials')
+    @patch('btrdb.utils.credentials.credentials_by_profile')
+    @patch('btrdb.utils.credentials.credentials_by_env')
     @patch('btrdb._connect')
-    def test_uses_args_over_env(self, mock_connect, mock_load_credentials):
+    def test_uses_args_over_env(self, mock_connect, mock_credentials_by_env, mock_credentials_by_profile):
         """
-        Assert uses profile arg over profile env
+        Assert uses connect args over env
         """
-        os.environ["BTRDB_PROFILE"] = "dog"
-        mock_load_credentials.return_value = {
-            "cat": {"name": "cat", "btrdb": {"endpoints": "a", "api_key": "b"}},
-            "dog": {"name": "dog", "btrdb": {"endpoints": "c", "api_key": "d"}},
+        mock_credentials_by_profile.return_value = {}
+        mock_credentials_by_env.return_value = {
+            "endpoints": "a", "apikey": "b"
         }
-        connect(profile="cat")
-        mock_connect.assert_called_once_with("a", "b")
+        connect("cat", "dog")
+        mock_connect.assert_called_once_with(endpoints="cat", apikey="dog")
 
+    @patch('btrdb.utils.credentials.credentials_by_profile')
+    @patch('btrdb.utils.credentials.credentials_by_env')
+    @patch('btrdb._connect')
+    def test_uses_env_over_profile(self, mock_connect, mock_credentials_by_env, mock_credentials_by_profile):
+        """
+        Assert connect uses env over profile info
+        """
+        mock_credentials_by_profile.return_value = {
+            "endpoints": "a", "apikey": "b"
+        }
+        mock_credentials_by_env.return_value = {
+            "endpoints": "c", "apikey": "d"
+        }
+        connect()
+        mock_connect.assert_called_once_with(endpoints="c", apikey="d")
+
+    @patch('btrdb.utils.credentials.credentials_by_profile')
     @patch('btrdb.Connection')
-    def test_connect_with_env(self, mock_conn):
+    def test_connect_with_env(self, mock_conn, mock_credentials_by_profile):
         """
         Assert connect uses ENV variables
         """
+        mock_credentials_by_profile.return_value = {}
         address = "127.0.0.1:4410"
-        apikey = "abcd"
         os.environ[BTRDB_ENDPOINTS] = address
 
         btrdb = connect()
         mock_conn.assert_called_once_with(address, apikey=None)
         mock_conn.reset_mock()
 
+        apikey = "abcd"
         os.environ[BTRDB_API_KEY] = apikey
         btrdb = connect()
         mock_conn.assert_called_once_with(address, apikey=apikey)

@@ -16,6 +16,7 @@ Module for Stream and related classes
 ##########################################################################
 
 import re
+import json
 import uuid as uuidlib
 from copy import deepcopy
 from collections.abc import Sequence
@@ -24,6 +25,7 @@ from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import StreamSetTransformer
 from btrdb.utils.buffer import PointBuffer
 from btrdb.utils.timez import currently_as_ns, to_nanoseconds
+from btrdb.utils.conversion import AnnotationEncoder
 from btrdb.exceptions import BTrDBError, InvalidOperation
 
 
@@ -78,18 +80,16 @@ class Stream(object):
         Queries the BTrDB server for all stream metadata including collection,
         annotation, and tags. This method requires a round trip to the server.
 
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
         """
 
         ep = self._btrdb.ep
         self._collection, self._property_version, self._tags, self._annotations, _ = ep.streamInfo(self._uuid, False, True)
         self._known_to_exist = True
+
+        # deserialize annoation values
+        self._annotations = dict(
+            [[k, json.loads(v)] for k, v in self._annotations.items()]
+        )
 
     def exists(self):
         """
@@ -146,7 +146,7 @@ class Stream(object):
 
         Returns
         -------
-        uuid : uuid.UUID
+        UUID
             The unique identifier of the stream.
 
 
@@ -166,7 +166,7 @@ class Stream(object):
 
         Returns
         -------
-        name : str
+        str
             The name of the stream.
 
         """
@@ -205,10 +205,9 @@ class Stream(object):
 
         Returns
         -------
-        RawPoint
-            The first data point in the stream
-        int
-            The version of the stream for the RawPoint supplied
+        tuple
+            The first data point in the stream and the version of the stream
+            the value was retrieved at (tuple(RawPoint, int)).
 
         """
         start = 0
@@ -226,9 +225,9 @@ class Stream(object):
 
         Returns
         -------
-        RawPoint, int
+        tuple
             The last data point in the stream and the version of the stream
-            the value was retrieved at.
+            the value was retrieved at (tuple(RawPoint, int)).
 
         """
         start = currently_as_ns()
@@ -249,7 +248,7 @@ class Stream(object):
 
         Returns
         -------
-        dict[str, str]
+        dict
             A dictionary containing the tags.
 
         """
@@ -277,9 +276,9 @@ class Stream(object):
 
         Returns
         -------
-        tuple[dict[str, str], int]
+        tuple
             A tuple containing a dictionary of annotations and an integer representing
-            the version of the metadata.
+            the version of the metadata (tuple(dict, int)).
 
         """
         if refresh or self._annotations is None:
@@ -325,7 +324,7 @@ class Stream(object):
 
         Returns
         -------
-        version : int
+        int
             The version of the stream after inserting new points.
 
         """
@@ -350,14 +349,17 @@ class Stream(object):
             collection=collection
         )
 
-    def _update_annotations(self, annotations):
+    def _update_annotations(self, annotations, encoder):
+        serialized = dict(
+            [[k, json.dumps(v, cls=encoder)] for k, v in annotations.items()]
+        )
         self._btrdb.ep.setStreamAnnotations(
             uu=self.uuid,
             expected=self._property_version,
-            changes=annotations
+            changes=serialized
         )
 
-    def update(self, tags=None, annotations=None, collection=None):
+    def update(self, tags=None, annotations=None, collection=None, encoder=AnnotationEncoder):
         """
         Updates metadata including tags, annotations, and collection.
 
@@ -369,10 +371,12 @@ class Stream(object):
             dict of annotation information for the stream.
         collection: str
             The collection prefix for a stream
+        encoder: json.JSONEncoder
+            JSON encoder to class to use for annotation serializations
 
         Returns
         -------
-        property_version : int
+        int
             The version of the metadata (separate from the version of the data)
 
         """
@@ -393,7 +397,7 @@ class Stream(object):
             self.refresh_metadata()
 
         if annotations is not None:
-            self._update_annotations(annotations)
+            self._update_annotations(annotations, encoder)
             self.refresh_metadata()
 
         return self._property_version
@@ -444,10 +448,11 @@ class Stream(object):
         version: int
             The version of the stream to be queried
 
-        Yields
+        Returns
         ------
-        (RawPoint, int)
-            Returns a tuple containing a RawPoint and the stream version
+        list
+            Returns a list of tuples containing a RawPoint and the stream
+            version (list(tuple(RawPoint,int))).
 
 
         Notes
@@ -502,7 +507,7 @@ class Stream(object):
 
         Returns
         -------
-        tuple(tuple(StatPoint, int), ...)
+        tuple
             Returns a tuple containing windows of data.  Each window is a tuple
             containing data tuples.  Each data tuple contains a StatPoint and
             the stream version.
@@ -547,10 +552,10 @@ class Stream(object):
 
         Returns
         -------
-        tuple(tuple(StatPoint, int), ...)
+        tuple
             Returns a tuple containing windows of data.  Each window is a tuple
             containing data tuples.  Each data tuple contains a StatPoint and
-            the stream version.
+            the stream version (tuple(tuple(StatPoint, int), ...)).
 
         Notes
         -----
@@ -605,10 +610,9 @@ class Stream(object):
 
         Returns
         -------
-        RawPoint
-            The point closest to time
-        int
-            Version of the stream used to satisfy the query
+        tuple
+            The closest data point in the stream and the version of the stream
+            the value was retrieved at (tuple(RawPoint, int)).
 
         """
 
@@ -639,14 +643,6 @@ class Stream(object):
     def flush(self):
         """
         Flush writes the stream buffers out to persistent storage.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        None
 
         """
         self._btrdb.ep.flush(self._uuid)
@@ -724,7 +720,7 @@ class StreamSetBase(Sequence):
 
         Returns
         -------
-        dict[UUID: int]
+        dict
             A dict containing the stream UUID and version ints as key/values
 
         """
@@ -741,7 +737,7 @@ class StreamSetBase(Sequence):
 
         Returns
         -------
-        tuple(RawPoint)
+        tuple
             The earliest points of data found among all streams
 
         """
@@ -769,7 +765,7 @@ class StreamSetBase(Sequence):
 
         Returns
         -------
-        tuple(RawPoint)
+        tuple
             The latest points of data found among all streams
 
         """
@@ -1031,9 +1027,9 @@ class StreamSetBase(Sequence):
 
         Returns
         -------
-        list(tuple(RawPoint, int))
+        list
             A list of tuples containing a RawPoint (or StatPoint) and the stream
-            version.
+            version (list(tuple(RawPoint, int))).
 
         """
         result = []

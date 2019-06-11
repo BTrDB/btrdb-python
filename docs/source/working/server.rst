@@ -22,8 +22,7 @@ interactions.
 For your convenience, you may default all connection parameters to environment
 variables if these are configured on your system.  If no arguments are provided, the
 :code:`btrdb.connect` function will attempt to connect using the
-:code:`BTRDB_ENDPOINTS` and :code:`BTRDB_API_KEY` environment variables.  If
-these cannot be found then a connection error will be raised.
+:code:`BTRDB_ENDPOINTS` and :code:`BTRDB_API_KEY` environment variables.
 
 Several connection options are shown in the code below:
 
@@ -73,6 +72,19 @@ The credentials file is in YAML format as shown below.
       btrdb:
         endpoints: "btrdb.example.com:4411"
         api_key: "e666a2d61103feb2235441fd68879440"
+
+Connection Info Resolution
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :code:`connect` function is quite aggressive about finding ways to connect to the server
+and power users could get into odd edge cases if using multiple profiles with incomplete entries.
+For troubleshooting purposes, the :code:`connect` function performs the following steps to
+determine the correct server credentials.
+
+
+1. Load profile connection info with the :code:`BTRDB_PROFILE` environment variable or load the default profile if not found.
+2. Overwrite the profile data with :code:`BTRDB_ENDPOINTS` and :code:`BTRDB_API_KEY` environment variables if available.
+3. Overwrite accumulated connection data with :code:`endpoints` and :code:`api_key` arguments if supplied.
 
 
 Viewing server status

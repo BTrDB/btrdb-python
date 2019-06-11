@@ -45,8 +45,8 @@ MAX_POINTWIDTH = 63
 
 
 class Connection(object):
+
     def __init__(self, addrportstr, apikey=None):
-        # type: () -> BTrDB
         """
         Connects to a BTrDB server
 
@@ -57,10 +57,6 @@ class Connection(object):
         apikey: str
             The option API key to authenticate requests
 
-        Returns
-        -------
-        Connection
-            A Connection class object.
         """
         addrport = addrportstr.split(":", 2)
         chan_ops = [('grpc.default_compression_algorithm', CompressionAlgorithm.gzip)]
@@ -109,7 +105,6 @@ class BTrDB(object):
 
     def __init__(self, endpoint):
         self.ep = endpoint
-
 
     def streams(self, *identifiers, versions=None):
         """
@@ -240,10 +235,10 @@ class BTrDB(object):
         annotations: Dict[str, str]
             The annotations to identify the stream.
 
-        Yields
+        Returns
         ------
-        Stream Generator
-            A stream generator that iterates over the search results.
+        list
+            A list of stream objects found with the provided search arguments.
 
         """
         result = []
@@ -269,7 +264,6 @@ class BTrDB(object):
         return result
 
     def collection_metadata(self, prefix):
-        # type: (csv.writer, QueryType, int, int, int, int, bool, *Tuple[int, str, UUID]) -> Tuple[Dict[str, int], Dict[str, int]]
         """
         Gives statistics about metadata for collections that match a
         prefix.
@@ -278,6 +272,12 @@ class BTrDB(object):
         ----------
         prefix: str
             A prefix of the collection names to look at
+
+        Returns
+        -------
+        tuple
+            A tuple of dictionaries containing metadata on the streams in the
+            provided collection.
 
         """
         ep = self.ep
