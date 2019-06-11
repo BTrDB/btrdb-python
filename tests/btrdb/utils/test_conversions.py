@@ -16,9 +16,12 @@ Testing for btrdb convertion utilities
 ##########################################################################
 
 import uuid
-import pytest
+from datetime import datetime
 
-from btrdb.utils.conversion import to_uuid
+import pytest
+import numpy as np
+
+from btrdb.utils.conversion import to_uuid, AnnotationEncoder
 
 ##########################################################################
 ## Test Constants
@@ -31,6 +34,17 @@ EXAMPLE_UUID = uuid.UUID(EXAMPLE_UUID_STR)
 ##########################################################################
 ## Initialization Tests
 ##########################################################################
+
+class TestAnnotationEncoder(object):
+
+    def test_datetime_conversions(self):
+        dt = datetime(2018,9,10,16,30)
+        expected = '"2018-09-10 16:30:00.000000"'
+        encoder = AnnotationEncoder()
+
+        assert encoder.encode(dt) == expected
+        assert encoder.encode(np.datetime64(dt)) == expected
+
 
 class TestToUUID(object):
 

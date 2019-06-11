@@ -16,6 +16,7 @@ Module for Stream and related classes
 ##########################################################################
 
 import re
+import json
 import uuid as uuidlib
 from copy import deepcopy
 from collections.abc import Sequence
@@ -24,6 +25,7 @@ from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import StreamSetTransformer
 from btrdb.utils.buffer import PointBuffer
 from btrdb.utils.timez import currently_as_ns, to_nanoseconds
+from btrdb.utils.conversion import AnnotationEncoder
 from btrdb.exceptions import BTrDBError, InvalidOperation
 
 
@@ -342,14 +344,17 @@ class Stream(object):
             collection=collection
         )
 
-    def _update_annotations(self, annotations):
+    def _update_annotations(self, annotations, encoder):
+        serialized = dict(
+            [[k, json.dumps(v, cls=encoder)] for k, v in annotations.items()]
+        )
         self._btrdb.ep.setStreamAnnotations(
             uu=self.uuid,
             expected=self._property_version,
-            changes=annotations
+            changes=serialized
         )
 
-    def update(self, tags=None, annotations=None, collection=None):
+    def update(self, tags=None, annotations=None, collection=None, encoder=AnnotationEncoder):
         """
         Updates metadata including tags, annotations, and collection.
 
@@ -361,6 +366,8 @@ class Stream(object):
             dict of annotation information for the stream.
         collection: str
             The collection prefix for a stream
+        encoder: json.JSONEncoder
+            JSON encoder to class to use for annotation serializations
 
         Returns
         -------
@@ -385,7 +392,7 @@ class Stream(object):
             self.refresh_metadata()
 
         if annotations is not None:
-            self._update_annotations(annotations)
+            self._update_annotations(annotations, encoder)
             self.refresh_metadata()
 
         return self._property_version

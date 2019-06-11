@@ -183,14 +183,55 @@ class TestStream(object):
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-
         annotations = {"owner": "rabbit"}
 
         stream.refresh_metadata()
         stream.update(annotations=annotations)
-        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(uu=uu, expected=42,
-            changes=annotations)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+            uu=uu,
+            expected=42,
+            changes={"owner": '"rabbit"'}
+        )
         stream._btrdb.ep.setStreamTags.assert_not_called()
+
+
+    def test_nested_conversions(self):
+        """
+        Assert update correctly encodes nested annotation data
+        """
+        annotations = {
+            "num": 10,
+            "float": 1.3,
+            "string": "the quick brown fox is 10",
+            "nested": {
+                "num": 11,
+                "float": 1.3,
+                "string": "the quick brown fox is 11",
+                "nested": {
+                    "num": 12,
+                    "float": 1.3,
+                    "string": "the quick brown fox is 12",
+                }
+            }
+        }
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        stream.refresh_metadata()
+        stream.update(annotations=annotations)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+            uu=uu,
+            expected=42,
+            changes={
+                'num': '10',
+                'float': '1.3',
+                'string': '"the quick brown fox is 10"',
+                'nested': '{"num": 11, "float": 1.3, "string": "the quick brown fox is 11", "nested": {"num": 12, "float": 1.3, "string": "the quick brown fox is 12"}}'
+            }
+        )
+
 
 
     ##########################################################################
