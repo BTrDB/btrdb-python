@@ -16,6 +16,8 @@ Testing package for the btrdb stream module
 ##########################################################################
 
 import re
+import sys
+import json
 import uuid
 import pytz
 import datetime
@@ -108,6 +110,21 @@ class TestStream(object):
         stream._btrdb.ep.streamInfo.assert_called_once_with(uu, False, True)
 
 
+    def test_refresh_metadata_deserializes_annotations(self):
+        """
+        Assert refresh_metadata deserializes annotation values
+        """
+        uu = uuid.uuid4()
+        serialized = {"parent": '{"child": 42}'}
+        expected = {"parent": {"child": 42}}
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, serialized, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        stream.refresh_metadata()
+        assert stream.annotations()[0] == expected
+
+
     ##########################################################################
     ## update tests
     ##########################################################################
@@ -183,14 +200,63 @@ class TestStream(object):
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-
         annotations = {"owner": "rabbit"}
 
         stream.refresh_metadata()
         stream.update(annotations=annotations)
-        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(uu=uu, expected=42,
-            changes=annotations)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+            uu=uu,
+            expected=42,
+            changes={"owner": '"rabbit"'}
+        )
         stream._btrdb.ep.setStreamTags.assert_not_called()
+
+
+    def test_nested_conversions(self):
+        """
+        Assert update correctly encodes nested annotation data
+        """
+        annotations = {
+            "num": 10,
+            "float": 1.3,
+            "string": "the quick brown fox is 10",
+            "nested": {
+                "num": 11,
+                "float": 1.3,
+                "string": "the quick brown fox is 11",
+                "nested": {
+                    "num": 12,
+                    "float": 1.3,
+                    "string": "the quick brown fox is 12",
+                }
+            }
+        }
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        stream.refresh_metadata()
+        stream.update(annotations=annotations)
+
+        # spot check a nested value for Python 3.4 and 3.5 compatability
+        changes = stream._btrdb.ep.setStreamAnnotations.call_args[1]['changes']
+        assert changes['nested'].__class__ == str
+        assert json.loads(changes['nested']) == annotations['nested']
+
+        # check all args if Python > 3.5
+        if sys.version_info[0] > 3.5:
+            stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+                uu=uu,
+                expected=42,
+                changes={
+                    'num': '10',
+                    'float': '1.3',
+                    'string': '"the quick brown fox is 10"',
+                    'nested': '{"num": 11, "float": 1.3, "string": "the quick brown fox is 11", "nested": {"num": 12, "float": 1.3, "string": "the quick brown fox is 12"}}'
+                }
+            )
+
 
 
     ##########################################################################
