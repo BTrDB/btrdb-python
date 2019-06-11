@@ -86,6 +86,11 @@ class Stream(object):
         self._collection, self._property_version, self._tags, self._annotations, _ = ep.streamInfo(self._uuid, False, True)
         self._known_to_exist = True
 
+        # deserialize annoation values
+        self._annotations = dict(
+            [[k, json.loads(v)] for k, v in self._annotations.items()]
+        )
+
     def exists(self):
         """
         Check if stream exists

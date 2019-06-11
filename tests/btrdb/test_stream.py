@@ -108,6 +108,21 @@ class TestStream(object):
         stream._btrdb.ep.streamInfo.assert_called_once_with(uu, False, True)
 
 
+    def test_refresh_metadata_deserializes_annotations(self):
+        """
+        Assert refresh_metadata deserializes annotation values
+        """
+        uu = uuid.uuid4()
+        serialized = {"parent": '{"child": 42}'}
+        expected = {"parent": {"child": 42}}
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, serialized, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        stream.refresh_metadata()
+        assert stream.annotations()[0] == expected
+
+
     ##########################################################################
     ## update tests
     ##########################################################################
