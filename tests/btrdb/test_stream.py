@@ -1038,6 +1038,31 @@ class TestStreamSet(object):
         streams = StreamSet([stream1, stream2])
         assert streams.latest() == (RawPoint(time=10, value=1), RawPoint(time=20, value=1))
 
+    @patch("btrdb.stream.currently_as_ns")
+    def test_current(self, mocked, stream1, stream2):
+        """
+        Assert current calls nearest with the current time
+        """
+        mocked.return_value=15
+        streams = StreamSet([stream1, stream2])
+        streams.current()
+        stream1.nearest.assert_called_once_with(15, version=11, backward=True)
+        stream2.nearest.assert_called_once_with(15, version=22, backward=True)
+
+    @patch("btrdb.stream.currently_as_ns")
+    def test_currently_out_of_range(self, mocked):
+        """
+        Assert currently raises an exception if it is not filtered
+        """
+        mocked.return_value=15
+        streams = StreamSet([stream1, stream2])
+
+        with pytest.raises(ValueError, match="current time is not included in filtered stream range"):
+            streams.filter(start=20, end=30).current()
+
+        with pytest.raises(ValueError, match="current time is not included in filtered stream range"):
+            streams.filter(start=0, end=10).current()
+
 
     ##########################################################################
     ## filter tests

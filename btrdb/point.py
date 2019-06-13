@@ -85,6 +85,8 @@ class RawPoint(object):
         return self.__repr__()
 
     def __eq__(self, other):
+        if not hasattr(other, "time") or not hasattr(other, "value"):
+            return False
         return self.time == other.time and self.value == other.value
 
 
@@ -218,6 +220,10 @@ class StatPoint(object):
         return self.__repr__()
 
     def __eq__(self, other):
+        for attr in "time", "min", "mean", "max", "count", "stddev":
+            if not hasattr(other, attr):
+                return False
+
         return self.time == other.time and \
             self.min == other.min and \
             self.mean == other.mean and \
