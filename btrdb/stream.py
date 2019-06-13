@@ -241,9 +241,8 @@ class Stream(object):
     def current(self, version=0):
         """
         Returns the point that is closest to the current timestamp, e.g. the latest
-        point in the stream up to and including now. Note that no future values will be
-        returned. Returns None if error encountered during lookup or there are no values
-        before now.
+        point in the stream up until now. Note that no future values will be returned.
+        Returns None if errors during lookup or there are no values before now.
 
         Parameters
         ----------
@@ -805,8 +804,9 @@ class StreamSetBase(Sequence):
 
     def current(self):
         """
-        Returns the points of data in the streams closest to the current timestamp, up
-        to and including now and using available filters.
+        Returns the points of data in the streams closest to the current timestamp. If
+        the current timestamp is outside of the filtered range of data, a ValueError is
+        raised.
 
         Parameters
         ----------
@@ -819,11 +819,16 @@ class StreamSetBase(Sequence):
         """
         latest = []
         params = self._params_from_filters()
-        start = params.get("end", currently_as_ns())
+        now = currently_as_ns()
+        end = params.get("end", None)
+        start = params.get("start", None)
+
+        if (end is not None and end <= now) or (start is not None and start > now):
+            raise ValueError("current time is not included in filtered stream range")
 
         for s in self._streams:
             version = self.versions()[s.uuid]
-            point, _ = s.nearest(start, version=version, backward=True)
+            point, _ = s.nearest(now, version=version, backward=True)
             latest.append(point)
 
         return tuple(latest)
