@@ -34,6 +34,8 @@ from btrdb.exceptions import BTrDBError, InvalidOperation
 ##########################################################################
 
 INSERT_BATCH_SIZE = 5000
+MINIMUM_TIME = -(16 << 56)
+MAXIMUM_TIME = (48 << 56) - 1
 
 try:
     RE_PATTERN = re._pattern_type
@@ -196,12 +198,14 @@ class Stream(object):
 
     def earliest(self, version=0):
         """
-        Returns the first point of data in the stream.  Returns None if error
+        Returns the first point of data in the stream. Returns None if error
         encountered during lookup or no values in stream.
 
         Parameters
         ----------
-        None
+        version : int, default: 0
+            Specify the version of the stream to query; if zero, queries the latest
+            stream state rather than pinning to a version.
 
         Returns
         -------
@@ -210,18 +214,19 @@ class Stream(object):
             the value was retrieved at (tuple(RawPoint, int)).
 
         """
-        start = 0
+        start = MINIMUM_TIME
         return self.nearest(start, version=version, backward=False)
 
     def latest(self, version=0):
         """
-        Returns last point of data in the stream. Note that this method will
-        return None if no point can be found that is less than the current
-        date/time.
+        Returns last point of data in the stream. Returns None if error
+        encountered during lookup or no values in stream.
 
         Parameters
         ----------
-        None
+        version : int, default: 0
+            Specify the version of the stream to query; if zero, queries the latest
+            stream state rather than pinning to a version.
 
         Returns
         -------
@@ -230,8 +235,29 @@ class Stream(object):
             the value was retrieved at (tuple(RawPoint, int)).
 
         """
-        start = currently_as_ns()
+        start = MAXIMUM_TIME
         return self.nearest(start, version=version, backward=True)
+
+    def current(self, version=0):
+        """
+        Returns the point that is closest to the current timestamp, e.g. the latest
+        point in the stream up until now. Note that no future values will be returned.
+        Returns None if errors during lookup or there are no values before now.
+
+        Parameters
+        ----------
+        version : int, default: 0
+            Specify the version of the stream to query; if zero, queries the latest
+            stream state rather than pinning to a version.
+
+        Returns
+        -------
+        tuple
+            The last data point in the stream up until now and the version of the stream
+            the value was retrieved at (tuple(RawPoint, int)).
+        """
+        start = currently_as_ns()
+        return self.nearest(start, version, backward=True)
 
     def tags(self, refresh=False):
         """
@@ -728,8 +754,7 @@ class StreamSetBase(Sequence):
 
     def earliest(self):
         """
-        Returns earliest points of data in streams using available
-        filters.
+        Returns earliest points of data in streams using available filters.
 
         Parameters
         ----------
@@ -743,7 +768,7 @@ class StreamSetBase(Sequence):
         """
         earliest = []
         params = self._params_from_filters()
-        start = params.get("start", 0)
+        start = params.get("start", MINIMUM_TIME)
 
         for s in self._streams:
             version = self.versions()[s.uuid]
@@ -754,10 +779,7 @@ class StreamSetBase(Sequence):
 
     def latest(self):
         """
-        Returns latest points of data in the streams using available
-        filters.  Note that this method will return None if no
-        end filter is provided and point cannot be found that is less than the
-        current date/time.
+        Returns latest points of data in the streams using available filters.
 
         Parameters
         ----------
@@ -771,11 +793,42 @@ class StreamSetBase(Sequence):
         """
         latest = []
         params = self._params_from_filters()
-        start = params.get("end", currently_as_ns())
+        start = params.get("end", MAXIMUM_TIME)
 
         for s in self._streams:
             version = self.versions()[s.uuid]
             point, _ = s.nearest(start, version=version, backward=True)
+            latest.append(point)
+
+        return tuple(latest)
+
+    def current(self):
+        """
+        Returns the points of data in the streams closest to the current timestamp. If
+        the current timestamp is outside of the filtered range of data, a ValueError is
+        raised.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        tuple
+            The latest points of data found among all streams
+        """
+        latest = []
+        params = self._params_from_filters()
+        now = currently_as_ns()
+        end = params.get("end", None)
+        start = params.get("start", None)
+
+        if (end is not None and end <= now) or (start is not None and start > now):
+            raise ValueError("current time is not included in filtered stream range")
+
+        for s in self._streams:
+            version = self.versions()[s.uuid]
+            point, _ = s.nearest(now, version=version, backward=True)
             latest.append(point)
 
         return tuple(latest)
