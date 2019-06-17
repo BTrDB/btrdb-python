@@ -26,6 +26,7 @@ from unittest.mock import Mock, PropertyMock, patch, call
 
 from btrdb.conn import BTrDB
 from btrdb.endpoint import Endpoint
+from btrdb import MINIMUM_TIME, MAXIMUM_TIME
 from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
 from btrdb.point import RawPoint, StatPoint
 from btrdb.exceptions import BTrDBError, InvalidOperation
@@ -472,7 +473,7 @@ class TestStream(object):
 
         point, ver = stream.earliest()
         assert (point, ver) == (RawPoint(100, 1.0), 42)
-        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
+        endpoint.nearest.assert_called_once_with(uu, MINIMUM_TIME, 0, False)
 
 
     def test_earliest_swallows_exception(self):
@@ -485,7 +486,7 @@ class TestStream(object):
         endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
 
         assert stream.earliest() is None
-        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
+        endpoint.nearest.assert_called_once_with(uu, MINIMUM_TIME, 0, False)
 
 
     def test_earliest_passes_exception(self):
@@ -500,11 +501,10 @@ class TestStream(object):
         with pytest.raises(BTrDBError) as exc:
             stream.earliest()
         assert exc.value.code == 999
-        endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
+        endpoint.nearest.assert_called_once_with(uu, MINIMUM_TIME, 0, False)
 
 
-    @patch("btrdb.stream.currently_as_ns")
-    def test_latest(self, mocked):
+    def test_latest(self):
         """
         Assert latest calls Endpoint.nearest
         """
@@ -512,18 +512,61 @@ class TestStream(object):
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
         endpoint.nearest = Mock(return_value=(RawPointProto(time=100, value=1.0), 42))
+        point, ver = stream.latest()
+
+        assert (point, ver) == (RawPoint(100, 1.0), 42)
+        endpoint.nearest.assert_called_once_with(uu, MAXIMUM_TIME, 0, True)
+
+
+    def test_latest_swallows_exception(self):
+        """
+        Assert latest returns None when endpoint throws exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
+
+        assert stream.latest() is None
+        endpoint.nearest.assert_called_once_with(uu, MAXIMUM_TIME, 0, True)
+
+
+    def test_latest_passes_exception(self):
+        """
+        Assert latest reraises non 401 exception
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+
+        with pytest.raises(BTrDBError) as exc:
+            stream.latest()
+        assert exc.value.code == 999
+        endpoint.nearest.assert_called_once_with(uu, MAXIMUM_TIME, 0, True)
+
+
+    @patch("btrdb.stream.currently_as_ns")
+    def test_currently(self, mocked):
+        """
+        Assert currently calls Endpoint.nearest
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+        endpoint.nearest = Mock(return_value=(RawPointProto(time=100, value=1.0), 42))
         ns_fake_time = 1514808000000000000
         mocked.return_value = ns_fake_time
-        point, ver = stream.latest()
+        point, ver = stream.current()
 
         assert (point, ver) == (RawPoint(100, 1.0), 42)
         endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
 
 
     @patch("btrdb.stream.currently_as_ns")
-    def test_latest_swallows_exception(self, mocked):
+    def test_currently_swallows_exception(self, mocked):
         """
-        Assert latest returns None when endpoint throws exception
+        Assert currently returns None when endpoint throws exception
         """
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
@@ -532,14 +575,14 @@ class TestStream(object):
         ns_fake_time = 1514808000000000000
         mocked.return_value = ns_fake_time
 
-        assert stream.latest() is None
+        assert stream.current() is None
         endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
 
 
     @patch("btrdb.stream.currently_as_ns")
-    def test_latest_passes_exception(self, mocked):
+    def test_currently_passes_exception(self, mocked):
         """
-        Assert latest reraises non 401 exception
+        Assert currently reraises non 401 exception
         """
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
@@ -549,7 +592,7 @@ class TestStream(object):
         mocked.return_value = ns_fake_time
 
         with pytest.raises(BTrDBError) as exc:
-            stream.latest()
+            stream.current()
         assert exc.value.code == 999
         endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
 
@@ -994,6 +1037,31 @@ class TestStreamSet(object):
         """
         streams = StreamSet([stream1, stream2])
         assert streams.latest() == (RawPoint(time=10, value=1), RawPoint(time=20, value=1))
+
+    @patch("btrdb.stream.currently_as_ns")
+    def test_current(self, mocked, stream1, stream2):
+        """
+        Assert current calls nearest with the current time
+        """
+        mocked.return_value=15
+        streams = StreamSet([stream1, stream2])
+        streams.current()
+        stream1.nearest.assert_called_once_with(15, version=11, backward=True)
+        stream2.nearest.assert_called_once_with(15, version=22, backward=True)
+
+    @patch("btrdb.stream.currently_as_ns")
+    def test_currently_out_of_range(self, mocked):
+        """
+        Assert currently raises an exception if it is not filtered
+        """
+        mocked.return_value=15
+        streams = StreamSet([stream1, stream2])
+
+        with pytest.raises(ValueError, match="current time is not included in filtered stream range"):
+            streams.filter(start=20, end=30).current()
+
+        with pytest.raises(ValueError, match="current time is not included in filtered stream range"):
+            streams.filter(start=0, end=10).current()
 
 
     ##########################################################################

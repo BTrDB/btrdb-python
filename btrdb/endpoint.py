@@ -42,7 +42,7 @@ class Endpoint(object):
             yield result.values, result.versionMajor
 
     def alignedWindows(self, uu, start, end, pointwidth, version = 0):
-        params = btrdb_pb2.AlignedWindowsParams(uuid = uu.bytes, start = start, end = end, versionMajor = version, pointWidth = pointwidth)
+        params = btrdb_pb2.AlignedWindowsParams(uuid = uu.bytes, start = start, end = end, versionMajor = version, pointWidth = int(pointwidth))
         for result in self.stub.AlignedWindows(params):
             BTrDBError.checkProtoStat(result.stat)
             yield result.values, result.versionMajor

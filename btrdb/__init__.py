@@ -20,6 +20,7 @@ from btrdb.endpoint import Endpoint
 from btrdb.exceptions import ConnectionError
 from btrdb.version import get_version
 from btrdb.utils.credentials import credentials_by_profile, credentials
+from btrdb.stream import MINIMUM_TIME, MAXIMUM_TIME
 
 ##########################################################################
 ## Module Variables
@@ -30,6 +31,7 @@ __version__ = get_version()
 BTRDB_ENDPOINTS = "BTRDB_ENDPOINTS"
 BTRDB_API_KEY = "BTRDB_API_KEY"
 BTRDB_PROFILE = "BTRDB_PROFILE"
+
 
 ##########################################################################
 ## Functions
