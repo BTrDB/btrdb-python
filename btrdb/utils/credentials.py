@@ -87,6 +87,8 @@ def credentials_by_profile(name=None):
     # load from credentials yaml file
     creds = load_credentials_from_file()
     if name not in creds.keys():
+        if name == 'default':
+            return {}
         raise ProfileNotFound("Profile `{}` not found in credentials file.".format(name))
 
     # rename api_key if needed and return
