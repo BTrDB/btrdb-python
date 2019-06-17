@@ -90,3 +90,19 @@ class TestLoadProfile(object):
             },
         }
         assert credentials_by_profile()["apikey"] == "333222111"
+
+    @patch('btrdb.utils.credentials.load_credentials_from_file')
+    def test_returns_no_default_profile(self, mock_credentials):
+        """
+        Assert empty credentials are returned if no default profile
+        """
+        mock_credentials.return_value = {
+            "duck": {
+                "btrdb" : {
+                    "endpoints": "192.168.1.100:4411",
+                    "api_key": "111222333",
+                },
+                "name": "duck"
+            },
+        }
+        assert credentials_by_profile() == {}
