@@ -249,6 +249,9 @@ class BTrDB(object):
         if annotations is None:
             annotations = {}
 
+        if not collection:
+            collection = [None]
+
         for item in collection:
             streams = self.ep.lookupStreams(item, is_collection_prefix, tags, annotations)
             for desclist in streams:
