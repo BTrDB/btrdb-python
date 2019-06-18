@@ -50,7 +50,7 @@ def stream1():
     type(stream).collection = PropertyMock(return_value="fruits/apple")
     type(stream).name = PropertyMock(return_value="gala")
     stream.tags = Mock(return_value={"name": "gala", "unit": "volts"})
-    stream.annotations = Mock(return_value={"owner": "ABC", "color": "red"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "red"}, 11))
     return stream
 
 
@@ -64,7 +64,7 @@ def stream2():
     type(stream).collection = PropertyMock(return_value="fruits/orange")
     type(stream).name = PropertyMock(return_value="blood")
     stream.tags = Mock(return_value={"name": "blood", "unit": "amps"})
-    stream.annotations = Mock(return_value={"owner": "ABC", "color": "orange"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "orange"}, 22))
     return stream
 
 

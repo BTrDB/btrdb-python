@@ -926,7 +926,7 @@ class StreamSetBase(Sequence):
             # filters if the subset of the annotations matches the given annotations
             obj._streams = [
                 s for s in obj._streams
-                if annotations.items() <= s.annotations().items()
+                if annotations.items() <= s.annotations()[0].items()
             ]
 
         return obj
