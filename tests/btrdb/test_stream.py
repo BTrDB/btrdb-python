@@ -116,8 +116,8 @@ class TestStream(object):
         Assert refresh_metadata deserializes annotation values
         """
         uu = uuid.uuid4()
-        serialized = {"parent": '{"child": 42}'}
-        expected = {"parent": {"child": 42}}
+        serialized = {"parent": '{"child": 42}', "sentence": "the quick brown fox"}
+        expected = {"parent": {"child": 42}, "sentence": "the quick brown fox"}
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, serialized, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
@@ -234,7 +234,7 @@ class TestStream(object):
         }
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
-        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {"foo": "42 Cherry Hill"}, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         stream.refresh_metadata()

@@ -89,9 +89,14 @@ class Stream(object):
         self._known_to_exist = True
 
         # deserialize annoation values
-        self._annotations = dict(
-            [[k, json.loads(v)] for k, v in self._annotations.items()]
-        )
+        parts = []
+        for k, v in self._annotations.items():
+            try:
+                parts.append([k, json.loads(v)])
+            except json.decoder.JSONDecodeError:
+                parts.append([k, v])
+
+        self._annotations = dict(parts)
 
     def exists(self):
         """
