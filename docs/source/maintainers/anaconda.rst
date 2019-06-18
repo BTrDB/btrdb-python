@@ -3,7 +3,7 @@ Anaconda Package Creation Walkthrough
 
 This walkthrough documents the process to create and upload the btrdb package to Anaconda Cloud.  At a high level, this will guide you through the following steps:
 
-1. Activate your local environment and install dependenciess
+1. Activate your local environment and install dependencies
 2. Create and edit the `meta.yaml` file
 3. Create local system builds for 3.6 and 3.7
 4. Create builds for other platforms using conda's conversion command
@@ -117,27 +117,6 @@ This will create a `btrdb` subfolder containing the `meta.yaml` file we need.  A
     $ cd ../
     $ rm -rf conda.recipe/
 
-Modify the requirements file
------------------------------
-
-At this time, the codebase has pinned the grpc dependencies at `1.12.1` which needs to be modified by hand as that version doesnt exist in Anaconda.  A diff is provided below so you can edit or patch the file.
-
-  .. code-block:: diff
-
-    diff --git a/requirements.txt b/requirements.txt
-    index f504f26..403b1d4 100644
-    --- a/requirements.txt
-    +++ b/requirements.txt
-    @@ -1,6 +1,6 @@
-    # GRPC / Protobuff related
-    -grpcio==1.12.1
-    -grpcio-tools==1.12.1
-    +grpcio==1.16.1
-    +grpcio-tools==1.16.1
-
-    # Time related utils
-    pytz
-
 
 Modify the meta.yaml file
 --------------------------
@@ -169,19 +148,11 @@ You may wish to update the build number as well.  A patch is supplied below to g
 
     requirements:
     host:
-    -    - grpcio ==1.12.1
-    -    - grpcio-tools ==1.12.1
-    +    - grpcio ==1.16.1
-    +    - grpcio-tools ==1.16.1
         - pip
         - python
         - pytz
     +    - pytest-runner
     run:
-    -    - grpcio ==1.12.1
-    -    - grpcio-tools ==1.12.1
-    +    - grpcio ==1.16.1
-    +    - grpcio-tools ==1.16.1
         - python
         - pytz
     +    - pytest-runner
