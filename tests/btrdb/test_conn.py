@@ -153,8 +153,7 @@ class TestBTrDB(object):
         expected = [call('a', False, tags, annotations), call('b', False, tags, annotations)]
         assert endpoint.lookupStreams.call_args_list == expected
 
-    @patch('btrdb.conn.unpack_stream_descriptor')
-    def test_streams_in_collections_no_arg(self, mock_util):
+    def test_streams_in_collections_no_arg(self):
         """
         Assert streams_in_collections calls lookupStreams if collections not sent
         """
