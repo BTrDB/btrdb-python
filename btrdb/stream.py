@@ -180,6 +180,21 @@ class Stream(object):
         return self.tags()["name"]
 
     @property
+    def unit(self):
+        """
+        Returns the stream's unit which is parsed from the stream tags.  This
+        may require a round trip to the server depending on how the stream was
+        acquired.
+
+        Returns
+        -------
+        str
+            The unit for values of the stream.
+
+        """
+        return self.tags()["unit"]
+
+    @property
     def collection(self):
         """
         Returns the collection of the stream. It may require a round trip to the

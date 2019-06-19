@@ -126,6 +126,26 @@ class TestStream(object):
         assert stream.annotations()[0] == expected
 
 
+    def test_stream_name_property(self):
+        """
+        Assert name property comes from tags
+        """
+        name = "LINE222VA-ANG"
+        stream = Stream(None, "FAKE_UUID")
+        stream._tags = {"name": name}
+        assert stream.name == name
+
+
+    def test_stream_unit_property(self):
+        """
+        Assert unit property comes from tags
+        """
+        unit = "whales"
+        stream = Stream(None, "FAKE_UUID")
+        stream._tags = {"unit": unit}
+        assert stream.unit == unit
+
+
     ##########################################################################
     ## update tests
     ##########################################################################
