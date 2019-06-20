@@ -17,6 +17,7 @@ Connection related objects for the BTrDB library
 
 import os
 import re
+import json
 import uuid as uuidlib
 
 import grpc
@@ -101,6 +102,43 @@ class BTrDB(object):
 
     def __init__(self, endpoint):
         self.ep = endpoint
+
+    def query(self, stmt, params=[]):
+        """
+        Performs a SQL query on the database metadata and returns a list of
+        dictionaries from the resulting cursor.
+
+        Parameters
+        ----------
+        stmt: str
+            a SQL statement to be executed on the BTrDB metadata.  Available
+            tables are noted below.  To sanitize inputs use a `$1` style parameter such as
+            `select * from streams where name = $1 or name = $2`.
+        params: list or tuple
+            a list of parameter values to be sanitized and interpolated into the
+            SQL statement. Using parameters forces value/type checking and is
+            considered a best practice at the very least.
+
+        Returns
+        -------
+        list
+            a list of dictionary object representing the cursor results.
+
+
+        Notes
+        -------
+        Parameters will be inserted into the SQL statement as noted by the
+        paramter number such as `$1`, `$2`, or `$3`.  The `streams` table is
+        available for `SELECT` statements only.
+
+        See https://btrdb.readthedocs.io/en/latest/ for more info.
+        """
+        return [
+            json.loads(row.decode("utf-8"))
+            for page in self.ep.sql_query(stmt, params)
+            for row in page
+        ]
+
 
     def streams(self, *identifiers, versions=None):
         """

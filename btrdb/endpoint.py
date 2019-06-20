@@ -212,3 +212,9 @@ class Endpoint(object):
         for result in self.stub.GenerateCSV(params):
             BTrDBError.checkProtoStat(result.stat)
             yield result.row
+
+    def sql_query(self, stmt, params=[]):
+        request = btrdb_pb2.SQLQueryParams(query=stmt, params=params)
+        for page in self.stub.SQLQuery(request):
+            BTrDBError.checkProtoStat(page.stat)
+            yield page.SQLQueryRow
