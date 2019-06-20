@@ -132,7 +132,9 @@ def credentials(endpoints=None, apikey=None):
     """
     creds = {}
     credentials_by_arg = filter_none(lambda: { "endpoints": endpoints, "apikey": apikey, })
-    pipeline = (credentials_by_profile, credentials_by_env, credentials_by_arg)
+    pipeline = [credentials_by_env, credentials_by_arg]
+    if os.path.exists(CREDENTIALS_PATH):
+        pipeline.insert(0, credentials_by_profile)
+
     [creds.update(func()) for func in pipeline]
     return creds
-

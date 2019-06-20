@@ -50,7 +50,7 @@ def stream1():
     type(stream).collection = PropertyMock(return_value="fruits/apple")
     type(stream).name = PropertyMock(return_value="gala")
     stream.tags = Mock(return_value={"name": "gala", "unit": "volts"})
-    stream.annotations = Mock(return_value={"owner": "ABC", "color": "red"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "red"}, 11))
     return stream
 
 
@@ -64,7 +64,7 @@ def stream2():
     type(stream).collection = PropertyMock(return_value="fruits/orange")
     type(stream).name = PropertyMock(return_value="blood")
     stream.tags = Mock(return_value={"name": "blood", "unit": "amps"})
-    stream.annotations = Mock(return_value={"owner": "ABC", "color": "orange"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "orange"}, 22))
     return stream
 
 
@@ -116,14 +116,34 @@ class TestStream(object):
         Assert refresh_metadata deserializes annotation values
         """
         uu = uuid.uuid4()
-        serialized = {"parent": '{"child": 42}'}
-        expected = {"parent": {"child": 42}}
+        serialized = {"parent": '{"child": 42}', "sentence": "the quick brown fox"}
+        expected = {"parent": {"child": 42}, "sentence": "the quick brown fox"}
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, serialized, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         stream.refresh_metadata()
         assert stream.annotations()[0] == expected
+
+
+    def test_stream_name_property(self):
+        """
+        Assert name property comes from tags
+        """
+        name = "LINE222VA-ANG"
+        stream = Stream(None, "FAKE_UUID")
+        stream._tags = {"name": name}
+        assert stream.name == name
+
+
+    def test_stream_unit_property(self):
+        """
+        Assert unit property comes from tags
+        """
+        unit = "whales"
+        stream = Stream(None, "FAKE_UUID")
+        stream._tags = {"unit": unit}
+        assert stream.unit == unit
 
 
     ##########################################################################
@@ -234,7 +254,7 @@ class TestStream(object):
         }
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
-        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {"foo": "42 Cherry Hill"}, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         stream.refresh_metadata()

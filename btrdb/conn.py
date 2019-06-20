@@ -1,48 +1,45 @@
-# Copyright (c) 2017 Sam Kumar <samkumar@berkeley.edu>
-# Copyright (c) 2017 Michael P Andersen <m.andersen@cs.berkeley.edu>
-# Copyright (c) 2017 University of California, Berkeley
-# All rights reserved.
+# btrdb.conn
+# Connection related objects for the BTrDB library
 #
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#     * Redistributions of source code must retain the above copyright
-#       notice, this list of conditions and the following disclaimer.
-#     * Redistributions in binary form must reproduce the above copyright
-#       notice, this list of conditions and the following disclaimer in the
-#       documentation and/or other materials provided with the distribution.
-#     * Neither the name of the University of California, Berkeley nor the
-#       names of its contributors may be used to endorse or promote products
-#       derived from this software without specific prior written permission.
+# Author:   PingThings
+# Created:  Fri Dec 21 14:57:30 2018 -0500
 #
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNERS OR CONTRIBUTORS BE LIABLE FOR
-# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# For license information, see LICENSE.txt
+# ID: conn.py [] allen@pingthings.io $
 
 """
-The 'btrdb' module provides Python bindings to interact with BTrDB.
+Connection related objects for the BTrDB library
 """
+
+##########################################################################
+## Imports
+##########################################################################
+
+import os
+import re
+import json
+import uuid as uuidlib
 
 import grpc
-import uuid as uuidlib
-import os
-
 from grpc._cython.cygrpc import CompressionAlgorithm
 
 from btrdb.stream import Stream, StreamSet
 from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.conversion import to_uuid
+from btrdb.exceptions import NotFound
+
+##########################################################################
+## Module Variables
+##########################################################################
 
 MIN_TIME = -(16 << 56)
 MAX_TIME = 48 << 56
 MAX_POINTWIDTH = 63
 
+
+##########################################################################
+## Classes
+##########################################################################
 
 class Connection(object):
 
@@ -106,6 +103,43 @@ class BTrDB(object):
     def __init__(self, endpoint):
         self.ep = endpoint
 
+    def query(self, stmt, params=[]):
+        """
+        Performs a SQL query on the database metadata and returns a list of
+        dictionaries from the resulting cursor.
+
+        Parameters
+        ----------
+        stmt: str
+            a SQL statement to be executed on the BTrDB metadata.  Available
+            tables are noted below.  To sanitize inputs use a `$1` style parameter such as
+            `select * from streams where name = $1 or name = $2`.
+        params: list or tuple
+            a list of parameter values to be sanitized and interpolated into the
+            SQL statement. Using parameters forces value/type checking and is
+            considered a best practice at the very least.
+
+        Returns
+        -------
+        list
+            a list of dictionary object representing the cursor results.
+
+
+        Notes
+        -------
+        Parameters will be inserted into the SQL statement as noted by the
+        paramter number such as `$1`, `$2`, or `$3`.  The `streams` table is
+        available for `SELECT` statements only.
+
+        See https://btrdb.readthedocs.io/en/latest/ for more info.
+        """
+        return [
+            json.loads(row.decode("utf-8"))
+            for page in self.ep.sql_query(stmt, params)
+            for row in page
+        ]
+
+
     def streams(self, *identifiers, versions=None):
         """
         Returns a StreamSet object with BTrDB streams from the supplied
@@ -129,7 +163,31 @@ class BTrDB(object):
         if versions and len(versions) != len(identifiers):
             raise ValueError("number of versions does not match identifiers")
 
-        streams = [self.stream_from_uuid(ident) for ident in identifiers]
+        streams = []
+        for ident in identifiers:
+            if isinstance(ident, uuidlib.UUID):
+                streams.append(self.stream_from_uuid(ident))
+                continue
+
+            if isinstance(ident, str):
+                # attempt UUID lookup
+                pattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                if re.match(pattern, ident):
+                    streams.append(self.stream_from_uuid(ident))
+                    continue
+
+                # attempt collection/name lookup
+                if "/" in ident:
+                    parts = ident.split("/")
+                    found = self.streams_in_collection("/".join(parts[:-1]), tags={"name": parts[-1]})
+                    if len(found) == 1:
+                        streams.append(found[0])
+                        continue
+                    raise NotFound(f"Could not identify stream `{ident}`")
+
+            raise ValueError(f"Could not identify stream based on `{ident}`.  Identifier must be UUID or collection/name.")
+
+
         obj = StreamSet(streams)
 
         if versions:
@@ -248,6 +306,9 @@ class BTrDB(object):
 
         if annotations is None:
             annotations = {}
+
+        if not collection:
+            collection = [None]
 
         for item in collection:
             streams = self.ep.lookupStreams(item, is_collection_prefix, tags, annotations)

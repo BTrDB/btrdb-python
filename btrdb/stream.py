@@ -89,9 +89,14 @@ class Stream(object):
         self._known_to_exist = True
 
         # deserialize annoation values
-        self._annotations = dict(
-            [[k, json.loads(v)] for k, v in self._annotations.items()]
-        )
+        parts = []
+        for k, v in self._annotations.items():
+            try:
+                parts.append([k, json.loads(v)])
+            except json.decoder.JSONDecodeError:
+                parts.append([k, v])
+
+        self._annotations = dict(parts)
 
     def exists(self):
         """
@@ -173,6 +178,21 @@ class Stream(object):
 
         """
         return self.tags()["name"]
+
+    @property
+    def unit(self):
+        """
+        Returns the stream's unit which is parsed from the stream tags.  This
+        may require a round trip to the server depending on how the stream was
+        acquired.
+
+        Returns
+        -------
+        str
+            The unit for values of the stream.
+
+        """
+        return self.tags()["unit"]
 
     @property
     def collection(self):
@@ -921,7 +941,7 @@ class StreamSetBase(Sequence):
             # filters if the subset of the annotations matches the given annotations
             obj._streams = [
                 s for s in obj._streams
-                if annotations.items() <= s.annotations().items()
+                if annotations.items() <= s.annotations()[0].items()
             ]
 
         return obj

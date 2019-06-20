@@ -41,6 +41,13 @@ class TestLoadCredentials(object):
 
 class TestLoadProfile(object):
 
+    def setup(self):
+        for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE", "BTRDB_API_KEY"]:
+            try:
+                del os.environ[env]
+            except KeyError:
+                pass
+
     @patch('btrdb.utils.credentials.load_credentials_from_file')
     def test_raises_err_if_profile_not_found(self, mock_credentials):
         """
@@ -106,3 +113,19 @@ class TestLoadProfile(object):
             },
         }
         assert credentials_by_profile() == {}
+
+class TestCredentials(object):
+
+    def setup(self):
+        for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE", "BTRDB_API_KEY"]:
+            try:
+                del os.environ[env]
+            except KeyError:
+                pass
+
+    @patch('btrdb.utils.credentials.load_credentials_from_file')
+    @patch('os.path.exists')
+    def test_checks_file_existence(self, mock_exists, mock_load):
+        mock_exists.return_value = False
+        credentials()
+        assert not mock_load.called
