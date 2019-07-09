@@ -128,6 +128,42 @@ class Stream(object):
                 return False
             raise bte
 
+    def count(self, start=MINIMUM_TIME, end=MAXIMUM_TIME, pointwidth=62, version=0):
+        """
+        Compute the total number of points in the stream
+
+        Counts the number of points in the specified window and version. By
+        default returns the latest total count of points in the stream. This
+        helper method sums the counts of all StatPoints returned by
+        ``aligned_windows``. Because of this, note that the start and end
+        timestamps may be adjusted if they are not powers of 2. For smaller
+        windows of time, you may also need to adjust the pointwidth to ensure
+        that the count granularity is captured appropriately.
+
+        Parameters
+        ----------
+        start : int or datetime like object, default: MINIMUM_TIME
+            The start time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+
+        end : int or datetime like object, default: MAXIMUM_TIME
+            The end time in nanoseconds for the range to be queried. (see
+            :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+
+        pointwidth : int, default: 62
+            Specify the number of ns between data points (2**pointwidth)
+
+        version : int, default: 0
+            Version of the stream to query
+
+        Returns
+        -------
+        int
+            The total number of points in the stream for the specified window.
+        """
+        points = self.aligned_windows(start, end, pointwidth, version)
+        return sum([point.count for point, _ in points])
+
     @property
     def btrdb(self):
         """
@@ -771,6 +807,44 @@ class StreamSetBase(Sequence):
 
         """
         return self._pinned_versions if self._pinned_versions else self._latest_versions()
+
+    def count(self):
+        """
+        Compute the total number of points in the streams using filters.
+
+        Computes the total number of points across all streams using the
+        specified filters. By default, this returns the latest total count of
+        all points in the streams. The count is modified by start and end
+        filters or by pinning versions.
+
+        Note that this helper method sums the counts of all StatPoints returned
+        by ``aligned_windows``. Because of this the start and end timestamps
+        may be adjusted if they are not powers of 2. You can also set the
+        pointwidth property for smaller windows of time to ensure that the
+        count granularity is captured appropriately.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        int
+            The total number of points in all streams for the specified filters.
+        """
+        params = self._params_from_filters()
+        start = params.get("start", MINIMUM_TIME)
+        end = params.get("end", MAXIMUM_TIME)
+
+        pointwidth = self.pointwidth if self.pointwidth is not None else 62
+        versions = self._pinned_versions if self._pinned_versions else {}
+
+        count = 0
+        for s in self._streams:
+            version = versions.get(s.uuid, 0)
+            count += s.count(start, end, pointwidth, version)
+
+        return count
 
     def earliest(self):
         """
