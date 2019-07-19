@@ -13,11 +13,15 @@ Complex analytics in Python may require additional speedups that can be gained b
 
 The first and most critical thing to note is that ``btrdb.Connection`` objects *are not thread- or multiprocess-safe*. This means that in your code you should use either a lock or a semaphore to share a single connection object or that each process or thread should create their own connection object and clean up after themselves when they are done using the connection. Moreover, because of the forking issue discribed in the warning above, you must also take care when to create connections in worker processes.
 
-Let's take the following simple example: we want to perform a data quality analysis on 12 hour chunks of data for all the streams in our ``staging/sensors`` collection. If we have hundreds of sensor streams across many months, this job can be sped up dramatically by using multiprocessing. To do this, let's consider the following process architecture:
+Let's take the following simple example: we want to perform a data quality analysis on 12 hour chunks of data for all the streams in our ``staging/sensors`` collection. If we have hundreds of sensor streams across many months, this job can be sped up dramatically by using multiprocessing. Instead of having a single process churning through the each chunk of data one at a time, several workers can process multiple data chunks simultanously using multiple CPU cores and taking advantage of other CPU scheduling optimizations.
 
-.. image:: images/multiprocessing_architecture.png
+.. _architecture:
+.. figure:: /_static/figures/multiprocessing_architecture.png
+    :alt: a multiprocessing architecture
 
-At first glance, this architecture looks similar to the one used by ``multiprocessing.Pool``, which is true. However, consider the following code:
+    A two queue multiprocessing architecture for data parallel processing.
+
+Consider the processing architecture shown in :numref:`architecture`. At first glance, this architecture looks similar to the one used by ``multiprocessing.Pool``, which is true. However, consider the following code:
 
 .. code-block:: python
 
