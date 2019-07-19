@@ -120,6 +120,9 @@ The sampling rate of the data at different moments will determine how deep the t
 
 Appendix
 --------
+The original version of this page can be found at:
+
+- `github.com/PingThingsIO/btrdb-explained <https://github.com/PingThingsIO/btrdb-explained>`_
 
 This page is written based on the following sources:
 
