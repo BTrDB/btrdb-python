@@ -20,8 +20,8 @@ import sys
 import json
 import uuid
 import pytz
-import datetime
 import pytest
+import datetime
 from unittest.mock import Mock, PropertyMock, patch, call
 
 from btrdb.conn import BTrDB
@@ -34,6 +34,7 @@ from btrdb.grpcinterface import btrdb_pb2
 
 RawPointProto =  btrdb_pb2.RawPoint
 StatPointProto =  btrdb_pb2.StatPoint
+EST = pytz.timezone('America/New_York')
 
 
 ##########################################################################
@@ -116,8 +117,31 @@ class TestStream(object):
         Assert refresh_metadata deserializes annotation values
         """
         uu = uuid.uuid4()
-        serialized = {"parent": '{"child": 42}', "sentence": "the quick brown fox"}
-        expected = {"parent": {"child": 42}, "sentence": "the quick brown fox"}
+        serialized = {
+            'acronym': 'VPHM',
+            'description': 'El Segundo PMU 42 Ean',
+            'devacronym': 'PMU!EL_SEG_PMU_42',
+            'enabled': 'true',
+            'id': '76932ae4-09bc-472c-8dc6-64fea68d2797',
+            'phase': 'A',
+            'label': 'null',
+            'frequency': '30',
+            'control': '2019-11-07 13:21:23.000000-0500',
+            "calibrate": '{"racf": 1.8, "pacf": 0.005}',
+        }
+        expected = {
+            'acronym': 'VPHM',
+            'description': 'El Segundo PMU 42 Ean',
+            'devacronym': 'PMU!EL_SEG_PMU_42',
+            'enabled': True,
+            'id': '76932ae4-09bc-472c-8dc6-64fea68d2797',
+            'phase': 'A',
+            'label': None,
+            'frequency': 30,
+            'control': '2019-11-07 13:21:23.000000-0500',
+            "calibrate": {"racf": 1.8, "pacf": 0.005},
+        }
+
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, serialized, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
@@ -221,19 +245,43 @@ class TestStream(object):
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        annotations = {"owner": "rabbit"}
+
+        # Test realistic annotations with multiple types
+        annotations = {
+            "acronym": "VPHM",
+            "description": "El Segundo PMU 42 Ean",
+            "devacronym": "PMU!EL_SEG_PMU_42",
+            "enabled": True,
+            "id": uuid.UUID('76932ae4-09bc-472c-8dc6-64fea68d2797'),
+            "phase": "A",
+            "label": None,
+            "frequency": 30,
+            "control": EST.localize(datetime.datetime(2019, 11, 7, 13, 21, 23)),
+            "calibrate": {"racf": 1.8, "pacf": 0.005},
+        }
 
         stream.refresh_metadata()
         stream.update(annotations=annotations)
         stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
             uu=uu,
             expected=42,
-            changes={"owner": '"rabbit"'}
+            changes={
+                'acronym': 'VPHM',
+                'description': 'El Segundo PMU 42 Ean',
+                'devacronym': 'PMU!EL_SEG_PMU_42',
+                'enabled': 'true',
+                'id': '76932ae4-09bc-472c-8dc6-64fea68d2797',
+                'phase': 'A',
+                'label': 'null',
+                'frequency': '30',
+                'control': '2019-11-07 13:21:23.000000-0500',
+                "calibrate": '{"racf": 1.8, "pacf": 0.005}',
+            }
         )
         stream._btrdb.ep.setStreamTags.assert_not_called()
 
 
-    def test_nested_conversions(self):
+    def test_update_annotations_nested_conversions(self):
         """
         Assert update correctly encodes nested annotation data
         """
@@ -278,7 +326,24 @@ class TestStream(object):
                 }
             )
 
+    def test_update_annotations_no_encoder(self):
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
+        annotations = {"foo": "this is a string", "bar": "3.14"}
+
+        stream.refresh_metadata()
+        stream.update(annotations=annotations, encoder=None)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+            uu=uu,
+            expected=42,
+            changes=annotations,
+        )
+
+        # TODO: mock json.dumps
+        # assert mock_dumps.assert_not_called()
 
     ##########################################################################
     ## exists tests
