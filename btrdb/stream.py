@@ -21,12 +21,12 @@ import uuid as uuidlib
 from copy import deepcopy
 from collections.abc import Sequence
 
+from btrdb.utils.buffer import PointBuffer
 from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import StreamSetTransformer
-from btrdb.utils.buffer import PointBuffer
-from btrdb.utils.timez import currently_as_ns, to_nanoseconds
-from btrdb.utils.conversion import AnnotationEncoder
 from btrdb.exceptions import BTrDBError, InvalidOperation
+from btrdb.utils.timez import currently_as_ns, to_nanoseconds
+from btrdb.utils.conversion import AnnotationEncoder, AnnotationDecoder
 
 
 ##########################################################################
@@ -39,7 +39,7 @@ MAXIMUM_TIME = (48 << 56) - 1
 
 try:
     RE_PATTERN = re._pattern_type
-except:
+except Exception:
     RE_PATTERN = re.Pattern
 
 
@@ -74,14 +74,12 @@ class Stream(object):
         self._btrdb = btrdb
         self._uuid = uuid
 
-
     def refresh_metadata(self):
         """
         Refreshes the locally cached meta data for a stream
 
         Queries the BTrDB server for all stream metadata including collection,
         annotation, and tags. This method requires a round trip to the server.
-
         """
 
         ep = self._btrdb.ep
@@ -89,14 +87,10 @@ class Stream(object):
         self._known_to_exist = True
 
         # deserialize annoation values
-        parts = []
-        for k, v in self._annotations.items():
-            try:
-                parts.append([k, json.loads(v)])
-            except json.decoder.JSONDecodeError:
-                parts.append([k, v])
-
-        self._annotations = dict(parts)
+        self._annotations = {
+            key: json.loads(val, cls=AnnotationDecoder)
+            for key, val in self._annotations.items()
+        }
 
     def exists(self):
         """
@@ -432,9 +426,14 @@ class Stream(object):
         )
 
     def _update_annotations(self, annotations, encoder):
-        serialized = dict(
-            [[k, json.dumps(v, cls=encoder)] for k, v in annotations.items()]
-        )
+        # make a copy of the annotations to prevent accidental mutable object mutation
+        serialized = deepcopy(annotations)
+        if encoder is not None:
+            serialized = {
+                k: json.dumps(v, cls=encoder, indent=None, allow_nan=True)
+                for k, v in serialized.items()
+            }
+
         self._btrdb.ep.setStreamAnnotations(
             uu=self.uuid,
             expected=self._property_version,
@@ -453,8 +452,9 @@ class Stream(object):
             dict of annotation information for the stream.
         collection: str
             The collection prefix for a stream
-        encoder: json.JSONEncoder
-            JSON encoder to class to use for annotation serializations
+        encoder: json.JSONEncoder or None
+            JSON encoder to class to use for annotation serializations, set to
+            None to prevent JSON encoding of the annotations.
 
         Returns
         -------
