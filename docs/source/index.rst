@@ -1,5 +1,5 @@
 Welcome to btrdb docs!
-========================================
+======================
 
 .. image:: https://img.shields.io/travis/BTrDB/btrdb-python/master.svg
     :target: https://travis-ci.org/BTrDB/btrdb-python
@@ -13,6 +13,8 @@ Welcome to btrdb docs!
 .. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg
     :target: https://opensource.org/licenses/BSD-3-Clause
 
+.. image:: https://img.shields.io/pypi/v/btrdb.svg
+    :target: https://pypi.python.org/project/btrdb/
 
 .. note::
 
@@ -77,10 +79,11 @@ in Github!
    installing
    concepts
    working
+   explained
 
 
 API Reference
---------------------
+-------------
 
 .. toctree::
    :maxdepth: 2
@@ -95,7 +98,7 @@ API Reference
 
 
 Maintainers
---------------------
+-----------
 
 * :doc:`maintainers/anaconda`
 
@@ -104,7 +107,7 @@ Maintainers
 
 
 Indices and tables
---------------------
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

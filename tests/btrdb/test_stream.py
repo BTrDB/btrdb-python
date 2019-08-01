@@ -20,8 +20,8 @@ import sys
 import json
 import uuid
 import pytz
-import datetime
 import pytest
+import datetime
 from unittest.mock import Mock, PropertyMock, patch, call
 
 from btrdb.conn import BTrDB
@@ -34,6 +34,7 @@ from btrdb.grpcinterface import btrdb_pb2
 
 RawPointProto =  btrdb_pb2.RawPoint
 StatPointProto =  btrdb_pb2.StatPoint
+EST = pytz.timezone('America/New_York')
 
 
 ##########################################################################
@@ -116,8 +117,31 @@ class TestStream(object):
         Assert refresh_metadata deserializes annotation values
         """
         uu = uuid.uuid4()
-        serialized = {"parent": '{"child": 42}', "sentence": "the quick brown fox"}
-        expected = {"parent": {"child": 42}, "sentence": "the quick brown fox"}
+        serialized = {
+            'acronym': 'VPHM',
+            'description': 'El Segundo PMU 42 Ean',
+            'devacronym': 'PMU!EL_SEG_PMU_42',
+            'enabled': 'true',
+            'id': '76932ae4-09bc-472c-8dc6-64fea68d2797',
+            'phase': 'A',
+            'label': 'null',
+            'frequency': '30',
+            'control': '2019-11-07 13:21:23.000000-0500',
+            "calibrate": '{"racf": 1.8, "pacf": 0.005}',
+        }
+        expected = {
+            'acronym': 'VPHM',
+            'description': 'El Segundo PMU 42 Ean',
+            'devacronym': 'PMU!EL_SEG_PMU_42',
+            'enabled': True,
+            'id': '76932ae4-09bc-472c-8dc6-64fea68d2797',
+            'phase': 'A',
+            'label': None,
+            'frequency': 30,
+            'control': '2019-11-07 13:21:23.000000-0500',
+            "calibrate": {"racf": 1.8, "pacf": 0.005},
+        }
+
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, serialized, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
@@ -221,19 +245,43 @@ class TestStream(object):
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        annotations = {"owner": "rabbit"}
+
+        # Test realistic annotations with multiple types
+        annotations = {
+            "acronym": "VPHM",
+            "description": "El Segundo PMU 42 Ean",
+            "devacronym": "PMU!EL_SEG_PMU_42",
+            "enabled": True,
+            "id": uuid.UUID('76932ae4-09bc-472c-8dc6-64fea68d2797'),
+            "phase": "A",
+            "label": None,
+            "frequency": 30,
+            "control": EST.localize(datetime.datetime(2019, 11, 7, 13, 21, 23)),
+            "calibrate": {"racf": 1.8, "pacf": 0.005},
+        }
 
         stream.refresh_metadata()
         stream.update(annotations=annotations)
         stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
             uu=uu,
             expected=42,
-            changes={"owner": '"rabbit"'}
+            changes={
+                'acronym': 'VPHM',
+                'description': 'El Segundo PMU 42 Ean',
+                'devacronym': 'PMU!EL_SEG_PMU_42',
+                'enabled': 'true',
+                'id': '76932ae4-09bc-472c-8dc6-64fea68d2797',
+                'phase': 'A',
+                'label': 'null',
+                'frequency': '30',
+                'control': '2019-11-07 13:21:23.000000-0500',
+                "calibrate": '{"racf": 1.8, "pacf": 0.005}',
+            }
         )
         stream._btrdb.ep.setStreamTags.assert_not_called()
 
 
-    def test_nested_conversions(self):
+    def test_update_annotations_nested_conversions(self):
         """
         Assert update correctly encodes nested annotation data
         """
@@ -278,7 +326,24 @@ class TestStream(object):
                 }
             )
 
+    def test_update_annotations_no_encoder(self):
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
+        annotations = {"foo": "this is a string", "bar": "3.14"}
+
+        stream.refresh_metadata()
+        stream.update(annotations=annotations, encoder=None)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+            uu=uu,
+            expected=42,
+            changes=annotations,
+        )
+
+        # TODO: mock json.dumps
+        # assert mock_dumps.assert_not_called()
 
     ##########################################################################
     ## exists tests
@@ -476,6 +541,28 @@ class TestStream(object):
         stream._btrdb.ep.alignedWindows.assert_called_once_with(
             uu, 100, 500, 1, 0
         )
+
+
+    def test_count(self):
+        """
+        Test that stream count method uses aligned windows
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        windows = [
+            [(StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6), StatPointProto(time=2,min=3,mean=4,max=5,count=6,stddev=7)), 42],
+            [(StatPointProto(time=3,min=4,mean=5,max=6,count=7,stddev=8), StatPointProto(time=4,min=5,mean=6,max=7,count=8,stddev=9)), 42],
+        ]
+        endpoint.alignedWindows = Mock(return_value=windows)
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        assert stream.count() == 26
+        stream._btrdb.ep.alignedWindows.assert_called_once_with(
+            uu, MINIMUM_TIME, MAXIMUM_TIME, 62, 0
+        )
+
+        stream.count(10, 1000, 48, 1200)
+        stream._btrdb.ep.alignedWindows.assert_called_with(uu, 10, 1000, 48, 1200)
 
 
     ##########################################################################
@@ -1082,6 +1169,50 @@ class TestStreamSet(object):
 
         with pytest.raises(ValueError, match="current time is not included in filtered stream range"):
             streams.filter(start=0, end=10).current()
+
+    def test_count(self):
+        """
+        Test the stream set count method
+        """
+        uu1 = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        uu2 = uuid.UUID('4dadf38d-52a5-4b7a-ada9-a5d563f9538c')
+        endpoint = Mock(Endpoint)
+        windows = [
+            [(StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6), StatPointProto(time=2,min=3,mean=4,max=5,count=6,stddev=7)), 42],
+            [(StatPointProto(time=3,min=4,mean=5,max=6,count=7,stddev=8), StatPointProto(time=4,min=5,mean=6,max=7,count=8,stddev=9)), 42],
+        ]
+        endpoint.alignedWindows = Mock(return_value=windows)
+        streams = StreamSet([
+            Stream(btrdb=BTrDB(endpoint), uuid=uu1),
+            Stream(btrdb=BTrDB(endpoint), uuid=uu2),
+        ])
+
+        assert streams.count() == 52
+        endpoint.alignedWindows.assert_any_call(uu1, MINIMUM_TIME, MAXIMUM_TIME, 62, 0)
+        endpoint.alignedWindows.assert_any_call(uu2, MINIMUM_TIME, MAXIMUM_TIME, 62, 0)
+
+
+    def test_count_filtered(self):
+        """
+        Test the stream set count method with filters
+        """
+        uu1 = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        uu2 = uuid.UUID('4dadf38d-52a5-4b7a-ada9-a5d563f9538c')
+        endpoint = Mock(Endpoint)
+        endpoint.alignedWindows = Mock(return_value=[])
+        streams = StreamSet([
+            Stream(btrdb=BTrDB(endpoint), uuid=uu1),
+            Stream(btrdb=BTrDB(endpoint), uuid=uu2),
+        ])
+
+        streams = streams.filter(start=10, end=1000)
+        streams.pin_versions({uu1: 42, uu2: 99})
+        streams.pointwidth = 48
+
+        streams.count()
+        endpoint.alignedWindows.assert_any_call(uu1, 10, 1000, 48, 42)
+        endpoint.alignedWindows.assert_any_call(uu2, 10, 1000, 48, 99)
+
 
 
     ##########################################################################

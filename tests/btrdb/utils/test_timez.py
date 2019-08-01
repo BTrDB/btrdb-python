@@ -133,6 +133,14 @@ class TestToNanoseconds(object):
         expected = int(dt.timestamp() * 1e9)
         assert to_nanoseconds(dt_str) == expected
 
+    def test_str_midnight(self):
+        """
+        Test parse a date at midnight
+        """
+        expected = datetime.datetime(2019, 4, 7, tzinfo=pytz.utc)
+        expected = int(expected.timestamp() * 1e9)
+        assert to_nanoseconds("2019-04-07") == expected
+
     def test_str_raise_valueerror(self):
         """
         Assert to_nanoseconds raises on invalid str

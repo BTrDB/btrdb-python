@@ -30,15 +30,17 @@ import pytz
 ##########################################################################
 
 DATETIME_FORMATS = (
-	"%Y-%m-%d %H:%M:%S.%f%z", # most common RFC3339 nanoseconds
-	"%Y-%m-%d %H:%M:%S.%f",   # expects UTC default timezone
-	"%Y-%m-%dT%H:%M:%S.%fZ",  # JSON encoding, UTC timezone
-	"%Y-%m-%dT%H:%M:%SZ",	  # JSON encoding, UTC timezone
-	"%Y-%m-%dT%H:%M:%S.%f%z", # less common JSON-ish encoding
-	"%Y-%m-%dT%H:%M:%S.%f",   # for completeness, UTC default timezone
-	"%Y-%m-%d %H:%M:%S%z",	  # human readable date time with TZ
-	"%Y-%m-%d %H:%M:%S",	  # human readable date time UTC default
+    "%Y-%m-%d %H:%M:%S.%f%z",  # most common RFC3339 nanoseconds
+    "%Y-%m-%d %H:%M:%S.%f",    # expects UTC default timezone
+    "%Y-%m-%dT%H:%M:%S.%fZ",   # JSON encoding, UTC timezone
+    "%Y-%m-%dT%H:%M:%SZ",	   # JSON encoding, UTC timezone
+    "%Y-%m-%dT%H:%M:%S.%f%z",  # less common JSON-ish encoding
+    "%Y-%m-%dT%H:%M:%S.%f",    # for completeness, UTC default timezone
+    "%Y-%m-%d %H:%M:%S%z",	   # human readable date time with TZ
+    "%Y-%m-%d %H:%M:%S",	   # human readable date time UTC default
+    "%Y-%m-%d",                # helper to get midnight on a particular date
 )
+
 
 ##########################################################################
 ## Functions
@@ -92,6 +94,7 @@ def datetime_to_ns(dt):
     dt_utc = aware.astimezone(pytz.utc)
     return int(dt_utc.timestamp() * 1e9)
 
+
 def to_nanoseconds(val):
     """
     Converts datetime, datetime64, float, str (RFC 2822) to nanoseconds.  If a
@@ -128,6 +131,8 @@ def to_nanoseconds(val):
     | %Y-%m-%d %H:%M:%S%z            | human readable date time with TZ         |
     +--------------------------------+------------------------------------------+
     | %Y-%m-%d %H:%M:%S              | human readable date time UTC default     |
+    +--------------------------------+------------------------------------------+
+    | %Y-%m-%d                       | midnight at a particular date            |
     +--------------------------------+------------------------------------------+
 
     """

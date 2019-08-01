@@ -16,12 +16,14 @@ Testing for btrdb convertion utilities
 ##########################################################################
 
 import uuid
-from datetime import datetime
-
+import json
 import pytest
 import numpy as np
 
-from btrdb.utils.conversion import to_uuid, AnnotationEncoder
+from datetime import datetime
+from btrdb.utils.conversion import to_uuid
+from btrdb.utils.conversion import AnnotationDecoder, AnnotationEncoder
+
 
 ##########################################################################
 ## Test Constants
@@ -31,19 +33,49 @@ EXAMPLE_UUID_STR = "07d28a44-4991-492d-b9c5-2d8cec5aa6d4"
 EXAMPLE_UUID_BYTES = EXAMPLE_UUID_STR.encode("ASCII")
 EXAMPLE_UUID = uuid.UUID(EXAMPLE_UUID_STR)
 
+
 ##########################################################################
-## Initialization Tests
+## Conversion Tests
 ##########################################################################
 
-class TestAnnotationEncoder(object):
+class TestAnnotationJSON(object):
 
-    def test_datetime_conversions(self):
-        dt = datetime(2018,9,10,16,30)
-        expected = '"2018-09-10 16:30:00.000000"'
-        encoder = AnnotationEncoder()
+    @pytest.mark.parametrize("obj, expected", [
+        (True, "true"),
+        (False, "false"),
+        (None, "null"),
+        (3.14, "3.14"),
+        (42, "42"),
+        ("foo", "foo"),
+        ("a long walk on the beach", "a long walk on the beach"),
+        (['a', 'b', 'c'], '["a", "b", "c"]'),
+        ({'color': 'red', 'foo': 24}, '{"color": "red", "foo": 24}'),
+        (datetime(2018, 9, 10, 16, 30), "2018-09-10 16:30:00.000000"),
+        (np.datetime64(datetime(2018, 9, 10, 16, 30)), "2018-09-10 16:30:00.000000+0000"),
+        (EXAMPLE_UUID, EXAMPLE_UUID_STR),
+    ])
+    def test_annotations_encoder(self, obj, expected):
+        msg = f"did not correctly encode type {type(obj)}"
+        assert json.dumps(obj, cls=AnnotationEncoder, indent=None) == expected, msg
 
-        assert encoder.encode(dt) == expected
-        assert encoder.encode(np.datetime64(dt)) == expected
+    @pytest.mark.parametrize("obj, s", [
+        (True, "true"),
+        (False, "false"),
+        (None, "null"),
+        (3.14, "3.14"),
+        (42, "42"),
+        ("foo", "foo"),
+        ("foo", '"foo"'),
+        ("a long walk on the beach", "a long walk on the beach"),
+        ("a long walk on the beach", '"a long walk on the beach"'),
+        (['a', 'b', 'c'], '["a", "b", "c"]'),
+        ({'color': 'red', 'foo': 24}, '{"color": "red", "foo": 24}'),
+        ("2018-09-10 16:30:00.000000", "2018-09-10 16:30:00.000000"),
+        ({'uuid': EXAMPLE_UUID_STR}, f'{{"uuid": "{EXAMPLE_UUID_STR}"}}'),
+    ])
+    def test_annotations_decoder(self, obj, s):
+        msg = f"did not correctly decode type {type(obj)}"
+        assert json.loads(s, cls=AnnotationDecoder) == obj, msg
 
 
 class TestToUUID(object):
