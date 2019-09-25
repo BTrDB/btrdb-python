@@ -727,15 +727,16 @@ class TestStream(object):
         """
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
-        endpoint.insert = Mock(side_effect=[1,2])
+        endpoint.insert = Mock(side_effect=[1,2,3])
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
-        data = list(zip(range(10000,16000), map(float, range(6000))))
+        data = list(zip(range(10000,120000), map(float, range(110000))))
         version = stream.insert(data)
 
         assert stream._btrdb.ep.insert.call_args_list[0][0][1] == data[:INSERT_BATCH_SIZE]
-        assert stream._btrdb.ep.insert.call_args_list[1][0][1] == data[INSERT_BATCH_SIZE:]
-        assert version == 2
+        assert stream._btrdb.ep.insert.call_args_list[1][0][1] == data[INSERT_BATCH_SIZE:2*INSERT_BATCH_SIZE]
+        assert stream._btrdb.ep.insert.call_args_list[2][0][1] == data[2*INSERT_BATCH_SIZE:]
+        assert version == 3
 
 
     def test_nearest(self):

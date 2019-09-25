@@ -33,7 +33,7 @@ from btrdb.utils.conversion import AnnotationEncoder, AnnotationDecoder
 ## Module Variables
 ##########################################################################
 
-INSERT_BATCH_SIZE = 5000
+INSERT_BATCH_SIZE = 50000
 MINIMUM_TIME = -(16 << 56)
 MAXIMUM_TIME = (48 << 56) - 1
 
