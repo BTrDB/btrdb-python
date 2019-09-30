@@ -26,7 +26,7 @@ from btrdb.exceptions import ConnectionError
 ## Test Constants
 ##########################################################################
 
-EXPECTED_VERSION = "5.5.3"
+EXPECTED_VERSION = "5.6"
 
 
 ##########################################################################

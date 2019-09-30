@@ -35,7 +35,7 @@ class TestCurrentlyAsNs(object):
         """
         Assert currently_as_ns returns correct value
         """
-        expected = int(datetime.datetime(2018,1,1,12).timestamp() * 1e9)
+        expected = 1514808000000000000
         with freeze_time("2018-01-01 12:00:00 -0000"):
             assert currently_as_ns() == expected
 
@@ -82,10 +82,10 @@ class TestNsToDatetime(object):
         """
         Assert ns_to_datetime returns correct datetime
         """
-        input = 1514808000000000000
+        val = 1514808000000000000
         expected = datetime.datetime(2018,1,1,12, tzinfo=pytz.UTC)
 
-        assert ns_to_datetime(input) == expected
+        assert ns_to_datetime(val) == expected
 
 
 class TestToNanoseconds(object):

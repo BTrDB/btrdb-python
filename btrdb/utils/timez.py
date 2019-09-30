@@ -51,7 +51,7 @@ def currently_as_ns():
     Returns the current UTC time as nanoseconds since epoch
     """
     dt = datetime.utcnow()
-    return int(dt.timestamp() * 1e9)
+    return int(dt.replace(tzinfo=pytz.utc).timestamp() * 1e9)
 
 
 def ns_to_datetime(ns):

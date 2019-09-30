@@ -30,6 +30,7 @@ clean:
 	-rm -rf .eggs
 	-rm -rf site
 	-rm -rf docs/_build
+	-rm -rf platform-builds meta.yaml
 
 # Targets for testing
 test:
