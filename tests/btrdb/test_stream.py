@@ -276,7 +276,8 @@ class TestStream(object):
                 'frequency': '30',
                 'control': '2019-11-07 13:21:23.000000-0500',
                 "calibrate": '{"racf": 1.8, "pacf": 0.005}',
-            }
+            },
+            removals=[],
         )
         stream._btrdb.ep.setStreamTags.assert_not_called()
 
@@ -327,6 +328,9 @@ class TestStream(object):
             )
 
     def test_update_annotations_no_encoder(self):
+        """
+        Assert update annotations works with None as encoder argument
+        """
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
@@ -340,10 +344,43 @@ class TestStream(object):
             uu=uu,
             expected=42,
             changes=annotations,
+            removals=[],
         )
 
         # TODO: mock json.dumps
         # assert mock_dumps.assert_not_called()
+
+    def test_update_annotations_replace(self):
+        """
+        Assert that replace argument will add proper keys to removals array in
+        endpoint call.
+        """
+        uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
+        endpoint = Mock(Endpoint)
+        endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {"phase": "A", "source": "PJM"}, None))
+        stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
+
+        annotations = {"foo": "this is a string", "phase": "A", }
+
+        stream.refresh_metadata()
+
+        # remove one of the keys and add new ones
+        stream.update(annotations=annotations, replace=True)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_once_with(
+            uu=uu,
+            expected=42,
+            changes=annotations,
+            removals=["source"],
+        )
+
+        # clear annotations
+        stream.update(annotations={}, replace=True)
+        stream._btrdb.ep.setStreamAnnotations.assert_called_with(
+            uu=uu,
+            expected=42,
+            changes={},
+            removals=["phase", "source"],
+        )
 
     ##########################################################################
     ## exists tests
