@@ -425,7 +425,7 @@ class Stream(object):
             collection=collection
         )
 
-    def _update_annotations(self, annotations, encoder):
+    def _update_annotations(self, annotations, encoder, replace):
         # make a copy of the annotations to prevent accidental mutable object mutation
         serialized = deepcopy(annotations)
         if encoder is not None:
@@ -434,13 +434,18 @@ class Stream(object):
                 for k, v in serialized.items()
             }
 
+        removals = []
+        if replace:
+            removals = [i for i in self._annotations.keys() if i not in annotations.keys()]
+
         self._btrdb.ep.setStreamAnnotations(
             uu=self.uuid,
             expected=self._property_version,
-            changes=serialized
+            changes=serialized,
+            removals=removals
         )
 
-    def update(self, tags=None, annotations=None, collection=None, encoder=AnnotationEncoder):
+    def update(self, tags=None, annotations=None, collection=None, encoder=AnnotationEncoder, replace=False):
         """
         Updates metadata including tags, annotations, and collection.
 
@@ -455,6 +460,9 @@ class Stream(object):
         encoder: json.JSONEncoder or None
             JSON encoder to class to use for annotation serializations, set to
             None to prevent JSON encoding of the annotations.
+        replace: bool
+            Replace annotations vs the default upsert operation.  Choosing True is the
+            only way to remove annotation keys.
 
         Returns
         -------
@@ -479,7 +487,7 @@ class Stream(object):
             self.refresh_metadata()
 
         if annotations is not None:
-            self._update_annotations(annotations, encoder)
+            self._update_annotations(annotations, encoder, replace)
             self.refresh_metadata()
 
         return self._property_version
