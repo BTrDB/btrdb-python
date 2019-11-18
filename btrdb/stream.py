@@ -447,7 +447,7 @@ class Stream(object):
 
     def update(self, tags=None, annotations=None, collection=None, encoder=AnnotationEncoder, replace=False):
         """
-        Updates metadata including tags, annotations, and collection.
+        Updates metadata (as an UPSERT operation) including tags, annotations, and collection.
 
         Parameters
         ----------

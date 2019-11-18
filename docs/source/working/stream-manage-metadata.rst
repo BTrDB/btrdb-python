@@ -50,6 +50,10 @@ is also returned when asking for annotations.  This version number is incremente
 whenever metadata (tags, annotations, collection, etc.) are updated but not when
 making changes to the underlying time series data.
 
+By default the method will attempt to provide a cached copy of the annotations
+however you can request the latest version from the server using the `refresh`
+argument.
+
 .. code-block:: python
 
     stream.annotations(refresh=True)
@@ -87,4 +91,12 @@ multiple updates to the property version.
         'state': 'VT',
         'created': '2018-01-01 12:42:03 -0500'
     }
-    prop_version = stream.update(collection=collection, annotations=annotations)
+    property_version = stream.update(
+        collection=collection,
+        annotations=annotations
+    )
+
+By default, annotations are updated as an UPSERT operation.  If you would like
+to remove any keys you must use the `replace=True` keyword argument.
+This will ensure that the dictionary you provide completely replaces the existing
+annotations.
