@@ -36,6 +36,9 @@ class RawPoint(object):
         The value of a time series at a single point in time.
 
     """
+
+    __slots__ = ["_time", "_value"]
+
     def __init__(self, time, value):
         self._time = time
         self._value = value
@@ -132,6 +135,9 @@ class StatPoint(object):
 
 
     """
+
+    __slots__ = ["_time", "_min", "_mean", "_max", "_count", "_stddev"]
+
     def __init__(self, time, minv, meanv, maxv, count, stddev):
         self._time = time
         self._min = minv
