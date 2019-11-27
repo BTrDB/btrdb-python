@@ -66,7 +66,7 @@ class Endpoint(object):
         result = self.stub.Obliterate(params)
         BTrDBError.checkProtoStat(result.stat)
 
-    def setStreamAnnotations(self, uu, expected, changes):
+    def setStreamAnnotations(self, uu, expected, changes, removals):
         annkvlist = []
         for k, v in changes.items():
             if v is None:
@@ -77,7 +77,7 @@ class Endpoint(object):
                 ov = btrdb_pb2.OptValue(value = v)
             kv = btrdb_pb2.KeyOptValue(key = k, val = ov)
             annkvlist.append(kv)
-        params = btrdb_pb2.SetStreamAnnotationsParams(uuid=uu.bytes, expectedPropertyVersion=expected, changes=annkvlist)
+        params = btrdb_pb2.SetStreamAnnotationsParams(uuid=uu.bytes, expectedPropertyVersion=expected, changes=annkvlist, removals=removals)
         result = self.stub.SetStreamAnnotations(params)
         BTrDBError.checkProtoStat(result.stat)
 
