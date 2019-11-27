@@ -80,8 +80,14 @@ just a convenience as this value can also be found within the tags.
 Updating Metadata
 ----------------------------
 An :code:`update` method is available if you would like to make changes to
-the tags, annotations, or collection.  Note that a single operation could make
-multiple updates to the property version.
+the tags, annotations, or collection.  By default, all updates are implemented
+as an UPSERT operation and a single change could result in multiple increments
+to the property version (the version of the metadata).
+
+Upon calling this method, the library will first verify that the local property version of your
+stream object matches the version found on the server.  If the two versions
+do not match then you will not be allowed to perform an update as this implies
+that the data has already been changed by another user or process.
 
 .. code-block:: python
 
@@ -96,7 +102,12 @@ multiple updates to the property version.
         annotations=annotations
     )
 
-By default, annotations are updated as an UPSERT operation.  If you would like
-to remove any keys you must use the `replace=True` keyword argument.
-This will ensure that the dictionary you provide completely replaces the existing
-annotations.
+If you would like to remove any keys from your annotations you must use the `replace=True` keyword argument.  This will ensure that the annotations dictionary you provide completely replaces the existing values rather than perform an UPSERT operation.  The example below shows how you could remove an existing key from the annotations dictionary.
+
+.. code-block:: python
+
+    annotations, _ = stream.anotations()
+    del annotations["key_to_delete"]
+    stream.update(annotations=annotations, replace=True)
+
+

@@ -108,7 +108,7 @@ class Stream(object):
         Returns
         -------
         bool
-            Indicates whether stream exists.
+            Indicates whether stream is extant in the BTrDB server.
         """
 
         if self._known_to_exist:
@@ -447,27 +447,51 @@ class Stream(object):
 
     def update(self, tags=None, annotations=None, collection=None, encoder=AnnotationEncoder, replace=False):
         """
-        Updates metadata (as an UPSERT operation) including tags, annotations, and collection.
+        Updates metadata including tags, annotations, and collection as an
+        UPSERT operation.
+
+        By default, the update will only affect the keys and values in the
+        specified tags and annotations dictionaries, inserting them if they
+        don't exist, or updating the value for the key if it does exist. If
+        any of the update arguments (i.e. tags, annotations, collection) are
+        None, they will remain unchanged in the database.
+
+        To delete either tags or annotations, you must specify exactly which
+        keys and values you want set for the field and set `replace=True`. For
+        example:
+
+            >>> annotations, _ = stream.anotations()
+            >>> del annotations["key_to_delete"]
+            >>> stream.update(annotations=annotations, replace=True)
+
+        This ensures that all of the keys and values for the annotations are
+        preserved except for the key to be deleted.
 
         Parameters
-        ----------
-        tags: dict
-            dict of tag information for the stream.
-        annotations: dict
-            dict of annotation information for the stream.
-        collection: str
-            The collection prefix for a stream
-        encoder: json.JSONEncoder or None
-            JSON encoder to class to use for annotation serializations, set to
-            None to prevent JSON encoding of the annotations.
-        replace: bool
-            Replace annotations vs the default upsert operation.  Choosing True is the
-            only way to remove annotation keys.
+        -----------
+        tags : dict, optional
+            Specify the tag key/value pairs as a dictionary to upsert or
+            replace. If None, the tags  will remain unchanged in the database.
+        annotations : dict, optional
+            Specify the annotations key/value pairs as a dictionary to upsert
+            or replace. If None, the annotations will remain unchanged in the
+            database.
+        collection : str, optional
+            Specify a new collection for the stream. If None, the collection
+            will remain unchanged.
+        encoder : json.JSONEncoder or None
+            JSON encoder class to use for annotation serialization. Set to None
+            to prevent JSON encoding of the annotations.
+        replace : bool, default: False
+            Replace all annotations or tags with the specified dictionaries
+            instead of performing the normal upsert operation. Specifying True
+            is the only way to remove annotation keys.
 
         Returns
         -------
         int
             The version of the metadata (separate from the version of the data)
+            also known as the "property version".
 
         """
         if tags is None and annotations is None and collection is None:
