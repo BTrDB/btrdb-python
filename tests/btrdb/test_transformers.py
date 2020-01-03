@@ -24,7 +24,7 @@ import numpy as np
 from pandas import Series, DataFrame, Index
 
 from btrdb.stream import Stream, StreamSet
-from btrdb.point import RawPoint
+from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import *
 
 ##########################################################################
@@ -183,10 +183,39 @@ class TestTransformers(object):
             assert series.index.dtype.name == 'int64'
 
     def test_to_dataframe(self, streamset):
+        """
+        assert to_dateframe works on RawPoints
+        """
         columns = ["time", "test/stream0", "test/stream1", "test/stream2", "test/stream3"]
         df = DataFrame(expected["to_dict"], columns=columns)
         df.set_index("time", inplace=True)
         assert to_dataframe(streamset).equals(df)
+
+    def test_to_dataframe_statpoints(self):
+        """
+        assert to_dateframe works on StatPoints
+        """
+        rows = [
+            [StatPoint(1500000000100000000, 0, 2.0, 2.5, 10, 1),StatPoint(1500000000300000000, 0, 4.0, 4.5, 11, 1),StatPoint(1500000000500000000, 0, 6.0, 6.5, 10, 1),StatPoint(1500000000700000000, 0, 8.0, 8.5, 11, 2)],
+            [StatPoint(1500000000100000000, 0, 3.0, 3.5, 11, 1),StatPoint(1500000000300000000, 0, 5.0, 5.5, 10, 1),StatPoint(1500000000500000000, 0, 7.0, 7.5, 10, 1),StatPoint(1500000000700000000, 0, 9.0, 9.5, 11, 2)],
+            [StatPoint(1500000000100000000, 0, 4.0, 4.5, 10, 1),StatPoint(1500000000300000000, 0, 6.0, 6.5, 11, 1),StatPoint(1500000000500000000, 0, 8.0, 8.5, 10, 1),StatPoint(1500000000700000000, 0, 10.0, 10.5, 11, 2)],
+            [StatPoint(1500000000100000000, 0, 5.0, 5.5, 11, 1),StatPoint(1500000000300000000, 0, 7.0, 7.5, 10, 1),StatPoint(1500000000500000000, 0, 9.0, 9.5, 10, 1),StatPoint(1500000000700000000, 0, 11.0, 11.5, 11, 2)],
+        ]
+        streams = []
+        for idx in range(4):
+            stream = Mock(Stream)
+            type(stream).collection = PropertyMock(return_value="test")
+            type(stream).name = PropertyMock(return_value="stream{}".format(idx))
+            streams.append(stream)
+
+        obj = StreamSet(streams)
+        obj.rows = Mock(return_value=rows)
+        df = obj.to_dataframe()
+
+        assert df["test/stream0"].tolist() == [2.0, 3.0, 4.0, 5.0]
+        assert df["test/stream1"].tolist() == [4.0, 5.0, 6.0, 7.0]
+        assert df["test/stream2"].tolist() == [6.0, 7.0, 8.0, 9.0]
+        assert df["test/stream3"].tolist() == [8.0, 9.0, 10.0, 11.0]
 
     def test_to_csv_as_path(self, streamset, tmpdir):
         path = os.path.join(tmpdir.dirname, "to_csv_test.csv")

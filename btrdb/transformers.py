@@ -117,7 +117,10 @@ def to_dict(stream_set):
             "time": _get_time_from_row(row),
         })
         for idx, col in enumerate(stream_names):
-            item[col] = row[idx].value if row[idx] else None
+            if row[idx].__class__.__name__ == "RawPoint":
+                item[col] = row[idx].value if row[idx] else None
+            else:
+                item[col] = row[idx].mean if row[idx] else None
         data.append(item)
     return data
 
