@@ -1,9 +1,9 @@
-pytest==4.0.2
-pytest-cov==2.6.0
+pytest==5.3.2
+pytest-cov==2.8.1
 pytest-flakes==4.0.0
-freezegun==0.3.11
+freezegun==0.3.12
 
 # dependencies for conversions
 numpy>=1.15
 pandas
-tabulate==0.8.3
+tabulate==0.8.6
