@@ -199,6 +199,24 @@ class TestTransformers(object):
             assert (result[idx] == expected[idx]).all()     # verify data
             assert result[idx].name == expected_names[idx]  # verify name
 
+    def test_to_series_statpoint(self, statpoint_streamset):
+        """
+        Asserts to_series produces correct results with statpoints
+        """
+        result = to_series(statpoint_streamset)
+        values = [2.0, 4.0, 6.0, 8.0]
+        index = [1500000000100000000, 1500000000300000000, 1500000000500000000, 1500000000700000000]
+        assert (result[0] == Series(values, index=index)).all()
+
+        values = [3.0, 5.0, 7.0, 9.0]
+        index = [1500000000100000000, 1500000000300000000, 1500000000500000000, 1500000000700000000]
+        assert (result[1] == Series(values, index=index)).all()
+
+        result = to_series(statpoint_streamset, agg="max")
+        values = [2.5, 4.5, 6.5, 8.5]
+        index = [1500000000100000000, 1500000000300000000, 1500000000500000000, 1500000000700000000]
+        assert (result[0] == Series(values, index=index)).all()
+
     def test_to_series_index_type(self, streamset):
         """
         assert default index type is 'datetime64[ns]'
@@ -293,4 +311,28 @@ class TestTransformers(object):
         assert result == expected["to_dict"]
 
     def test_to_table(self, streamset):
+        """
+        asserts to_table returns formatted ASCII table
+        """
         assert to_table(streamset) == expected["table"]
+
+
+    def test_to_table(self, statpoint_streamset):
+        """
+        asserts to_table handles statpoints with requested key
+        """
+        expected = """               time    test/stream0    test/stream1    test/stream2    test/stream3
+-------------------  --------------  --------------  --------------  --------------
+1500000000100000000               2               4               6               8
+1500000000300000000               3               5               7               9
+1500000000500000000               4               6               8              10
+1500000000700000000               5               7               9              11"""
+        assert to_table(statpoint_streamset) == expected
+
+        expected = """               time    test/stream0    test/stream1    test/stream2    test/stream3
+-------------------  --------------  --------------  --------------  --------------
+1500000000100000000             2.5             4.5             6.5             8.5
+1500000000300000000             3.5             5.5             7.5             9.5
+1500000000500000000             4.5             6.5             8.5            10.5
+1500000000700000000             5.5             7.5             9.5            11.5"""
+        assert to_table(statpoint_streamset, agg="max") == expected
