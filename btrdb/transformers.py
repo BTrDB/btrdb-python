@@ -29,10 +29,10 @@ def _get_time_from_row(row):
     raise Exception("Row contains no data")
 
 
-def _stream_names(stream_set):
+def _stream_names(streamset):
     return tuple(
         s.collection + "/" +  s.name \
-        for s in stream_set._streams
+        for s in streamset._streams
     )
 
 
@@ -40,7 +40,7 @@ def _stream_names(stream_set):
 ## Transform Functions
 ##########################################################################
 
-def to_series(stream_set, datetime64_index=True, agg="mean"):
+def to_series(streamset, datetime64_index=True, agg="mean"):
     """
     Returns a list of Pandas Series objects indexed by time
 
@@ -62,9 +62,9 @@ def to_series(stream_set, datetime64_index=True, agg="mean"):
         raise ImportError("Please install Pandas to use this transformation function.")
 
     result = []
-    stream_names = _stream_names(stream_set)
+    stream_names = _stream_names(streamset)
 
-    for idx, output in enumerate(stream_set.values()):
+    for idx, output in enumerate(streamset.values()):
         times, values = [], []
         for point in output:
             times.append(point.time)
@@ -82,7 +82,7 @@ def to_series(stream_set, datetime64_index=True, agg="mean"):
     return result
 
 
-def to_dataframe(stream_set, columns=None, agg="mean"):
+def to_dataframe(streamset, columns=None, agg="mean"):
     """
     Returns a Pandas DataFrame object indexed by time and using the values of a
     stream for each column.
@@ -103,14 +103,23 @@ def to_dataframe(stream_set, columns=None, agg="mean"):
     except ImportError:
         raise ImportError("Please install Pandas to use this transformation function.")
 
-    stream_names = _stream_names(stream_set)
+    stream_names = _stream_names(streamset)
     columns = columns if columns else ["time"] + list(stream_names)
-    return pd.DataFrame(to_dict(stream_set,agg=agg), columns=columns).set_index("time")
+    return pd.DataFrame(to_dict(streamset,agg=agg), columns=columns).set_index("time")
 
 
-def to_array(stream_set, agg="mean"):
+def to_array(streamset, agg="mean"):
     """
-    Returns a list of Numpy arrays (one per stream) containing point classes.
+    Returns a multidimensional numpy array (similar to a list of lists) containing point
+    classes.
+
+    Parameters
+    ----------
+    agg : str, default: "mean"
+        Specify the StatPoint field (e.g. aggregating function) to return for the
+        arrays. Must be one of "min", "mean", "max", "count", or "stddev". This
+        argument is ignored if RawPoint values are passed into the function.
+
     """
     try:
         import numpy as np
@@ -118,7 +127,7 @@ def to_array(stream_set, agg="mean"):
         raise ImportError("Please install Numpy to use this transformation function.")
 
     results = []
-    for points in stream_set.values():
+    for points in streamset.values():
         segment = []
         for point in points:
             if point.__class__.__name__ == "RawPoint":
@@ -129,7 +138,7 @@ def to_array(stream_set, agg="mean"):
     return np.array(results)
 
 
-def to_dict(stream_set, agg="mean"):
+def to_dict(streamset, agg="mean"):
     """
     Returns a list of OrderedDict for each time code with the appropriate
     stream data attached.
@@ -143,8 +152,8 @@ def to_dict(stream_set, agg="mean"):
 
     """
     data = []
-    stream_names = _stream_names(stream_set)
-    for row in stream_set.rows():
+    stream_names = _stream_names(streamset)
+    for row in streamset.rows():
         item = OrderedDict({
             "time": _get_time_from_row(row),
         })
@@ -157,7 +166,7 @@ def to_dict(stream_set, agg="mean"):
     return data
 
 
-def to_csv(stream_set, fobj, dialect=None, fieldnames=None, agg="mean"):
+def to_csv(streamset, fobj, dialect=None, fieldnames=None, agg="mean"):
     """
     Saves stream data as a CSV file.
 
@@ -194,17 +203,17 @@ def to_csv(stream_set, fobj, dialect=None, fieldnames=None, agg="mean"):
                 file_to_close.close()
 
     with open_path_or_file(fobj) as csvfile:
-        stream_names = _stream_names(stream_set)
+        stream_names = _stream_names(streamset)
         fieldnames = fieldnames if fieldnames else ["time"] + list(stream_names)
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect=dialect)
         writer.writeheader()
 
-        for item in to_dict(stream_set, agg=agg):
+        for item in to_dict(streamset, agg=agg):
             writer.writerow(item)
 
 
-def to_table(stream_set, agg="mean"):
+def to_table(streamset, agg="mean"):
     """
     Returns string representation of the data in tabular form using the tabulate
     library.
@@ -222,7 +231,7 @@ def to_table(stream_set, agg="mean"):
     except ImportError:
         raise ImportError("Please install tabulate to use this transformation function.")
 
-    return tabulate(stream_set.to_dict(agg=agg), headers="keys")
+    return tabulate(streamset.to_dict(agg=agg), headers="keys")
 
 
 ##########################################################################
