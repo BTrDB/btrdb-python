@@ -20,6 +20,7 @@ import json
 import uuid as uuidlib
 from copy import deepcopy
 from collections.abc import Sequence
+from datetime import timedelta
 
 from btrdb.utils.buffer import PointBuffer
 from btrdb.point import RawPoint, StatPoint
@@ -27,6 +28,7 @@ from btrdb.transformers import StreamSetTransformer
 from btrdb.exceptions import BTrDBError, InvalidOperation
 from btrdb.utils.timez import currently_as_ns, to_nanoseconds
 from btrdb.utils.conversion import AnnotationEncoder, AnnotationDecoder
+from btrdb.utils.general import pointwidth as pw
 
 
 ##########################################################################
@@ -122,7 +124,7 @@ class Stream(object):
                 return False
             raise bte
 
-    def count(self, start=MINIMUM_TIME, end=MAXIMUM_TIME, pointwidth=62, version=0):
+    def count(self, start=MINIMUM_TIME, end=MAXIMUM_TIME, pointwidth=62, precise=False, version=0):
         """
         Compute the total number of points in the stream
 
@@ -133,6 +135,9 @@ class Stream(object):
         timestamps may be adjusted if they are not powers of 2. For smaller
         windows of time, you may also need to adjust the pointwidth to ensure
         that the count granularity is captured appropriately.
+
+        Alternatively you can set the precise argument to True which will
+        give an exact count to the nanosecond but may be slower to execute.
 
         Parameters
         ----------
@@ -145,7 +150,14 @@ class Stream(object):
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
 
         pointwidth : int, default: 62
-            Specify the number of ns between data points (2**pointwidth)
+            Specify the number of ns between data points (2**pointwidth).  If the value
+            is too large for the time window than the next smallest, appropriate
+            pointwidth will be used.
+
+        precise : bool, default: False
+            Forces the use of a windows query instead of aligned_windows
+            to determine exact count down to the nanosecond.  This will
+            be some amount slower than the aligned_windows version.
 
         version : int, default: 0
             Version of the stream to query
@@ -155,8 +167,17 @@ class Stream(object):
         int
             The total number of points in the stream for the specified window.
         """
-        points = self.aligned_windows(start, end, pointwidth, version)
-        return sum([point.count for point, _ in points])
+
+        if not precise:
+            pointwidth = min(pointwidth, pw.from_nanoseconds(to_nanoseconds(end) - to_nanoseconds(start))-1)
+            points = self.aligned_windows(start, end, pointwidth, version)
+            return  sum([point.count for point, _ in points])
+
+        depth = 0
+        width = to_nanoseconds(end) - to_nanoseconds(start)
+        points = self.windows(start, end, width, depth, version)
+        return  sum([point.count for point, _ in points])
+
 
     @property
     def btrdb(self):
