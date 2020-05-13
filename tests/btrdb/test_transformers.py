@@ -234,10 +234,8 @@ class TestTransformers(object):
         """
         assert to_dateframe uses name lambda
         """
-        columns = ["stream0", "stream1", "stream2", "stream3"]
         result = streamset.to_series(name_callable=lambda s: s.name)
         assert [s.name for s in result] == ['stream0', 'stream1', 'stream2', 'stream3']
-
 
     def test_to_series_ignores_rawpoint_with_agg(self, streamset):
         """
@@ -245,7 +243,6 @@ class TestTransformers(object):
         """
         result = streamset.to_series(agg="mean")
         assert len(result) == 4
-
 
     def test_to_series_statpoint(self, statpoint_streamset):
         """
