@@ -20,7 +20,6 @@ import json
 import uuid as uuidlib
 from copy import deepcopy
 from collections.abc import Sequence
-from datetime import timedelta
 
 from btrdb.utils.buffer import PointBuffer
 from btrdb.point import RawPoint, StatPoint
@@ -888,14 +887,12 @@ class StreamSetBase(Sequence):
         params = self._params_from_filters()
         start = params.get("start", MINIMUM_TIME)
         end = params.get("end", MAXIMUM_TIME)
-
-        pointwidth = self.pointwidth if self.pointwidth is not None else 62
         versions = self._pinned_versions if self._pinned_versions else {}
-
         count = 0
+
         for s in self._streams:
             version = versions.get(s.uuid, 0)
-            count += s.count(start, end, pointwidth, version)
+            count += s.count(start, end, version=version)
 
         return count
 

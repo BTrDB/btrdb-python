@@ -593,13 +593,13 @@ class TestStream(object):
         endpoint.alignedWindows = Mock(return_value=windows)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
-        assert stream.count() == 26
+        assert stream.count(precise=False, version=0) == 26
         stream._btrdb.ep.alignedWindows.assert_called_once_with(
-            uu, MINIMUM_TIME, MAXIMUM_TIME, 62, 0
+            uu, MINIMUM_TIME, MAXIMUM_TIME, 60, 0
         )
 
-        stream.count(10, 1000, 48, 1200)
-        stream._btrdb.ep.alignedWindows.assert_called_with(uu, 10, 1000, 48, 1200)
+        stream.count(10, 1000, 8, version=1200)
+        stream._btrdb.ep.alignedWindows.assert_called_with(uu, 10, 1000, 8, 1200)
 
 
     ##########################################################################
@@ -1226,8 +1226,8 @@ class TestStreamSet(object):
         ])
 
         assert streams.count() == 52
-        endpoint.alignedWindows.assert_any_call(uu1, MINIMUM_TIME, MAXIMUM_TIME, 62, 0)
-        endpoint.alignedWindows.assert_any_call(uu2, MINIMUM_TIME, MAXIMUM_TIME, 62, 0)
+        endpoint.alignedWindows.assert_any_call(uu1, MINIMUM_TIME, MAXIMUM_TIME, 60, 0)
+        endpoint.alignedWindows.assert_any_call(uu2, MINIMUM_TIME, MAXIMUM_TIME, 60, 0)
 
 
     def test_count_filtered(self):
@@ -1242,14 +1242,18 @@ class TestStreamSet(object):
             Stream(btrdb=BTrDB(endpoint), uuid=uu1),
             Stream(btrdb=BTrDB(endpoint), uuid=uu2),
         ])
+        windows = [
+            [(StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6), StatPointProto(time=2,min=3,mean=4,max=5,count=6,stddev=7)), 42],
+            [(StatPointProto(time=3,min=4,mean=5,max=6,count=7,stddev=8), StatPointProto(time=4,min=5,mean=6,max=7,count=8,stddev=9)), 42],
+        ]
+        endpoint.alignedWindows = Mock(return_value=windows)
 
         streams = streams.filter(start=10, end=1000)
         streams.pin_versions({uu1: 42, uu2: 99})
-        streams.pointwidth = 48
 
         streams.count()
-        endpoint.alignedWindows.assert_any_call(uu1, 10, 1000, 48, 42)
-        endpoint.alignedWindows.assert_any_call(uu2, 10, 1000, 48, 99)
+        endpoint.alignedWindows.assert_any_call(uu1, 10, 1000, 8, 42)
+        endpoint.alignedWindows.assert_any_call(uu2, 10, 1000, 8, 99)
 
 
 
