@@ -151,7 +151,7 @@ def to_dataframe(streamset, columns=None, agg="mean", name_callable=None):
         stream_names = [[s.collection, s.name, prop] for s in streamset._streams for prop in _STAT_PROPERTIES]
         df.columns=pd.MultiIndex.from_tuples(stream_names)
     else:
-        df.columns = _stream_names(streamset, name_callable)
+        df.columns =  columns if columns else _stream_names(streamset, name_callable)
 
     return df
 

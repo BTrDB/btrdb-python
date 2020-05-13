@@ -313,9 +313,19 @@ class TestTransformers(object):
         """
         assert to_dateframe with column argument issues warning
         """
-        columns = ["time", "test/stream0", "test/stream1", "test/stream2", "test/stream3"]
+        columns = ["test/cats", "test/dogs", "test/horses", "test/fishes"]
         with pytest.deprecated_call():
             statpoint_streamset.to_dataframe(columns=columns)
+
+    def test_to_dataframe_column(self, statpoint_streamset):
+        """
+        assert to_dateframe with column argument actually renames columns
+        """
+        columns = ["test/cats", "test/dogs", "test/horses", "test/fishes"]
+        with pytest.deprecated_call():
+            df = statpoint_streamset.to_dataframe(columns=columns)
+
+        assert df.columns.tolist() == columns
 
     def test_to_dataframe_multindex(self, statpoint_streamset):
         """
