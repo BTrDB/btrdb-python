@@ -571,7 +571,7 @@ Now that we have our locally built packages, we can easily create the remaining 
 
   .. code-block:: bash
 
-    $ conda convert -f  --platform all ~/.pyenv/versions/anaconda3-2018.12/envs/btrdb-conda/conda-bld/osx-64/btrdb-5.2.2-py37_0.tar.bz2 -o platform-builds/
+    $ conda convert -f -o platform-builds/ --platform all ~/.pyenv/versions/anaconda3-2018.12/envs/btrdb-conda/conda-bld/osx-64/btrdb-5.2.2-py37_0.tar.bz2
     > Source platform 'osx-64' and target platform 'osx-64' are identical. Skipping conversion.
     > Converting btrdb-5.2.2-py37_0.tar.bz2 from osx-64 to linux-32
     > Converting btrdb-5.2.2-py37_0.tar.bz2 from osx-64 to linux-64
@@ -583,7 +583,7 @@ Now that we have our locally built packages, we can easily create the remaining 
     > Converting btrdb-5.2.2-py37_0.tar.bz2 from osx-64 to win-64
 
 
-    $ conda convert -f  --platform all ~/.pyenv/versions/anaconda3-2018.12/envs/btrdb-conda/conda-bld/osx-64/btrdb-5.2.2-py36_0.tar.bz2 -o platform-builds/
+    $ conda convert -f -o platform-builds/ --platform all ~/.pyenv/versions/anaconda3-2018.12/envs/btrdb-conda/conda-bld/osx-64/btrdb-5.2.2-py36_0.tar.bz2
     > Source platform 'osx-64' and target platform 'osx-64' are identical. Skipping conversion.
     > Converting btrdb-5.2.2-py36_0.tar.bz2 from osx-64 to linux-32
     > Converting btrdb-5.2.2-py36_0.tar.bz2 from osx-64 to linux-64
@@ -656,7 +656,7 @@ The remaining install packages were created using `conda convert` and so are eas
 
   .. code-block:: bash
 
-    $ find platform-builds/ -name *.bz2 -exec anaconda upload --user pingthings {} \;
+    $ find platform-builds/ -name "*.bz2" -exec anaconda upload --user pingthings {} \;
     > Using Anaconda API: https://api.anaconda.org
     > Using "pingthings" as upload username
     > Processing 'platform-builds//linux-64/btrdb-5.2.2-py36_0.tar.bz2'

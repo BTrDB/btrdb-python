@@ -92,7 +92,7 @@ def credentials_by_profile(name=None):
         raise ProfileNotFound("Profile `{}` not found in credentials file.".format(name))
 
     # rename api_key if needed and return
-    fragment = creds[name]["btrdb"]
+    fragment = creds[name].get("btrdb", {})
     if "api_key" in fragment:
         fragment["apikey"] = fragment.pop("api_key")
     return fragment

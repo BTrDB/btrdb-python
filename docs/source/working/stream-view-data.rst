@@ -9,12 +9,12 @@ related performance benefits.
 
 View Individual Data Points
 ----------------------------
-To view the values directly, call the :code:`values` method which will
+To view the values directly, call the :code:`Stream.values` method which will
 fully materialize the stream values at the stream version you specify (use the
 default value of zero as the latest version).  A :code:`start` and :code:`end`
 argument is required when making this request.
 
-Calling :code:`values` will return a series of :code:`tuple`, with each item containing a
+Calling :code:`Stream.values` will return a series of :code:`tuple`, with each item containing a
 :code:`RawPoint`, and version of the stream (:code:`int`).  As described in the
 API reference, a :code:`RawPoint` has both a :code:`time` and :code:`value`
 property.
@@ -31,6 +31,29 @@ property.
     >> RawPoint(1500000000200000000, 2.8)
     >> RawPoint(1500000000300000000, 3.66)
     ...
+
+
+Helpers for Dates/Times
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are interested in finding the closest point to a particular datetime, there
+is the :code:`Stream.nearest` method.  Alternatively, if you want to know the first or
+last points in a stream, you can call the :code:`Stream.earliest` and :code:`Stream.latest`
+methods.  These two are often useful if you would like to view all of the data
+within the stream using the :code:`Stream.windows` method below (it is not recommended that
+you query for all the data using the :code:`Stream.values` method due to the memory
+consumption implied).  Each of these three methods returns a tuple containing a
+RawPoint and the data version number.  The exact timestamp can be obtained from the
+RawPoint.  Keep in mind that all of these methods accept a :code:`version` argument so that
+you can ask for the earliest, latest, or nearest point from a previous version of the stream.
+
+.. code-block:: python
+
+    stream = db.stream_from_uuid("6f8ebaf0-78ea-416e-a0ff-5c3c5d83c279")
+    stream.earliest()
+    >> (RawPoint(1364860800000000000, 42516.03), 3934)
+    stream.earliest()[0].time
+    >> 1364860800000000000
 
 
 View Windows of Data
@@ -57,7 +80,7 @@ cover.
 
 aligned_windows
 ^^^^^^^^^^^^^^^^
-For statistical aggregates of your data, the :code:`aligned_windows` method is
+For statistical aggregates of your data, the :code:`Stream.aligned_windows` method is
 the fastest way to query your data. Each point returned is a statistical
 aggregate of all the raw data within a window of width 2^pointwidth
 nanoseconds.
@@ -103,7 +126,7 @@ with count == 0 will be omitted.
 
 windows
 ^^^^^^^^
-The :code:`windows` method of a Stream allows you to request windows of data
+The :code:`Stream.windows` method of a Stream allows you to request windows of data
 while specifying the precision of the data you require.  Each window will cover
 :code:`width` nanoseconds in length.  Precision of the result is determined by
 the :code:`depth` parameter such that each window will be accurate to

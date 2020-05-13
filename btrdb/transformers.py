@@ -18,10 +18,13 @@ Value transformation utilities
 import csv
 import contextlib
 from collections import OrderedDict
+from warnings import warn
 
 ##########################################################################
 ## Helper Functions
 ##########################################################################
+
+_STAT_PROPERTIES = ('min', 'mean', 'max', 'count', 'stddev')
 
 def _get_time_from_row(row):
     for item in row:
@@ -29,10 +32,14 @@ def _get_time_from_row(row):
     raise Exception("Row contains no data")
 
 
-def _stream_names(stream_set):
+def _stream_names(streamset, func):
+    """
+    private convenience function to come up with proper final stream names
+    before sending a collection of streams (dataframe, etc.) back to the
+    user.
+    """
     return tuple(
-        s.collection + "/" +  s.name \
-        for s in stream_set._streams
+        func(s) for s in streamset._streams
     )
 
 
@@ -40,7 +47,7 @@ def _stream_names(stream_set):
 ## Transform Functions
 ##########################################################################
 
-def to_series(stream_set, datetime64_index=True):
+def to_series(streamset, datetime64_index=True, agg="mean", name_callable=None):
     """
     Returns a list of Pandas Series objects indexed by time
 
@@ -50,20 +57,40 @@ def to_series(stream_set, datetime64_index=True):
         Directs function to convert Series index to np.datetime64[ns] or
         leave as np.int64.
 
+    agg : str, default: "mean"
+        Specify the StatPoint field (e.g. aggregating function) to create the Series
+        from. Must be one of "min", "mean", "max", "count", or "stddev". This
+        argument is ignored if RawPoint values are passed into the function.
+
+    name_callable : lambda, default: lambda s: s.collection + "/" +  s.name
+        Sprecify a callable that can be used to determine the series name given a
+        Stream object.
+
     """
     try:
         import pandas as pd
     except ImportError:
         raise ImportError("Please install Pandas to use this transformation function.")
 
-    result = []
-    stream_names = _stream_names(stream_set)
+    # TODO: allow this at some future point
+    if agg == "all":
+        raise AttributeError("cannot use 'all' as aggregate at this time")
 
-    for idx, output in enumerate(stream_set.values()):
+    if not callable(name_callable):
+        name_callable = lambda s: s.collection + "/" +  s.name
+
+
+    result = []
+    stream_names = _stream_names(streamset, name_callable)
+
+    for idx, output in enumerate(streamset.values()):
         times, values = [], []
-        for item in output:
-            times.append(item.time)
-            values.append(item.value)
+        for point in output:
+            times.append(point.time)
+            if point.__class__.__name__ == "RawPoint":
+                values.append(point.value)
+            else:
+                values.append(getattr(point, agg))
 
         if datetime64_index:
             times = pd.Index(times, dtype='datetime64[ns]')
@@ -73,7 +100,8 @@ def to_series(stream_set, datetime64_index=True):
         ))
     return result
 
-def to_dataframe(stream_set, columns=None):
+
+def to_dataframe(streamset, columns=None, agg="mean", name_callable=None):
     """
     Returns a Pandas DataFrame object indexed by time and using the values of a
     stream for each column.
@@ -81,48 +109,128 @@ def to_dataframe(stream_set, columns=None):
     Parameters
     ----------
     columns: sequence
-        column names to use for DataFrame
+        column names to use for DataFrame.  Deprecated and not compatible with name_callable.
+
+    agg : str, default: "mean"
+        Specify the StatPoint field (e.g. aggregating function) to create the Series
+        from. Must be one of "min", "mean", "max", "count", "stddev", or "all". This
+        argument is ignored if not using StatPoints.
+
+    name_callable : lambda, default: lambda s: s.collection + "/" +  s.name
+        Sprecify a callable that can be used to determine the series name given a
+        Stream object.  This is not compatible with agg == "all" at this time
+
+
     """
     try:
         import pandas as pd
     except ImportError:
         raise ImportError("Please install Pandas to use this transformation function.")
 
-    stream_names = _stream_names(stream_set)
-    columns = columns if columns else ["time"] + list(stream_names)
-    return pd.DataFrame(to_dict(stream_set), columns=columns).set_index("time")
+    # deprecation warning added in v5.8
+    if columns:
+        warn("the columns argument is deprecated and will be removed in a future release", DeprecationWarning, stacklevel=2)
+
+    # TODO: allow this at some future point
+    if agg == "all" and name_callable is not None:
+        raise AttributeError("cannot provide name_callable when using 'all' as aggregate at this time")
+
+    # do not allow agg="all" with RawPoints
+    if agg == "all" and streamset.allow_window:
+        agg=""
+
+    # default arg values
+    if not callable(name_callable):
+        name_callable = lambda s: s.collection + "/" +  s.name
 
 
-def to_array(stream_set):
+    df = pd.DataFrame(to_dict(streamset,agg=agg))
+    df = df.set_index("time")
+
+    if agg == "all" and not streamset.allow_window:
+        stream_names = [[s.collection, s.name, prop] for s in streamset._streams for prop in _STAT_PROPERTIES]
+        df.columns=pd.MultiIndex.from_tuples(stream_names)
+    else:
+        df.columns =  columns if columns else _stream_names(streamset, name_callable)
+
+    return df
+
+
+def to_array(streamset, agg="mean"):
     """
-    Returns a list of Numpy arrays (one per stream) containing point classes.
+    Returns a multidimensional numpy array (similar to a list of lists) containing point
+    classes.
+
+    Parameters
+    ----------
+    agg : str, default: "mean"
+        Specify the StatPoint field (e.g. aggregating function) to return for the
+        arrays. Must be one of "min", "mean", "max", "count", or "stddev". This
+        argument is ignored if RawPoint values are passed into the function.
+
     """
     try:
         import numpy as np
     except ImportError:
         raise ImportError("Please install Numpy to use this transformation function.")
 
-    return [np.array(output) for output in stream_set.values()]
+    # TODO: allow this at some future point
+    if agg == "all":
+        raise AttributeError("cannot use 'all' as aggregate at this time")
+
+    results = []
+    for points in streamset.values():
+        segment = []
+        for point in points:
+            if point.__class__.__name__ == "RawPoint":
+                segment.append(point.value)
+            else:
+                segment.append(getattr(point, agg))
+        results.append(segment)
+    return np.array(results)
 
 
-def to_dict(stream_set):
+def to_dict(streamset, agg="mean", name_callable=None):
     """
     Returns a list of OrderedDict for each time code with the appropriate
     stream data attached.
+
+    Parameters
+    ----------
+    agg : str, default: "mean"
+        Specify the StatPoint field (e.g. aggregating function) to constrain dict
+        keys. Must be one of "min", "mean", "max", "count", or "stddev". This
+        argument is ignored if RawPoint values are passed into the function.
+
+    name_callable : lambda, default: lambda s: s.collection + "/" +  s.name
+        Sprecify a callable that can be used to determine the series name given a
+        Stream object.
+
     """
+    if not callable(name_callable):
+        name_callable = lambda s: s.collection + "/" +  s.name
+
     data = []
-    stream_names = _stream_names(stream_set)
-    for row in stream_set.rows():
+    stream_names = _stream_names(streamset, name_callable)
+
+    for row in streamset.rows():
         item = OrderedDict({
             "time": _get_time_from_row(row),
         })
         for idx, col in enumerate(stream_names):
-            item[col] = row[idx].value if row[idx] else None
+            if row[idx].__class__.__name__ == "RawPoint":
+                item[col] = row[idx].value if row[idx] else None
+            else:
+                if agg == "all":
+                    for stat in _STAT_PROPERTIES:
+                        item["{}-{}".format(col, stat)] = getattr(row[idx], stat) if row[idx] else None
+                else:
+                    item[col] = getattr(row[idx], agg) if row[idx] else None
         data.append(item)
     return data
 
 
-def to_csv(stream_set, fobj, dialect=None, fieldnames=None):
+def to_csv(streamset, fobj, dialect=None, fieldnames=None, agg="mean", name_callable=None):
     """
     Saves stream data as a CSV file.
 
@@ -139,7 +247,22 @@ def to_csv(stream_set, fobj, dialect=None, fieldnames=None):
         A sequence of strings to use as fieldnames in the CSV header.  See
         Python's csv module for more information.
 
+    agg : str, default: "mean"
+        Specify the StatPoint field (e.g. aggregating function) to return when
+        limiting results. Must be one of "min", "mean", "max", "count", or "stddev".
+        This argument is ignored if RawPoint values are passed into the function.
+
+    name_callable : lambda, default: lambda s: s.collection + "/" +  s.name
+        Sprecify a callable that can be used to determine the series name given a
+        Stream object.
     """
+
+    # TODO: allow this at some future point
+    if agg == "all":
+        raise AttributeError("cannot use 'all' as aggregate at this time")
+
+    if not callable(name_callable):
+        name_callable = lambda s: s.collection + "/" +  s.name
 
     @contextlib.contextmanager
     def open_path_or_file(path_or_file):
@@ -155,27 +278,46 @@ def to_csv(stream_set, fobj, dialect=None, fieldnames=None):
                 file_to_close.close()
 
     with open_path_or_file(fobj) as csvfile:
-        stream_names = _stream_names(stream_set)
+        stream_names = _stream_names(streamset, name_callable)
         fieldnames = fieldnames if fieldnames else ["time"] + list(stream_names)
 
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect=dialect)
         writer.writeheader()
 
-        for item in to_dict(stream_set):
+        for item in to_dict(streamset, agg=agg):
             writer.writerow(item)
 
 
-def to_table(stream_set):
+def to_table(streamset, agg="mean", name_callable=None):
     """
     Returns string representation of the data in tabular form using the tabulate
     library.
+
+    Parameters
+    ----------
+    agg : str, default: "mean"
+        Specify the StatPoint field (e.g. aggregating function) to create the Series
+        from. Must be one of "min", "mean", "max", "count", or "stddev". This
+        argument is ignored if RawPoint values are passed into the function.
+
+    name_callable : lambda, default: lambda s: s.collection + "/" +  s.name
+        Sprecify a callable that can be used to determine the column name given a
+        Stream object.
+
     """
     try:
         from tabulate import tabulate
     except ImportError:
         raise ImportError("Please install tabulate to use this transformation function.")
 
-    return tabulate(stream_set.to_dict(), headers="keys")
+    # TODO: allow this at some future point
+    if agg == "all":
+        raise AttributeError("cannot use 'all' as aggregate at this time")
+
+    if not callable(name_callable):
+        name_callable = lambda s: s.collection + "/" +  s.name
+
+    return tabulate(streamset.to_dict(agg=agg, name_callable=name_callable), headers="keys")
 
 
 ##########################################################################
