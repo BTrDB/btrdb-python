@@ -23,6 +23,7 @@ import uuid as uuidlib
 import grpc
 from grpc._cython.cygrpc import CompressionAlgorithm
 
+from btrdb.endpoint import Endpoint
 from btrdb.stream import Stream, StreamSet
 from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.conversion import to_uuid
@@ -100,8 +101,17 @@ class BTrDB(object):
     The primary server connection object for communicating with a BTrDB server.
     """
 
-    def __init__(self, endpoint):
+    def __init__(self, endpoint, conn_params=None):
+        # handle reinstantiation after reduce function
+        if isinstance(endpoint, dict):
+            conn_params = endpoint
+            endpoint = Endpoint(Connection(endpoint.get("endpoints"), endpoint.get("apikey")).channel)
+
         self.ep = endpoint
+        self.conn_params = conn_params
+
+    def __reduce__(self):
+        return(self.__class__, (self.conn_params,))
 
     def query(self, stmt, params=[]):
         """

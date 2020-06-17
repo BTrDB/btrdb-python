@@ -38,7 +38,7 @@ BTRDB_PROFILE = "BTRDB_PROFILE"
 ##########################################################################
 
 def _connect(endpoints=None, apikey=None):
-    return BTrDB(Endpoint(Connection(endpoints, apikey=apikey).channel))
+    return BTrDB(Endpoint(Connection(endpoints, apikey=apikey).channel), conn_params={"endpoints":endpoints, "apikey":apikey})
 
 def connect(conn_str=None, apikey=None, profile=None):
     """

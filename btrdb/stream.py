@@ -71,9 +71,12 @@ class Stream(object):
         if db_values:
             bad_keys = ", ".join(db_values.keys())
             raise TypeError("got unexpected db_values argument(s) '{}'".format(bad_keys))
-
+        
         self._btrdb = btrdb
         self._uuid = uuid
+
+    def __reduce__(self):
+        return(self.__class__, (self._btrdb, self._uuid))
 
     def refresh_metadata(self):
         """
