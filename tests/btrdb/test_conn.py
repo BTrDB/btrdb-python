@@ -247,3 +247,19 @@ class TestBTrDB(object):
         annotations = {"size": "large"}
         streams = conn.streams_in_collection(annotations=annotations)
         assert endpoint.lookupStreams.called
+
+    def test_btrdb_reduce(self):
+        """
+        Test __reduce__ function of BTrDB to assert whether it succesfully deconstruct 
+        and reconstructs the BTrDB object
+        """
+        conn_dict = {"endpoints": "test.endpoint:4411", "apikey": "test_apikey"}
+        conn = BTrDB(conn_dict)
+        assert isinstance(conn.__reduce__()[0], BTrDB.__class__)
+        assert isinstance(conn.__reduce__()[1][0], dict)
+        assert isinstance(BTrDB(conn.__reduce__()[1][0]), BTrDB)
+        assert conn.__reduce__()[1][0]["endpoints"] == conn_dict["endpoints"]
+        assert conn.__reduce__()[1][0]["apikey"] == conn_dict["apikey"]
+
+
+

@@ -98,6 +98,20 @@ class TestStream(object):
         assert stream.__repr__() == expected
         assert stream.__str__() == expected
 
+    def test_stream_reduce(self, stream1):
+        """
+        Test __reduce__ function of Stream to assert whether it succesfully deconstruct 
+        and reconstructs the Stream object
+        """
+
+        conn = BTrDB({"endpoints": "test.endpoint:4411", "apikey": "test_apikey"})
+        stream = Stream(conn, stream1.uuid)
+        assert isinstance(stream.__reduce__()[0], Stream.__class__)
+        assert isinstance(stream.__reduce__()[1][0], BTrDB)
+        assert stream.__reduce__()[1][1] == stream1.uuid
+        assert(Stream(*stream.__reduce__()[1])._uuid == stream1.uuid)
+        assert(isinstance(Stream(*stream.__reduce__()[1])._btrdb, BTrDB))
+
 
     def test_refresh_metadata(self):
         """
