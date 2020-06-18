@@ -25,15 +25,16 @@ class TestPointwidth(object):
         (timedelta(days=30), 51),
         (timedelta(days=7), 49),
         (timedelta(days=1), 46),
-        (timedelta(hours=4), 45),
-        (timedelta(minutes=15), 40),
-        (timedelta(seconds=30), 29),
+        (timedelta(hours=4), 43),
+        (timedelta(minutes=15), 39),
+        (timedelta(seconds=30), 34),
     ])
-    def test_from_nanoseconds(self, delta, expected):
+
+    def test_from_timedelta(self, delta, expected):
         """
-        Test getting the closest point width from nanoseconds
+        Test getting the closest point width from a timedelta
         """
-        assert pointwidth.from_nanoseconds(nsec) == expected
+        assert pointwidth.from_timedelta(delta) == expected
 
     @pytest.mark.parametrize("nsec, expected", [
         (ns_delta(days=365), 54),
@@ -44,6 +45,7 @@ class TestPointwidth(object):
         (ns_delta(minutes=30), 40),
         (ns_delta(seconds=1), 29),
     ])
+
     def test_from_nanoseconds(self, nsec, expected):
         """
         Test getting the closest point width from nanoseconds
