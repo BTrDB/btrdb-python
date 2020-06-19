@@ -20,6 +20,7 @@ import json
 import uuid as uuidlib
 from copy import deepcopy
 from collections.abc import Sequence
+import pickle
 
 from btrdb.utils.buffer import PointBuffer
 from btrdb.point import RawPoint, StatPoint
@@ -784,6 +785,46 @@ class Stream(object):
         """
         self._btrdb.ep.flush(self._uuid)
 
+    def dump(self, path):
+        """
+        Save Stream object as a pickle binary file, at the location specified by path
+
+        Parameters
+        ----------
+        path : str
+            Path to save stream object
+        """
+        pickle.dump(self, open(path, "wb"))
+    
+    @classmethod
+    def load(cls, path):
+        """
+        Load Stream object from a pickle binary file, saved at the location specified by path
+
+        Parameters
+        ----------
+        path : str
+            Path to save stream object
+        
+        Returns
+        -------
+        Stream:
+            Stream object loaded from pickle file
+        
+        Raises
+        ------
+        TypeError Object saved in file is not of type Stream
+            The object being loaded should be a stream
+        """
+        stream = pickle.load(open(path, "rb"))
+
+        if isinstance(stream, cls):
+            return cls(stream._btrdb, stream._uuid)
+        else:
+            raise TypeError("Object saved in file is not of type Stream")
+
+        
+
     def __repr__(self):
         return "<Stream collection={} name={}>".format(self.collection,
             self.name)
@@ -1313,6 +1354,43 @@ class StreamSetBase(Sequence):
     def __len__(self):
         return len(self._streams)
 
+    def dump(self, path):
+        """
+        Save StreamSet object as a pickle binary file, at the location specified by path
+
+        Parameters
+        ----------
+        path : str
+            Path to save stream object
+        """
+        pickle.dump(self, open(path, "wb"))
+    
+    @classmethod
+    def load(cls, path):
+        """
+        Load StreamSet object from a pickle binary file, saved at the location specified by path
+
+        Parameters
+        ----------
+        path : str
+            Path to save stream object
+        
+        Returns
+        -------
+        Stream:
+            Stream object loaded from pickle file
+        
+        Raises
+        ------
+        TypeError Object saved in file is not of type StreamSet
+            The object being loaded should be a stream
+        """
+        streams = pickle.load(open(path, "rb"))
+
+        if isinstance(streams, cls):
+            return cls(streams)
+        else:
+            raise TypeError("Object saved in file is not of type StreamSet")
 
 class StreamSet(StreamSetBase, StreamSetTransformer):
     """

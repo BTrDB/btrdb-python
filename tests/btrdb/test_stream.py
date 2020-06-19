@@ -68,6 +68,10 @@ def stream2():
     stream.annotations = Mock(return_value=({"owner": "ABC", "color": "orange"}, 22))
     return stream
 
+@pytest.fixture(scope="session")
+def pickle_folder(tmpdir_factory):
+    fn = tmpdir_factory.mktemp("data")
+    return fn
 
 ##########################################################################
 ## Stream Tests
@@ -100,8 +104,9 @@ class TestStream(object):
 
     def test_stream_reduce(self, stream1):
         """
-        Test __reduce__ function of Stream to assert whether it succesfully deconstruct 
-        and reconstructs the Stream object
+        Test __reduce__ function of Stream to assert whether it succesfully deconstruct
+        and reconstructs the Stream object, this test ensures that Stream.load(), Stream.dump(),
+        StreamSet.load() and StreamSet.dump() work. 
         """
 
         conn = BTrDB({"endpoints": "test.endpoint:4411", "apikey": "test_apikey"})
@@ -111,7 +116,6 @@ class TestStream(object):
         assert stream.__reduce__()[1][1] == stream1.uuid
         assert(Stream(*stream.__reduce__()[1])._uuid == stream1.uuid)
         assert(isinstance(Stream(*stream.__reduce__()[1])._btrdb, BTrDB))
-
 
     def test_refresh_metadata(self):
         """
