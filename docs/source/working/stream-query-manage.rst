@@ -60,7 +60,7 @@ detail.
 
 Querying Metadata
 -----------------
-Finally, you can query for metadata using standard SQL although at the moment, only the
+You can query for metadata using standard SQL although at the moment, only the
 `streams` table is available.  SQL queries can be submitted using the `query`
 method which accepts both a `stmt` and `params` argument.  The `stmt` should
 contain the SQL you'd like executed with parameter placeholders such as `$1` or
@@ -97,3 +97,35 @@ schema of the streams table as follows.
 +------------------+------------------------+-----------+
 | annotations      | hstore                 |           |
 +------------------+------------------------+-----------+
+
+Save/Load Stream using binary object
+--------------------------
+Finally, you can save and load a Stream object in a binary file using the :code:`dump`
+and :code:`load` methods. The methods are analogous to pickle.dump and pickle.load.
+
+.. code-block:: python
+
+    from btrdb import stream.Stream
+    conn = btrdb.connect()
+    stream = conn.stream_from_uuid("71466a91-dcfe-42ea-9e88-87c51f847942")
+    
+    # saving stream in binary file
+    stream.dump("stream_objects/my_stream.p")
+
+    # loading stream from binary file
+    stream = Stream.load("stream_objects/my_stream.p")
+
+The dump and load methods are also available for the StreamSet object.
+
+.. code-block:: python
+    
+    from btrdb import stream.StreamSet
+    conn = btrdb.connect()
+    streams = conn.streams(["71466a91-dcfe-42ea-9e88-87c51f847942", "71466a91-dcfe-42ea-9e88-87c51f847942"])
+    
+    # saving stream set in binary file
+    streams.dump("stream_objects/my_streamset.p")
+    
+    # loading stream set from binary file
+    stream = StreamSet.load("stream_objects/my_streamset.p")
+
