@@ -68,11 +68,6 @@ def stream2():
     stream.annotations = Mock(return_value=({"owner": "ABC", "color": "orange"}, 22))
     return stream
 
-@pytest.fixture(scope="session")
-def pickle_folder(tmpdir_factory):
-    fn = tmpdir_factory.mktemp("data")
-    return fn
-
 ##########################################################################
 ## Stream Tests
 ##########################################################################
