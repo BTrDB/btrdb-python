@@ -243,3 +243,20 @@ display or printing.  Some examples are shown below.
     >> 1500000000700000000                  8
     >> 1500000000800000000                                     9
     >> 1500000000900000000                 10
+
+
+Save/Load StreamSet using binary object
+---------------------------------------
+The stream's dump and load methods are also available for the StreamSet object.
+
+.. code-block:: python
+    
+    from btrdb import stream.StreamSet
+    conn = btrdb.connect()
+    streams = conn.streams(["71466a91-dcfe-42ea-9e88-87c51f847942", "71466a91-dcfe-42ea-9e88-87c51f847942"])
+    
+    # saving stream set in binary file
+    streams.dump("stream_objects/my_streamset.p")
+    
+    # loading stream set from binary file
+    stream = StreamSet.load("stream_objects/my_streamset.p", conn)

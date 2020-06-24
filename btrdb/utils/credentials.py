@@ -85,7 +85,7 @@ def credentials_by_profile(name=None):
         name = os.environ.get("BTRDB_PROFILE", 'default')
 
     # load from credentials yaml file
-    creds = load_credentials_from_file()
+    creds = load_credentials_from_file() or {}
     if name not in creds.keys():
         if name == 'default':
             return {}

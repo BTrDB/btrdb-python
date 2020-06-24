@@ -37,8 +37,8 @@ BTRDB_PROFILE = "BTRDB_PROFILE"
 ## Functions
 ##########################################################################
 
-def _connect(endpoints=None, apikey=None):
-    return BTrDB(Endpoint(Connection(endpoints, apikey=apikey).channel), conn_params={"endpoints":endpoints, "apikey":apikey})
+def _connect(endpoints=None, apikey=None, conn_params=None):
+    return BTrDB(Endpoint(Connection(endpoints, apikey=apikey).channel), conn_params=conn_params)
 
 def connect(conn_str=None, apikey=None, profile=None):
     """
@@ -70,12 +70,12 @@ def connect(conn_str=None, apikey=None, profile=None):
 
     # use specific profile if requested
     if profile:
-        return _connect(**credentials_by_profile(profile))
+        return _connect(**credentials_by_profile(profile), conn_params={"profile":profile})
 
     # resolve credentials using combination of arguments, env
     creds = credentials(conn_str, apikey)
     if "endpoints" in creds:
-        return _connect(**creds)
+        return _connect(**creds, conn_params={"conn_str": conn_str})
 
     raise ConnectionError("Could not determine credentials to use.")
 

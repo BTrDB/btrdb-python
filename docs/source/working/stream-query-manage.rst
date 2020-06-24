@@ -99,7 +99,7 @@ schema of the streams table as follows.
 +------------------+------------------------+-----------+
 
 Save/Load Stream using binary object
---------------------------
+------------------------------------
 Finally, you can save and load a Stream object in a binary file using the :code:`dump`
 and :code:`load` methods. The methods are analogous to pickle.dump and pickle.load.
 
@@ -113,19 +113,5 @@ and :code:`load` methods. The methods are analogous to pickle.dump and pickle.lo
     stream.dump("stream_objects/my_stream.p")
 
     # loading stream from binary file
-    stream = Stream.load("stream_objects/my_stream.p")
-
-The dump and load methods are also available for the StreamSet object.
-
-.. code-block:: python
-    
-    from btrdb import stream.StreamSet
-    conn = btrdb.connect()
-    streams = conn.streams(["71466a91-dcfe-42ea-9e88-87c51f847942", "71466a91-dcfe-42ea-9e88-87c51f847942"])
-    
-    # saving stream set in binary file
-    streams.dump("stream_objects/my_streamset.p")
-    
-    # loading stream set from binary file
-    stream = StreamSet.load("stream_objects/my_streamset.p")
+    stream = Stream.load("stream_objects/my_stream.p", conn)
 

@@ -27,6 +27,7 @@ from btrdb.endpoint import Endpoint
 from btrdb.stream import Stream, StreamSet
 from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.conversion import to_uuid
+from btrdb.utils.credentials import credentials_by_profile, credentials
 from btrdb.exceptions import NotFound
 
 ##########################################################################
@@ -105,13 +106,47 @@ class BTrDB(object):
         # handle reinstantiation after reduce function
         if isinstance(endpoint, dict):
             conn_params = endpoint
-            endpoint = Endpoint(Connection(endpoint.get("endpoints"), endpoint.get("apikey")).channel)
+            endpoint = self._reconnect(**conn_params)
+            # endpoint = Endpoint(Connection(endpoint.get("endpoints"), endpoint.get("apikey")).channel)
 
         self.ep = endpoint
         self.conn_params = conn_params
 
     def __reduce__(self):
         return(self.__class__, (self.conn_params,))
+
+    def _reconnect(self, conn_str=None, profile=None):
+        """
+        Re-instantiate BTrDB Endpoint, used after BTrDB.__reduce__ function when re-building object.
+
+        Parameters
+        ----------
+        conn_str: str, default=None
+            The address and port of the cluster to connect to, e.g. `192.168.1.1:4411`.
+            If set to None, will look in the environment variable `$BTRDB_ENDPOINTS`
+            (recommended).
+
+        profile: str, default=None
+            The name of a profile containing the required connection information as
+            found in the user's predictive grid credentials file
+            `~/.predictivegrid/credentials.yaml`.
+
+        Returns
+        -------
+        endpoint : Endpoint
+            An instance of the BTrDB Endpoint used in the BTrDB object.
+        """
+        # use specific profile if requested
+        if profile:
+            creds = credentials_by_profile(profile)
+            return Endpoint(Connection(creds.get("endpoints"), apikey=creds.get("apikey")).channel)
+
+        # resolve credentials using combination of arguments, env
+        creds = credentials(conn_str)
+        if "endpoints" in creds:
+            return Endpoint(Connection(creds.get("endpoints"), apikey=creds.get("apikey")).channel)
+
+        raise ConnectionError("Could not determine credentials to use when reconstructing BTrDB object. Consider using profile file or environment variables.")
 
     def query(self, stmt, params=[]):
         """

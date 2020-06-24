@@ -27,7 +27,7 @@ from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import StreamSetTransformer
 from btrdb.exceptions import BTrDBError, InvalidOperation
 from btrdb.utils.timez import currently_as_ns, to_nanoseconds
-from btrdb.utils.conversion import AnnotationEncoder, AnnotationDecoder
+from btrdb.utils.conversion import AnnotationEncoder, AnnotationDecoder, to_uuid
 from btrdb.utils.general import pointwidth as pw
 
 
@@ -794,10 +794,10 @@ class Stream(object):
         path : str
             Path to save stream object
         """
-        pickle.dump(self, open(path, "wb"))
+        pickle.dump(self._uuid, open(path, "wb"))
     
     @classmethod
-    def load(cls, path):
+    def load(cls, path, btrdb):
         """
         Load Stream object from a pickle binary file, saved at the location specified by path
 
@@ -805,7 +805,9 @@ class Stream(object):
         ----------
         path : str
             Path to save stream object
-        
+        btrdb : BTrDB object
+            BTrDB connection used to reinstantiate stream object
+
         Returns
         -------
         Stream:
@@ -816,12 +818,11 @@ class Stream(object):
         TypeError Object saved in file is not of type Stream
             The object being loaded should be a stream
         """
-        stream = pickle.load(open(path, "rb"))
-
-        if isinstance(stream, cls):
-            return cls(stream._btrdb, stream._uuid)
-        else:
-            raise TypeError("Object saved in file is not of type Stream")
+        uuid = pickle.load(open(path, "rb"))
+        try: 
+            cls(btrdb, to_uuid(uuid))
+        except TypeError:
+            raise TypeError("Object saved in file cannot be parsed to a Stream")
 
         
 
@@ -1363,10 +1364,14 @@ class StreamSetBase(Sequence):
         path : str
             Path to save stream object
         """
-        pickle.dump(self, open(path, "wb"))
+        pickle.dump({"uuids":[stream._uuid for stream in self._streams],
+                     "filters": self.filters,
+                     "pointwidth": self.pointwidth,
+                     "width": self.width,
+                     "depth": self.depth}, open(path, "wb"))
     
     @classmethod
-    def load(cls, path):
+    def load(cls, path, btrdb):
         """
         Load StreamSet object from a pickle binary file, saved at the location specified by path
 
@@ -1374,23 +1379,31 @@ class StreamSetBase(Sequence):
         ----------
         path : str
             Path to save stream object
-        
+        btrdb : BTrDB object
+            BTrDB connection used to reinstantiate stream object
+
         Returns
         -------
         Stream:
-            Stream object loaded from pickle file
-        
+            Stream object loaded from pickle file 
+
         Raises
         ------
-        TypeError Object saved in file is not of type StreamSet
-            The object being loaded should be a stream
+        TypeError Object saved in file cannot be parsed to a StreamSet
         """
         streams = pickle.load(open(path, "rb"))
 
-        if isinstance(streams, cls):
-            return cls(streams)
-        else:
-            raise TypeError("Object saved in file is not of type StreamSet")
+        if isinstance(streams, dict):
+            if  isinstance(streams.get("uuids", None), list):
+                if all(isinstance(uuid, str) for uuid in streams["uuids"]):
+
+                    stream_set = cls([Stream(btrdb, uuid) for uuid in streams["uuids"]])
+
+                    for key in ["filters", "pointwidth", "width", "depth"]:
+                        setattr(stream_set, key, streams.get(key, None))
+                    return stream_set
+
+        raise TypeError("Object saved in file cannot be parsed to a StreamSet")
 
 class StreamSet(StreamSetBase, StreamSetTransformer):
     """
