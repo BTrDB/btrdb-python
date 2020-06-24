@@ -104,13 +104,12 @@ class TestStream(object):
         StreamSet.load() and StreamSet.dump() work. 
         """
 
-        conn = BTrDB({"endpoints": "test.endpoint:4411", "apikey": "test_apikey"})
-        stream = Stream(conn, stream1.uuid)
+        stream = Stream(Mock(BTrDB), stream1.uuid)
         assert isinstance(stream.__reduce__()[0], Stream.__class__)
         assert isinstance(stream.__reduce__()[1][0], BTrDB)
         assert stream.__reduce__()[1][1] == stream1.uuid
         assert(Stream(*stream.__reduce__()[1])._uuid == stream1.uuid)
-        assert(isinstance(Stream(*stream.__reduce__()[1])._btrdb, BTrDB))
+        assert(isinstance(Stream(*stream.__reduce__()[1])._btrdb, Mock))
 
     def test_refresh_metadata(self):
         """

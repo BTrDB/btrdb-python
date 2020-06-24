@@ -79,7 +79,7 @@ class TestConnect(object):
             "endpoints": "a", "apikey": "b"
         }
         connect("cat", "dog")
-        mock_connect.assert_called_once_with(endpoints="cat", apikey="dog")
+        mock_connect.assert_called_once_with(endpoints="cat", apikey="dog", conn_params={"conn_str":"cat"})
 
     @patch('btrdb.utils.credentials.credentials_by_profile')
     @patch('btrdb.utils.credentials.credentials_by_env')
@@ -95,7 +95,7 @@ class TestConnect(object):
             "endpoints": "c", "apikey": "d"
         }
         connect()
-        mock_connect.assert_called_once_with(endpoints="c", apikey="d")
+        mock_connect.assert_called_once_with(endpoints="c", apikey="d", conn_params={"conn_str": None})
 
     @patch('btrdb.utils.credentials.credentials_by_profile')
     @patch('btrdb.Connection')

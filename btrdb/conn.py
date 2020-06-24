@@ -107,7 +107,6 @@ class BTrDB(object):
         if isinstance(endpoint, dict):
             conn_params = endpoint
             endpoint = self._reconnect(**conn_params)
-            # endpoint = Endpoint(Connection(endpoint.get("endpoints"), endpoint.get("apikey")).channel)
 
         self.ep = endpoint
         self.conn_params = conn_params
