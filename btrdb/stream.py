@@ -820,7 +820,7 @@ class Stream(object):
         """
         uuid = pickle.load(open(path, "rb"))
         try: 
-            cls(btrdb, to_uuid(uuid))
+            return cls(btrdb, to_uuid(uuid))
         except TypeError:
             raise TypeError("Object saved in file cannot be parsed to a Stream")
 
