@@ -58,7 +58,7 @@ class pointwidth(object):
         specified duration. Because pointwidths are in powers of 2, be sure to check
         that the returned real duration is sufficient.
         """
-        return cls.from_nanoseconds(delta.total_seconds()*1e9)
+        return cls.from_nanoseconds(int(delta.total_seconds()*1e9))
 
     @classmethod
     def from_nanoseconds(cls, nsec):
