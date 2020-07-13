@@ -104,8 +104,8 @@ Finally, you can save and load a Stream object in a binary file using the :code:
 and :code:`load` methods. The methods are analogous to pickle.dump and pickle.load.
 
 .. code-block:: python
-
-    from btrdb import stream.Stream
+    import btrdb
+    from btrdb.stream import Stream
     conn = btrdb.connect()
     stream = conn.stream_from_uuid("71466a91-dcfe-42ea-9e88-87c51f847942")
     

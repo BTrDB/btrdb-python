@@ -250,10 +250,10 @@ Save/Load StreamSet using binary object
 The stream's dump and load methods are also available for the StreamSet object.
 
 .. code-block:: python
-    
-    from btrdb import stream.StreamSet
+    import btrdb    
+    from btrdb.stream import StreamSet
     conn = btrdb.connect()
-    streams = conn.streams(["71466a91-dcfe-42ea-9e88-87c51f847942", "71466a91-dcfe-42ea-9e88-87c51f847942"])
+    streams = conn.streams(["71466a91-dcfe-42ea-9e88-87c51f847942", "2aafd6e4-5ac3-4808-9dc2-c1501ebec57f"])
     
     # saving stream set in binary file
     streams.dump("stream_objects/my_streamset.p")

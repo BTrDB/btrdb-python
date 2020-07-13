@@ -1394,9 +1394,8 @@ class StreamSetBase(Sequence):
         streams = pickle.load(open(path, "rb"))
 
         if isinstance(streams, dict):
-            if  isinstance(streams.get("uuids", None), list):
-                if all(isinstance(uuid, str) for uuid in streams["uuids"]):
-
+            if isinstance(streams.get("uuids", None), list):
+                if all(isinstance(uuid, str) or isinstance(uuid, uuidlib.UUID) for uuid in streams["uuids"]):
                     stream_set = cls([Stream(btrdb, uuid) for uuid in streams["uuids"]])
 
                     for key in ["filters", "pointwidth", "width", "depth"]:
