@@ -26,7 +26,7 @@ from grpc._cython.cygrpc import CompressionAlgorithm
 from btrdb.stream import Stream, StreamSet
 from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.conversion import to_uuid
-from btrdb.exceptions import NotFound
+from btrdb.exceptions import NotFound, InvalidOperation
 
 ##########################################################################
 ## Module Variables
@@ -346,3 +346,6 @@ class BTrDB(object):
         pyTags = {tag.key: tag.count for tag in tags}
         pyAnn = {ann.key: ann.count for ann in annotations}
         return pyTags, pyAnn
+    
+    def __reduce__(self):
+        raise InvalidOperation("BTrDB object cannot be reduced.")

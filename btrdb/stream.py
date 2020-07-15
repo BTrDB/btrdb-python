@@ -785,6 +785,10 @@ class Stream(object):
         return "<Stream collection={} name={}>".format(self.collection,
             self.name)
 
+    def __reduce__(self):
+        raise InvalidOperation("Stream object cannot be reduced.")
+
+
 ##########################################################################
 ## StreamSet  Classes
 ##########################################################################
@@ -1309,6 +1313,9 @@ class StreamSetBase(Sequence):
 
     def __len__(self):
         return len(self._streams)
+
+    def __reduce__(self):
+        raise InvalidOperation("StreamSet object cannot be reduced.")
 
 
 class StreamSet(StreamSetBase, StreamSetTransformer):
