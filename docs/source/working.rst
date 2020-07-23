@@ -15,3 +15,4 @@ to interact with the BTrDB database.
   working/stream-view-data
   working/streamsets
   working/multiprocessing
+  working/ray
