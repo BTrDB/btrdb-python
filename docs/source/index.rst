@@ -59,11 +59,6 @@ your appetite.
       for point, _ in stream.values(start, end):
           print(point.time, point.value)
 
-If you don't have access to a BTrDB server, then please see our smartgridstore
-`docs <https://docs.smartgrid.store/>`_ and `repo <https://github.com/BTrDB/smartgridstore>`_
-to get a `Dockerized <https://www.docker.com/>`_ version up and running quickly.
-
-
 
 User Guide
 ----------
