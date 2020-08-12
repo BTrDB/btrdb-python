@@ -27,7 +27,7 @@ from btrdb.exceptions import ProfileNotFound, CredentialsFileNotFound
 
 CONFIG_DIR = ".predictivegrid"
 CREDENTIALS_FILENAME = "credentials.yaml"
-CREDENTIALS_PATH = os.path.join(os.environ["HOME"], CONFIG_DIR, CREDENTIALS_FILENAME)
+CREDENTIALS_PATH = os.path.join(os.path.expanduser("~"), CONFIG_DIR, CREDENTIALS_FILENAME)
 
 ##########################################################################
 ## Functions
