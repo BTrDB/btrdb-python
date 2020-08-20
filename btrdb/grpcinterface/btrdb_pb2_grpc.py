@@ -254,8 +254,9 @@ class BTrDBServicer(object):
     raise NotImplementedError('Method not implemented!')
 
   def SQLQuery(self, request, context):
-    # missing associated documentation comment in .proto file
-    pass
+    """rpc SetCompactionConfig(SetCompactionConfigParams) returns (SetCompactionConfigResponse);
+    rpc GetCompactionConfig(GetCompactionConfigParams) returns (GetCompactionConfigResponse);
+    """
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')

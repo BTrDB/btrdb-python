@@ -402,7 +402,7 @@ class Stream(object):
         """
         return self._btrdb.ep.streamInfo(self._uuid, True, False)[4]
 
-    def insert(self, data):
+    def insert(self, data, merge='never'):
         """
         Insert new data in the form (time, value) into the series.
 
@@ -417,6 +417,12 @@ class Stream(object):
         data: list[tuple[int, float]]
             A list of tuples in which each tuple contains a time (int) and
             value (float) for insertion to the database
+        merge: str
+            A string describing the merge policy. Valid policies are:
+              - 'never': the default, no points are merged
+              - 'equal': points are deduplicated if the time and value are equal
+              - 'retain': if two points have the same timestamp, the old one is kept
+              - 'replace': if two points have the same timestamp, the new one is kept
 
         Returns
         -------
@@ -428,7 +434,7 @@ class Stream(object):
         version = 0
         while i < len(data):
             thisBatch = data[i:i + INSERT_BATCH_SIZE]
-            version = self._btrdb.ep.insert(self._uuid, thisBatch)
+            version = self._btrdb.ep.insert(self._uuid, thisBatch, merge)
             i += INSERT_BATCH_SIZE
         return version
 

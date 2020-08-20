@@ -160,9 +160,15 @@ class Endpoint(object):
             BTrDBError.checkProtoStat(result.stat)
             yield result.ranges, result.versionMajor
 
-    def insert(self, uu, values):
+    def insert(self, uu, values, policy):
+        policy_map = {
+            'never': btrdb_pb2.MergePolicy.NEVER,
+            'equal': btrdb_pb2.MergePolicy.EQUAL,
+            'retain': btrdb_pb2.MergePolicy.RETAIN,
+            'replace': btrdb_pb2.MergePolicy.REPLACE,
+        }
         protoValues = RawPoint.to_proto_list(values)
-        params = btrdb_pb2.InsertParams(uuid = uu.bytes, sync = False, values = protoValues)
+        params = btrdb_pb2.InsertParams(uuid = uu.bytes, sync = False, values = protoValues, merge_policy = policy_map[policy])
         result = self.stub.Insert(params)
         BTrDBError.checkProtoStat(result.stat)
         return result.versionMajor
