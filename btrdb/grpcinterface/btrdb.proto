@@ -23,6 +23,8 @@ service BTrDB {
   rpc GetMetadataUsage(MetadataUsageParams) returns (MetadataUsageResponse);
   rpc GenerateCSV(GenerateCSVParams) returns (stream GenerateCSVResponse);
   rpc SQLQuery(SQLQueryParams) returns (stream SQLQueryResponse);
+  //rpc SetCompactionConfig(SetCompactionConfigParams) returns (SetCompactionConfigResponse);
+  //rpc GetCompactionConfig(GetCompactionConfigParams) returns (GetCompactionConfigResponse);
 }
 
 message RawValuesParams {
@@ -167,9 +169,16 @@ message ChangesResponse {
   uint64 versionMinor = 3;
   repeated ChangedRange ranges = 4;
 }
+enum MergePolicy {
+  NEVER = 0;	// Never merge
+  EQUAL = 1;	// Merge identical (key, value) pairs
+  RETAIN = 2;	// When timestamps are equal, keep old value
+  REPLACE = 3;	// When timestamps are equal, keep new value
+}
 message InsertParams {
   bytes uuid = 1;
   bool sync = 2;
+  MergePolicy merge_policy = 4;
   repeated RawPoint values = 3;
 }
 message InsertResponse {
@@ -314,4 +323,55 @@ message SQLQueryResponse {
 
 message Role {
   string name = 1;
+}
+
+message SetCompactionConfigParams {
+  //Which stream to configure
+  bytes uuid = 1;
+
+  //Accessing versions LESS than this is not allowed
+  uint64 CompactedVersion = 2;
+
+  //For every timestamp >= Start and < End in this list,
+  //we cannot traverse the tree < Resolution.
+  // Ranges cannot overlap, and a range can never have its resolution PW increased
+  // (it is okay to decrease a range PW and it is okay to merge two adjacent ranges
+  // if the new range has <= resolution)
+  repeated ReducedResolutionRange reducedResolutionRanges = 3;
+
+  uint64 unused0 = 4;
+}
+
+message SetCompactionConfigResponse {
+  Status stat = 1;
+}
+
+message GetCompactionConfigParams {
+  //Which stream to query
+  bytes uuid = 1;
+}
+
+message GetCompactionConfigResponse {
+  Status stat = 1;
+
+  //The latest version of the stream, as returned by StreamInfo
+  uint64 LatestMajorVersion = 2;
+
+  //Accessing versions LESS than this is not allowed
+  uint64 CompactedVersion = 3;
+
+  //For every timestamp >= Start and < End in this list,
+  //we cannot traverse the tree < Resolution.
+  // Ranges cannot overlap, and a range can never have its resolution PW increased
+  // (it is okay to decrease a range PW and it is okay to merge two adjacent ranges
+  // if the new range has <= resolution)
+  repeated ReducedResolutionRange reducedResolutionRanges = 4;
+
+  uint64 unused0 = 5;
+}
+
+message ReducedResolutionRange {
+  int64 Start = 1;
+  int64 End = 2;
+  uint32 Resolution = 3;
 }

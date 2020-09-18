@@ -46,7 +46,7 @@ grpc:
 	python -m grpc_tools.protoc -Ibtrdb/grpcinterface --python_out=btrdb/grpcinterface --grpc_python_out=btrdb/grpcinterface btrdb/grpcinterface/btrdb.proto
 	@echo
 	@echo Fixing import statements:
-	sed -i '' 's/btrdb_pb2 as btrdb__pb2/btrdb.grpcinterface.btrdb_pb2 as btrdb__pb2/' btrdb/grpcinterface/btrdb_pb2_grpc.py
+	sed -i'.bak' 's/btrdb_pb2 as btrdb__pb2/btrdb.grpcinterface.btrdb_pb2 as btrdb__pb2/' btrdb/grpcinterface/btrdb_pb2_grpc.py
 
 
 # Build the universal wheel and source distribution

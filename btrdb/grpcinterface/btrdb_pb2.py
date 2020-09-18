@@ -3,6 +3,7 @@
 
 import sys
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -19,9 +20,44 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='v5api',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0b\x62trdb.proto\x12\x05v5api\"Q\n\x0fRawValuesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\"}\n\x11RawValuesResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x1f\n\x06values\x18\x04 \x03(\x0b\x32\x0f.v5api.RawPoint\"j\n\x14\x41lignedWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\x12\n\npointWidth\x18\x05 \x01(\r\"\x83\x01\n\x16\x41lignedWindowsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12 \n\x06values\x18\x04 \x03(\x0b\x32\x10.v5api.StatPoint\"m\n\rWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\r\n\x05width\x18\x05 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x06 \x01(\r\"|\n\x0fWindowsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12 \n\x06values\x18\x04 \x03(\x0b\x32\x10.v5api.StatPoint\"h\n\x10StreamInfoParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x13\n\x0bomitVersion\x18\x02 \x01(\x08\x12\x16\n\x0eomitDescriptor\x18\x03 \x01(\x08\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"\x8a\x01\n\x12StreamInfoResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12+\n\ndescriptor\x18\x04 \x01(\x0b\x32\x17.v5api.StreamDescriptor\"\x98\x01\n\x10StreamDescriptor\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x17\n\x0fpropertyVersion\x18\x05 \x01(\x04\"\x82\x01\n\x1aSetStreamAnnotationsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12#\n\x07\x63hanges\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x10\n\x08removals\x18\x04 \x03(\t\";\n\x1cSetStreamAnnotationsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"\x8a\x01\n\x13SetStreamTagsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x12\n\ncollection\x18\x04 \x01(\t\x12\x0e\n\x06remove\x18\x05 \x03(\t\"4\n\x15SetStreamTagsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"{\n\x0c\x43reateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\"-\n\x0e\x43reateResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"@\n\x13MetadataUsageParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"y\n\x15MetadataUsageResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x1d\n\x04tags\x18\x02 \x03(\x0b\x32\x0f.v5api.KeyCount\x12$\n\x0b\x61nnotations\x18\x03 \x03(\x0b\x32\x0f.v5api.KeyCount\"&\n\x08KeyCount\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\x04\"B\n\x15ListCollectionsParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"K\n\x17ListCollectionsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x13\n\x0b\x63ollections\x18\x02 \x03(\t\"\xab\x01\n\x13LookupStreamsParams\x12\x12\n\ncollection\x18\x01 \x01(\t\x12\x1a\n\x12isCollectionPrefix\x18\x02 \x01(\x08\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"^\n\x15LookupStreamsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12(\n\x07results\x18\x02 \x03(\x0b\x32\x17.v5api.StreamDescriptor\"S\n\rNearestParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04time\x18\x02 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x03 \x01(\x04\x12\x10\n\x08\x62\x61\x63kward\x18\x04 \x01(\x08\"z\n\x0fNearestResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x1e\n\x05value\x18\x04 \x01(\x0b\x32\x0f.v5api.RawPoint\"U\n\rChangesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\tfromMajor\x18\x02 \x01(\x04\x12\x0f\n\x07toMajor\x18\x03 \x01(\x04\x12\x12\n\nresolution\x18\x04 \x01(\r\"\x7f\n\x0f\x43hangesResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12#\n\x06ranges\x18\x04 \x03(\x0b\x32\x13.v5api.ChangedRange\"K\n\x0cInsertParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04sync\x18\x02 \x01(\x08\x12\x1f\n\x06values\x18\x03 \x03(\x0b\x32\x0f.v5api.RawPoint\"Y\n\x0eInsertResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"8\n\x0c\x44\x65leteParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\"Y\n\x0e\x44\x65leteResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"\x0c\n\nInfoParams\"\xa2\x01\n\x0cInfoResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x19\n\x04mash\x18\x02 \x01(\x0b\x32\x0b.v5api.Mash\x12\x14\n\x0cmajorVersion\x18\x03 \x01(\r\x12\x14\n\x0cminorVersion\x18\x04 \x01(\r\x12\r\n\x05\x62uild\x18\x05 \x01(\t\x12\x1f\n\x05proxy\x18\x06 \x01(\x0b\x32\x10.v5api.ProxyInfo\"#\n\tProxyInfo\x12\x16\n\x0eproxyEndpoints\x18\x01 \x03(\t\"1\n\x11\x46\x61ultInjectParams\x12\x0c\n\x04type\x18\x01 \x01(\x04\x12\x0e\n\x06params\x18\x02 \x01(\x0c\">\n\x13\x46\x61ultInjectResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\n\n\x02rv\x18\x02 \x01(\x0c\"\x1b\n\x0b\x46lushParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"X\n\rFlushResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\" \n\x10ObliterateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"1\n\x12ObliterateResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"\'\n\x08RawPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\r\n\x05value\x18\x02 \x01(\x01\"`\n\tStatPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0c\n\x04mean\x18\x03 \x01(\x01\x12\x0b\n\x03max\x18\x04 \x01(\x01\x12\r\n\x05\x63ount\x18\x05 \x01(\x06\x12\x0e\n\x06stddev\x18\x06 \x01(\x01\"*\n\x0c\x43hangedRange\x12\r\n\x05start\x18\x01 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x10\">\n\x06Status\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x19\n\x04mash\x18\x03 \x01(\x0b\x32\x0b.v5api.Mash\"\x98\x01\n\x04Mash\x12\x10\n\x08revision\x18\x01 \x01(\x03\x12\x0e\n\x06leader\x18\x02 \x01(\t\x12\x16\n\x0eleaderRevision\x18\x03 \x01(\x03\x12\x13\n\x0btotalWeight\x18\x04 \x01(\x03\x12\x0f\n\x07healthy\x18\x05 \x01(\x08\x12\x10\n\x08unmapped\x18\x06 \x01(\x01\x12\x1e\n\x07members\x18\x07 \x03(\x0b\x32\r.v5api.Member\"\xc3\x01\n\x06Member\x12\x0c\n\x04hash\x18\x01 \x01(\r\x12\x10\n\x08nodename\x18\x02 \x01(\t\x12\n\n\x02up\x18\x03 \x01(\x08\x12\n\n\x02in\x18\x04 \x01(\x08\x12\x0f\n\x07\x65nabled\x18\x05 \x01(\x08\x12\r\n\x05start\x18\x06 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x07 \x01(\x03\x12\x0e\n\x06weight\x18\x08 \x01(\x03\x12\x16\n\x0ereadPreference\x18\t \x01(\x01\x12\x15\n\rhttpEndpoints\x18\n \x01(\t\x12\x15\n\rgrpcEndpoints\x18\x0b \x01(\t\"8\n\x0bKeyOptValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x03val\x18\x02 \x01(\x0b\x32\x0f.v5api.OptValue\"\x19\n\x08OptValue\x12\r\n\x05value\x18\x01 \x01(\t\"&\n\x08KeyValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"?\n\x0fStreamCSVConfig\x12\x0f\n\x07version\x18\x01 \x01(\x04\x12\r\n\x05label\x18\x02 \x01(\t\x12\x0c\n\x04uuid\x18\x03 \x01(\x0c\"\x9d\x02\n\x11GenerateCSVParams\x12\x35\n\tqueryType\x18\x01 \x01(\x0e\x32\".v5api.GenerateCSVParams.QueryType\x12\x11\n\tstartTime\x18\x02 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x03 \x01(\x03\x12\x12\n\nwindowSize\x18\x04 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x05 \x01(\r\x12\x17\n\x0fincludeVersions\x18\x06 \x01(\x08\x12\'\n\x07streams\x18\x07 \x03(\x0b\x32\x16.v5api.StreamCSVConfig\"H\n\tQueryType\x12\x19\n\x15\x41LIGNED_WINDOWS_QUERY\x10\x00\x12\x11\n\rWINDOWS_QUERY\x10\x01\x12\r\n\tRAW_QUERY\x10\x02\"Q\n\x13GenerateCSVResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x10\n\x08isHeader\x18\x02 \x01(\x08\x12\x0b\n\x03row\x18\x03 \x03(\t\"J\n\x0eSQLQueryParams\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0e\n\x06params\x18\x02 \x03(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"D\n\x10SQLQueryResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x13\n\x0bSQLQueryRow\x18\x02 \x03(\x0c\"\x14\n\x04Role\x12\x0c\n\x04name\x18\x01 \x01(\t2\xb3\n\n\x05\x42TrDB\x12?\n\tRawValues\x12\x16.v5api.RawValuesParams\x1a\x18.v5api.RawValuesResponse0\x01\x12N\n\x0e\x41lignedWindows\x12\x1b.v5api.AlignedWindowsParams\x1a\x1d.v5api.AlignedWindowsResponse0\x01\x12\x39\n\x07Windows\x12\x14.v5api.WindowsParams\x1a\x16.v5api.WindowsResponse0\x01\x12@\n\nStreamInfo\x12\x17.v5api.StreamInfoParams\x1a\x19.v5api.StreamInfoResponse\x12^\n\x14SetStreamAnnotations\x12!.v5api.SetStreamAnnotationsParams\x1a#.v5api.SetStreamAnnotationsResponse\x12I\n\rSetStreamTags\x12\x1a.v5api.SetStreamTagsParams\x1a\x1c.v5api.SetStreamTagsResponse\x12\x34\n\x06\x43reate\x12\x13.v5api.CreateParams\x1a\x15.v5api.CreateResponse\x12Q\n\x0fListCollections\x12\x1c.v5api.ListCollectionsParams\x1a\x1e.v5api.ListCollectionsResponse0\x01\x12K\n\rLookupStreams\x12\x1a.v5api.LookupStreamsParams\x1a\x1c.v5api.LookupStreamsResponse0\x01\x12\x37\n\x07Nearest\x12\x14.v5api.NearestParams\x1a\x16.v5api.NearestResponse\x12\x39\n\x07\x43hanges\x12\x14.v5api.ChangesParams\x1a\x16.v5api.ChangesResponse0\x01\x12\x34\n\x06Insert\x12\x13.v5api.InsertParams\x1a\x15.v5api.InsertResponse\x12\x34\n\x06\x44\x65lete\x12\x13.v5api.DeleteParams\x1a\x15.v5api.DeleteResponse\x12.\n\x04Info\x12\x11.v5api.InfoParams\x1a\x13.v5api.InfoResponse\x12\x43\n\x0b\x46\x61ultInject\x12\x18.v5api.FaultInjectParams\x1a\x1a.v5api.FaultInjectResponse\x12\x31\n\x05\x46lush\x12\x12.v5api.FlushParams\x1a\x14.v5api.FlushResponse\x12@\n\nObliterate\x12\x17.v5api.ObliterateParams\x1a\x19.v5api.ObliterateResponse\x12L\n\x10GetMetadataUsage\x12\x1a.v5api.MetadataUsageParams\x1a\x1c.v5api.MetadataUsageResponse\x12\x45\n\x0bGenerateCSV\x12\x18.v5api.GenerateCSVParams\x1a\x1a.v5api.GenerateCSVResponse0\x01\x12<\n\x08SQLQuery\x12\x15.v5api.SQLQueryParams\x1a\x17.v5api.SQLQueryResponse0\x01\x62\x06proto3')
+  serialized_pb=_b('\n\x0b\x62trdb.proto\x12\x05v5api\"Q\n\x0fRawValuesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\"}\n\x11RawValuesResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x1f\n\x06values\x18\x04 \x03(\x0b\x32\x0f.v5api.RawPoint\"j\n\x14\x41lignedWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\x12\n\npointWidth\x18\x05 \x01(\r\"\x83\x01\n\x16\x41lignedWindowsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12 \n\x06values\x18\x04 \x03(\x0b\x32\x10.v5api.StatPoint\"m\n\rWindowsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x04 \x01(\x04\x12\r\n\x05width\x18\x05 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x06 \x01(\r\"|\n\x0fWindowsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12 \n\x06values\x18\x04 \x03(\x0b\x32\x10.v5api.StatPoint\"h\n\x10StreamInfoParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x13\n\x0bomitVersion\x18\x02 \x01(\x08\x12\x16\n\x0eomitDescriptor\x18\x03 \x01(\x08\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"\x8a\x01\n\x12StreamInfoResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12+\n\ndescriptor\x18\x04 \x01(\x0b\x32\x17.v5api.StreamDescriptor\"\x98\x01\n\x10StreamDescriptor\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x17\n\x0fpropertyVersion\x18\x05 \x01(\x04\"\x82\x01\n\x1aSetStreamAnnotationsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12#\n\x07\x63hanges\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x10\n\x08removals\x18\x04 \x03(\t\";\n\x1cSetStreamAnnotationsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"\x8a\x01\n\x13SetStreamTagsParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1f\n\x17\x65xpectedPropertyVersion\x18\x02 \x01(\x04\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x12\n\ncollection\x18\x04 \x01(\t\x12\x0e\n\x06remove\x18\x05 \x03(\t\"4\n\x15SetStreamTagsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"{\n\x0c\x43reateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x12\n\ncollection\x18\x02 \x01(\t\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\"-\n\x0e\x43reateResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"@\n\x13MetadataUsageParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"y\n\x15MetadataUsageResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x1d\n\x04tags\x18\x02 \x03(\x0b\x32\x0f.v5api.KeyCount\x12$\n\x0b\x61nnotations\x18\x03 \x03(\x0b\x32\x0f.v5api.KeyCount\"&\n\x08KeyCount\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05\x63ount\x18\x02 \x01(\x04\"B\n\x15ListCollectionsParams\x12\x0e\n\x06prefix\x18\x01 \x01(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"K\n\x17ListCollectionsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x13\n\x0b\x63ollections\x18\x02 \x03(\t\"\xab\x01\n\x13LookupStreamsParams\x12\x12\n\ncollection\x18\x01 \x01(\t\x12\x1a\n\x12isCollectionPrefix\x18\x02 \x01(\x08\x12 \n\x04tags\x18\x03 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\'\n\x0b\x61nnotations\x18\x04 \x03(\x0b\x32\x12.v5api.KeyOptValue\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"^\n\x15LookupStreamsResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12(\n\x07results\x18\x02 \x03(\x0b\x32\x17.v5api.StreamDescriptor\"S\n\rNearestParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04time\x18\x02 \x01(\x10\x12\x14\n\x0cversionMajor\x18\x03 \x01(\x04\x12\x10\n\x08\x62\x61\x63kward\x18\x04 \x01(\x08\"z\n\x0fNearestResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12\x1e\n\x05value\x18\x04 \x01(\x0b\x32\x0f.v5api.RawPoint\"U\n\rChangesParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x11\n\tfromMajor\x18\x02 \x01(\x04\x12\x0f\n\x07toMajor\x18\x03 \x01(\x04\x12\x12\n\nresolution\x18\x04 \x01(\r\"\x7f\n\x0f\x43hangesResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\x12#\n\x06ranges\x18\x04 \x03(\x0b\x32\x13.v5api.ChangedRange\"u\n\x0cInsertParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04sync\x18\x02 \x01(\x08\x12(\n\x0cmerge_policy\x18\x04 \x01(\x0e\x32\x12.v5api.MergePolicy\x12\x1f\n\x06values\x18\x03 \x03(\x0b\x32\x0f.v5api.RawPoint\"Y\n\x0eInsertResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"8\n\x0c\x44\x65leteParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\r\n\x05start\x18\x02 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x03 \x01(\x10\"Y\n\x0e\x44\x65leteResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\"\x0c\n\nInfoParams\"\xa2\x01\n\x0cInfoResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x19\n\x04mash\x18\x02 \x01(\x0b\x32\x0b.v5api.Mash\x12\x14\n\x0cmajorVersion\x18\x03 \x01(\r\x12\x14\n\x0cminorVersion\x18\x04 \x01(\r\x12\r\n\x05\x62uild\x18\x05 \x01(\t\x12\x1f\n\x05proxy\x18\x06 \x01(\x0b\x32\x10.v5api.ProxyInfo\"#\n\tProxyInfo\x12\x16\n\x0eproxyEndpoints\x18\x01 \x03(\t\"1\n\x11\x46\x61ultInjectParams\x12\x0c\n\x04type\x18\x01 \x01(\x04\x12\x0e\n\x06params\x18\x02 \x01(\x0c\">\n\x13\x46\x61ultInjectResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\n\n\x02rv\x18\x02 \x01(\x0c\"\x1b\n\x0b\x46lushParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"X\n\rFlushResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x14\n\x0cversionMajor\x18\x02 \x01(\x04\x12\x14\n\x0cversionMinor\x18\x03 \x01(\x04\" \n\x10ObliterateParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"1\n\x12ObliterateResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\"\'\n\x08RawPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\r\n\x05value\x18\x02 \x01(\x01\"`\n\tStatPoint\x12\x0c\n\x04time\x18\x01 \x01(\x10\x12\x0b\n\x03min\x18\x02 \x01(\x01\x12\x0c\n\x04mean\x18\x03 \x01(\x01\x12\x0b\n\x03max\x18\x04 \x01(\x01\x12\r\n\x05\x63ount\x18\x05 \x01(\x06\x12\x0e\n\x06stddev\x18\x06 \x01(\x01\"*\n\x0c\x43hangedRange\x12\r\n\x05start\x18\x01 \x01(\x10\x12\x0b\n\x03\x65nd\x18\x02 \x01(\x10\">\n\x06Status\x12\x0c\n\x04\x63ode\x18\x01 \x01(\r\x12\x0b\n\x03msg\x18\x02 \x01(\t\x12\x19\n\x04mash\x18\x03 \x01(\x0b\x32\x0b.v5api.Mash\"\x98\x01\n\x04Mash\x12\x10\n\x08revision\x18\x01 \x01(\x03\x12\x0e\n\x06leader\x18\x02 \x01(\t\x12\x16\n\x0eleaderRevision\x18\x03 \x01(\x03\x12\x13\n\x0btotalWeight\x18\x04 \x01(\x03\x12\x0f\n\x07healthy\x18\x05 \x01(\x08\x12\x10\n\x08unmapped\x18\x06 \x01(\x01\x12\x1e\n\x07members\x18\x07 \x03(\x0b\x32\r.v5api.Member\"\xc3\x01\n\x06Member\x12\x0c\n\x04hash\x18\x01 \x01(\r\x12\x10\n\x08nodename\x18\x02 \x01(\t\x12\n\n\x02up\x18\x03 \x01(\x08\x12\n\n\x02in\x18\x04 \x01(\x08\x12\x0f\n\x07\x65nabled\x18\x05 \x01(\x08\x12\r\n\x05start\x18\x06 \x01(\x03\x12\x0b\n\x03\x65nd\x18\x07 \x01(\x03\x12\x0e\n\x06weight\x18\x08 \x01(\x03\x12\x16\n\x0ereadPreference\x18\t \x01(\x01\x12\x15\n\rhttpEndpoints\x18\n \x01(\t\x12\x15\n\rgrpcEndpoints\x18\x0b \x01(\t\"8\n\x0bKeyOptValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\x1c\n\x03val\x18\x02 \x01(\x0b\x32\x0f.v5api.OptValue\"\x19\n\x08OptValue\x12\r\n\x05value\x18\x01 \x01(\t\"&\n\x08KeyValue\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"?\n\x0fStreamCSVConfig\x12\x0f\n\x07version\x18\x01 \x01(\x04\x12\r\n\x05label\x18\x02 \x01(\t\x12\x0c\n\x04uuid\x18\x03 \x01(\x0c\"\x9d\x02\n\x11GenerateCSVParams\x12\x35\n\tqueryType\x18\x01 \x01(\x0e\x32\".v5api.GenerateCSVParams.QueryType\x12\x11\n\tstartTime\x18\x02 \x01(\x03\x12\x0f\n\x07\x65ndTime\x18\x03 \x01(\x03\x12\x12\n\nwindowSize\x18\x04 \x01(\x04\x12\r\n\x05\x64\x65pth\x18\x05 \x01(\r\x12\x17\n\x0fincludeVersions\x18\x06 \x01(\x08\x12\'\n\x07streams\x18\x07 \x03(\x0b\x32\x16.v5api.StreamCSVConfig\"H\n\tQueryType\x12\x19\n\x15\x41LIGNED_WINDOWS_QUERY\x10\x00\x12\x11\n\rWINDOWS_QUERY\x10\x01\x12\r\n\tRAW_QUERY\x10\x02\"Q\n\x13GenerateCSVResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x10\n\x08isHeader\x18\x02 \x01(\x08\x12\x0b\n\x03row\x18\x03 \x03(\t\"J\n\x0eSQLQueryParams\x12\r\n\x05query\x18\x01 \x01(\t\x12\x0e\n\x06params\x18\x02 \x03(\t\x12\x19\n\x04role\x18\x64 \x01(\x0b\x32\x0b.v5api.Role\"D\n\x10SQLQueryResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x13\n\x0bSQLQueryRow\x18\x02 \x03(\x0c\"\x14\n\x04Role\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x94\x01\n\x19SetCompactionConfigParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x18\n\x10\x43ompactedVersion\x18\x02 \x01(\x04\x12>\n\x17reducedResolutionRanges\x18\x03 \x03(\x0b\x32\x1d.v5api.ReducedResolutionRange\x12\x0f\n\x07unused0\x18\x04 \x01(\x04\":\n\x1bSetCompactionConfigResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\")\n\x19GetCompactionConfigParams\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\xc1\x01\n\x1bGetCompactionConfigResponse\x12\x1b\n\x04stat\x18\x01 \x01(\x0b\x32\r.v5api.Status\x12\x1a\n\x12LatestMajorVersion\x18\x02 \x01(\x04\x12\x18\n\x10\x43ompactedVersion\x18\x03 \x01(\x04\x12>\n\x17reducedResolutionRanges\x18\x04 \x03(\x0b\x32\x1d.v5api.ReducedResolutionRange\x12\x0f\n\x07unused0\x18\x05 \x01(\x04\"H\n\x16ReducedResolutionRange\x12\r\n\x05Start\x18\x01 \x01(\x03\x12\x0b\n\x03\x45nd\x18\x02 \x01(\x03\x12\x12\n\nResolution\x18\x03 \x01(\r*<\n\x0bMergePolicy\x12\t\n\x05NEVER\x10\x00\x12\t\n\x05\x45QUAL\x10\x01\x12\n\n\x06RETAIN\x10\x02\x12\x0b\n\x07REPLACE\x10\x03\x32\xb3\n\n\x05\x42TrDB\x12?\n\tRawValues\x12\x16.v5api.RawValuesParams\x1a\x18.v5api.RawValuesResponse0\x01\x12N\n\x0e\x41lignedWindows\x12\x1b.v5api.AlignedWindowsParams\x1a\x1d.v5api.AlignedWindowsResponse0\x01\x12\x39\n\x07Windows\x12\x14.v5api.WindowsParams\x1a\x16.v5api.WindowsResponse0\x01\x12@\n\nStreamInfo\x12\x17.v5api.StreamInfoParams\x1a\x19.v5api.StreamInfoResponse\x12^\n\x14SetStreamAnnotations\x12!.v5api.SetStreamAnnotationsParams\x1a#.v5api.SetStreamAnnotationsResponse\x12I\n\rSetStreamTags\x12\x1a.v5api.SetStreamTagsParams\x1a\x1c.v5api.SetStreamTagsResponse\x12\x34\n\x06\x43reate\x12\x13.v5api.CreateParams\x1a\x15.v5api.CreateResponse\x12Q\n\x0fListCollections\x12\x1c.v5api.ListCollectionsParams\x1a\x1e.v5api.ListCollectionsResponse0\x01\x12K\n\rLookupStreams\x12\x1a.v5api.LookupStreamsParams\x1a\x1c.v5api.LookupStreamsResponse0\x01\x12\x37\n\x07Nearest\x12\x14.v5api.NearestParams\x1a\x16.v5api.NearestResponse\x12\x39\n\x07\x43hanges\x12\x14.v5api.ChangesParams\x1a\x16.v5api.ChangesResponse0\x01\x12\x34\n\x06Insert\x12\x13.v5api.InsertParams\x1a\x15.v5api.InsertResponse\x12\x34\n\x06\x44\x65lete\x12\x13.v5api.DeleteParams\x1a\x15.v5api.DeleteResponse\x12.\n\x04Info\x12\x11.v5api.InfoParams\x1a\x13.v5api.InfoResponse\x12\x43\n\x0b\x46\x61ultInject\x12\x18.v5api.FaultInjectParams\x1a\x1a.v5api.FaultInjectResponse\x12\x31\n\x05\x46lush\x12\x12.v5api.FlushParams\x1a\x14.v5api.FlushResponse\x12@\n\nObliterate\x12\x17.v5api.ObliterateParams\x1a\x19.v5api.ObliterateResponse\x12L\n\x10GetMetadataUsage\x12\x1a.v5api.MetadataUsageParams\x1a\x1c.v5api.MetadataUsageResponse\x12\x45\n\x0bGenerateCSV\x12\x18.v5api.GenerateCSVParams\x1a\x1a.v5api.GenerateCSVResponse0\x01\x12<\n\x08SQLQuery\x12\x15.v5api.SQLQueryParams\x1a\x17.v5api.SQLQueryResponse0\x01\x62\x06proto3')
 )
 
+_MERGEPOLICY = _descriptor.EnumDescriptor(
+  name='MergePolicy',
+  full_name='v5api.MergePolicy',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='NEVER', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='EQUAL', index=1, number=1,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='RETAIN', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='REPLACE', index=3, number=3,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=5490,
+  serialized_end=5550,
+)
+_sym_db.RegisterEnumDescriptor(_MERGEPOLICY)
+
+MergePolicy = enum_type_wrapper.EnumTypeWrapper(_MERGEPOLICY)
+NEVER = 0
+EQUAL = 1
+RETAIN = 2
+REPLACE = 3
 
 
 _GENERATECSVPARAMS_QUERYTYPE = _descriptor.EnumDescriptor(
@@ -45,8 +81,8 @@ _GENERATECSVPARAMS_QUERYTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=4599,
-  serialized_end=4671,
+  serialized_start=4641,
+  serialized_end=4713,
 )
 _sym_db.RegisterEnumDescriptor(_GENERATECSVPARAMS_QUERYTYPE)
 
@@ -1327,7 +1363,14 @@ _INSERTPARAMS = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='values', full_name='v5api.InsertParams.values', index=2,
+      name='merge_policy', full_name='v5api.InsertParams.merge_policy', index=2,
+      number=4, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='values', full_name='v5api.InsertParams.values', index=3,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -1346,7 +1389,7 @@ _INSERTPARAMS = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=2743,
-  serialized_end=2818,
+  serialized_end=2860,
 )
 
 
@@ -1390,8 +1433,8 @@ _INSERTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2820,
-  serialized_end=2909,
+  serialized_start=2862,
+  serialized_end=2951,
 )
 
 
@@ -1435,8 +1478,8 @@ _DELETEPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2911,
-  serialized_end=2967,
+  serialized_start=2953,
+  serialized_end=3009,
 )
 
 
@@ -1480,8 +1523,8 @@ _DELETERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2969,
-  serialized_end=3058,
+  serialized_start=3011,
+  serialized_end=3100,
 )
 
 
@@ -1504,8 +1547,8 @@ _INFOPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3060,
-  serialized_end=3072,
+  serialized_start=3102,
+  serialized_end=3114,
 )
 
 
@@ -1570,8 +1613,8 @@ _INFORESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3075,
-  serialized_end=3237,
+  serialized_start=3117,
+  serialized_end=3279,
 )
 
 
@@ -1601,8 +1644,8 @@ _PROXYINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3239,
-  serialized_end=3274,
+  serialized_start=3281,
+  serialized_end=3316,
 )
 
 
@@ -1639,8 +1682,8 @@ _FAULTINJECTPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3276,
-  serialized_end=3325,
+  serialized_start=3318,
+  serialized_end=3367,
 )
 
 
@@ -1677,8 +1720,8 @@ _FAULTINJECTRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3327,
-  serialized_end=3389,
+  serialized_start=3369,
+  serialized_end=3431,
 )
 
 
@@ -1708,8 +1751,8 @@ _FLUSHPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3391,
-  serialized_end=3418,
+  serialized_start=3433,
+  serialized_end=3460,
 )
 
 
@@ -1753,8 +1796,8 @@ _FLUSHRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3420,
-  serialized_end=3508,
+  serialized_start=3462,
+  serialized_end=3550,
 )
 
 
@@ -1784,8 +1827,8 @@ _OBLITERATEPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3510,
-  serialized_end=3542,
+  serialized_start=3552,
+  serialized_end=3584,
 )
 
 
@@ -1815,8 +1858,8 @@ _OBLITERATERESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3544,
-  serialized_end=3593,
+  serialized_start=3586,
+  serialized_end=3635,
 )
 
 
@@ -1853,8 +1896,8 @@ _RAWPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3595,
-  serialized_end=3634,
+  serialized_start=3637,
+  serialized_end=3676,
 )
 
 
@@ -1919,8 +1962,8 @@ _STATPOINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3636,
-  serialized_end=3732,
+  serialized_start=3678,
+  serialized_end=3774,
 )
 
 
@@ -1957,8 +2000,8 @@ _CHANGEDRANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3734,
-  serialized_end=3776,
+  serialized_start=3776,
+  serialized_end=3818,
 )
 
 
@@ -2002,8 +2045,8 @@ _STATUS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3778,
-  serialized_end=3840,
+  serialized_start=3820,
+  serialized_end=3882,
 )
 
 
@@ -2075,8 +2118,8 @@ _MASH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3843,
-  serialized_end=3995,
+  serialized_start=3885,
+  serialized_end=4037,
 )
 
 
@@ -2176,8 +2219,8 @@ _MEMBER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3998,
-  serialized_end=4193,
+  serialized_start=4040,
+  serialized_end=4235,
 )
 
 
@@ -2214,8 +2257,8 @@ _KEYOPTVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4195,
-  serialized_end=4251,
+  serialized_start=4237,
+  serialized_end=4293,
 )
 
 
@@ -2245,8 +2288,8 @@ _OPTVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4253,
-  serialized_end=4278,
+  serialized_start=4295,
+  serialized_end=4320,
 )
 
 
@@ -2283,8 +2326,8 @@ _KEYVALUE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4280,
-  serialized_end=4318,
+  serialized_start=4322,
+  serialized_end=4360,
 )
 
 
@@ -2328,8 +2371,8 @@ _STREAMCSVCONFIG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4320,
-  serialized_end=4383,
+  serialized_start=4362,
+  serialized_end=4425,
 )
 
 
@@ -2402,8 +2445,8 @@ _GENERATECSVPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4386,
-  serialized_end=4671,
+  serialized_start=4428,
+  serialized_end=4713,
 )
 
 
@@ -2447,8 +2490,8 @@ _GENERATECSVRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4673,
-  serialized_end=4754,
+  serialized_start=4715,
+  serialized_end=4796,
 )
 
 
@@ -2492,8 +2535,8 @@ _SQLQUERYPARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4756,
-  serialized_end=4830,
+  serialized_start=4798,
+  serialized_end=4872,
 )
 
 
@@ -2530,8 +2573,8 @@ _SQLQUERYRESPONSE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4832,
-  serialized_end=4900,
+  serialized_start=4874,
+  serialized_end=4942,
 )
 
 
@@ -2561,8 +2604,226 @@ _ROLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4902,
-  serialized_end=4922,
+  serialized_start=4944,
+  serialized_end=4964,
+)
+
+
+_SETCOMPACTIONCONFIGPARAMS = _descriptor.Descriptor(
+  name='SetCompactionConfigParams',
+  full_name='v5api.SetCompactionConfigParams',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuid', full_name='v5api.SetCompactionConfigParams.uuid', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='CompactedVersion', full_name='v5api.SetCompactionConfigParams.CompactedVersion', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='reducedResolutionRanges', full_name='v5api.SetCompactionConfigParams.reducedResolutionRanges', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='unused0', full_name='v5api.SetCompactionConfigParams.unused0', index=3,
+      number=4, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=4967,
+  serialized_end=5115,
+)
+
+
+_SETCOMPACTIONCONFIGRESPONSE = _descriptor.Descriptor(
+  name='SetCompactionConfigResponse',
+  full_name='v5api.SetCompactionConfigResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='stat', full_name='v5api.SetCompactionConfigResponse.stat', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=5117,
+  serialized_end=5175,
+)
+
+
+_GETCOMPACTIONCONFIGPARAMS = _descriptor.Descriptor(
+  name='GetCompactionConfigParams',
+  full_name='v5api.GetCompactionConfigParams',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuid', full_name='v5api.GetCompactionConfigParams.uuid', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b(""),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=5177,
+  serialized_end=5218,
+)
+
+
+_GETCOMPACTIONCONFIGRESPONSE = _descriptor.Descriptor(
+  name='GetCompactionConfigResponse',
+  full_name='v5api.GetCompactionConfigResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='stat', full_name='v5api.GetCompactionConfigResponse.stat', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='LatestMajorVersion', full_name='v5api.GetCompactionConfigResponse.LatestMajorVersion', index=1,
+      number=2, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='CompactedVersion', full_name='v5api.GetCompactionConfigResponse.CompactedVersion', index=2,
+      number=3, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='reducedResolutionRanges', full_name='v5api.GetCompactionConfigResponse.reducedResolutionRanges', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='unused0', full_name='v5api.GetCompactionConfigResponse.unused0', index=4,
+      number=5, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=5221,
+  serialized_end=5414,
+)
+
+
+_REDUCEDRESOLUTIONRANGE = _descriptor.Descriptor(
+  name='ReducedResolutionRange',
+  full_name='v5api.ReducedResolutionRange',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='Start', full_name='v5api.ReducedResolutionRange.Start', index=0,
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='End', full_name='v5api.ReducedResolutionRange.End', index=1,
+      number=2, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='Resolution', full_name='v5api.ReducedResolutionRange.Resolution', index=2,
+      number=3, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=5416,
+  serialized_end=5488,
 )
 
 _RAWVALUESRESPONSE.fields_by_name['stat'].message_type = _STATUS
@@ -2598,6 +2859,7 @@ _NEARESTRESPONSE.fields_by_name['stat'].message_type = _STATUS
 _NEARESTRESPONSE.fields_by_name['value'].message_type = _RAWPOINT
 _CHANGESRESPONSE.fields_by_name['stat'].message_type = _STATUS
 _CHANGESRESPONSE.fields_by_name['ranges'].message_type = _CHANGEDRANGE
+_INSERTPARAMS.fields_by_name['merge_policy'].enum_type = _MERGEPOLICY
 _INSERTPARAMS.fields_by_name['values'].message_type = _RAWPOINT
 _INSERTRESPONSE.fields_by_name['stat'].message_type = _STATUS
 _DELETERESPONSE.fields_by_name['stat'].message_type = _STATUS
@@ -2616,6 +2878,10 @@ _GENERATECSVPARAMS_QUERYTYPE.containing_type = _GENERATECSVPARAMS
 _GENERATECSVRESPONSE.fields_by_name['stat'].message_type = _STATUS
 _SQLQUERYPARAMS.fields_by_name['role'].message_type = _ROLE
 _SQLQUERYRESPONSE.fields_by_name['stat'].message_type = _STATUS
+_SETCOMPACTIONCONFIGPARAMS.fields_by_name['reducedResolutionRanges'].message_type = _REDUCEDRESOLUTIONRANGE
+_SETCOMPACTIONCONFIGRESPONSE.fields_by_name['stat'].message_type = _STATUS
+_GETCOMPACTIONCONFIGRESPONSE.fields_by_name['stat'].message_type = _STATUS
+_GETCOMPACTIONCONFIGRESPONSE.fields_by_name['reducedResolutionRanges'].message_type = _REDUCEDRESOLUTIONRANGE
 DESCRIPTOR.message_types_by_name['RawValuesParams'] = _RAWVALUESPARAMS
 DESCRIPTOR.message_types_by_name['RawValuesResponse'] = _RAWVALUESRESPONSE
 DESCRIPTOR.message_types_by_name['AlignedWindowsParams'] = _ALIGNEDWINDOWSPARAMS
@@ -2670,6 +2936,12 @@ DESCRIPTOR.message_types_by_name['GenerateCSVResponse'] = _GENERATECSVRESPONSE
 DESCRIPTOR.message_types_by_name['SQLQueryParams'] = _SQLQUERYPARAMS
 DESCRIPTOR.message_types_by_name['SQLQueryResponse'] = _SQLQUERYRESPONSE
 DESCRIPTOR.message_types_by_name['Role'] = _ROLE
+DESCRIPTOR.message_types_by_name['SetCompactionConfigParams'] = _SETCOMPACTIONCONFIGPARAMS
+DESCRIPTOR.message_types_by_name['SetCompactionConfigResponse'] = _SETCOMPACTIONCONFIGRESPONSE
+DESCRIPTOR.message_types_by_name['GetCompactionConfigParams'] = _GETCOMPACTIONCONFIGPARAMS
+DESCRIPTOR.message_types_by_name['GetCompactionConfigResponse'] = _GETCOMPACTIONCONFIGRESPONSE
+DESCRIPTOR.message_types_by_name['ReducedResolutionRange'] = _REDUCEDRESOLUTIONRANGE
+DESCRIPTOR.enum_types_by_name['MergePolicy'] = _MERGEPOLICY
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 RawValuesParams = _reflection.GeneratedProtocolMessageType('RawValuesParams', (_message.Message,), dict(
@@ -3050,6 +3322,41 @@ Role = _reflection.GeneratedProtocolMessageType('Role', (_message.Message,), dic
   ))
 _sym_db.RegisterMessage(Role)
 
+SetCompactionConfigParams = _reflection.GeneratedProtocolMessageType('SetCompactionConfigParams', (_message.Message,), dict(
+  DESCRIPTOR = _SETCOMPACTIONCONFIGPARAMS,
+  __module__ = 'btrdb_pb2'
+  # @@protoc_insertion_point(class_scope:v5api.SetCompactionConfigParams)
+  ))
+_sym_db.RegisterMessage(SetCompactionConfigParams)
+
+SetCompactionConfigResponse = _reflection.GeneratedProtocolMessageType('SetCompactionConfigResponse', (_message.Message,), dict(
+  DESCRIPTOR = _SETCOMPACTIONCONFIGRESPONSE,
+  __module__ = 'btrdb_pb2'
+  # @@protoc_insertion_point(class_scope:v5api.SetCompactionConfigResponse)
+  ))
+_sym_db.RegisterMessage(SetCompactionConfigResponse)
+
+GetCompactionConfigParams = _reflection.GeneratedProtocolMessageType('GetCompactionConfigParams', (_message.Message,), dict(
+  DESCRIPTOR = _GETCOMPACTIONCONFIGPARAMS,
+  __module__ = 'btrdb_pb2'
+  # @@protoc_insertion_point(class_scope:v5api.GetCompactionConfigParams)
+  ))
+_sym_db.RegisterMessage(GetCompactionConfigParams)
+
+GetCompactionConfigResponse = _reflection.GeneratedProtocolMessageType('GetCompactionConfigResponse', (_message.Message,), dict(
+  DESCRIPTOR = _GETCOMPACTIONCONFIGRESPONSE,
+  __module__ = 'btrdb_pb2'
+  # @@protoc_insertion_point(class_scope:v5api.GetCompactionConfigResponse)
+  ))
+_sym_db.RegisterMessage(GetCompactionConfigResponse)
+
+ReducedResolutionRange = _reflection.GeneratedProtocolMessageType('ReducedResolutionRange', (_message.Message,), dict(
+  DESCRIPTOR = _REDUCEDRESOLUTIONRANGE,
+  __module__ = 'btrdb_pb2'
+  # @@protoc_insertion_point(class_scope:v5api.ReducedResolutionRange)
+  ))
+_sym_db.RegisterMessage(ReducedResolutionRange)
+
 
 
 _BTRDB = _descriptor.ServiceDescriptor(
@@ -3058,8 +3365,8 @@ _BTRDB = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=4925,
-  serialized_end=6256,
+  serialized_start=5553,
+  serialized_end=6884,
   methods=[
   _descriptor.MethodDescriptor(
     name='RawValues',
