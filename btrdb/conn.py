@@ -140,7 +140,7 @@ class BTrDB(object):
         ]
 
 
-    def streams(self, *identifiers, versions=None):
+    def streams(self, *identifiers, versions=None, is_collection_prefix=False):
         """
         Returns a StreamSet object with BTrDB streams from the supplied
         identifiers.  If any streams cannot be found matching the identifier
@@ -179,7 +179,11 @@ class BTrDB(object):
                 # attempt collection/name lookup
                 if "/" in ident:
                     parts = ident.split("/")
-                    found = self.streams_in_collection("/".join(parts[:-1]), tags={"name": parts[-1]})
+                    found = self.streams_in_collection(
+                        "/".join(parts[:-1]),
+                        is_collection_prefix=is_collection_prefix,
+                        tags={"name": parts[-1]}
+                    )
                     if len(found) == 1:
                         streams.append(found[0])
                         continue
