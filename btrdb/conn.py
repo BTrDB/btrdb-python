@@ -179,7 +179,11 @@ class BTrDB(object):
                 # attempt collection/name lookup
                 if "/" in ident:
                     parts = ident.split("/")
-                    found = self.streams_in_collection("/".join(parts[:-1]), tags={"name": parts[-1]})
+                    found = self.streams_in_collection(
+                        "/".join(parts[:-1]),
+                        is_collection_prefix=False,
+                        tags={"name": parts[-1]}
+                    )
                     if len(found) == 1:
                         streams.append(found[0])
                         continue
