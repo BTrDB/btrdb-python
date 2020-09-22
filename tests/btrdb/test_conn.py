@@ -136,7 +136,10 @@ class TestBTrDB(object):
 
         mock_func.assert_called_once()
         assert mock_func.call_args[0][0] == 'zoo/animal'
-        assert mock_func.call_args[1] == {'tags': {'name': 'dog'}}
+        assert mock_func.call_args[1] == {
+            'is_collection_prefix': False,
+            'tags': {'name': 'dog'}
+        }
 
 
     @patch('btrdb.conn.BTrDB.streams_in_collection')
