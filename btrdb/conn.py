@@ -88,8 +88,8 @@ class Connection(object):
                     options=chan_ops
                 )
         else:
-            if apikey is not None:
-                raise ValueError("cannot use an API key with an insecure (port 4410) BTrDB API. Try port 4411")
+            # if apikey is not None:
+            #     raise ValueError("cannot use an API key with an insecure (port 4410) BTrDB API. Try port 4411")
             self.channel = grpc.insecure_channel(addrportstr, chan_ops)
 
 
