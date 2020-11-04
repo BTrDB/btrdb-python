@@ -44,6 +44,20 @@ supplied UUID cannot be found then :code:`None` will be returned.
     stream = conn.stream_from_uuid("71466a91-dcfe-42ea-9e88-87c51f847942")
 
 
+Look up collections
+--------------------------
+You can look up collections found in the server by using the :code:`list_collections`
+method, which returns a list of string collection names. Additionally,
+you can use the :code:`starts_with` parameter to filter the results to include only collections
+that begin with the provided prefix. Omitting the :code:`starts_with` parameter will return
+all available collections from the server.
+
+.. code-block:: python
+
+    conn = btrdb.connect()
+    collections = conn.list_collections(starts_with="NORTHWEST")
+
+
 Finding by collection
 --------------------------
 You can also search for multiple streams by collection using the server object's
