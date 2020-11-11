@@ -22,24 +22,10 @@ from unittest.mock import patch
 from btrdb import connect, __version__, BTRDB_ENDPOINTS, BTRDB_API_KEY
 from btrdb.exceptions import ConnectionError
 
-##########################################################################
-## Test Constants
-##########################################################################
-
-EXPECTED_VERSION = "5.10"
-
 
 ##########################################################################
 ## Initialization Tests
 ##########################################################################
-
-class TestPackage(object):
-
-    def test_version(self):
-        """
-        Assert that the test version matches the library version.
-        """
-        assert __version__ == EXPECTED_VERSION
 
 class TestConnect(object):
 

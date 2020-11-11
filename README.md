@@ -87,36 +87,27 @@ Aside from basic unit tests, the test suite is configured to use [pyflakes](http
 
 Note that the test suite has additional dependencies that must be installed for them to successfully run: `pip install -r tests/requirements.txt`.
 
+## Releases
+
+This codebase uses github actions to control the release process.  To create a new release of the software, run `release.sh` with arguments for the new version as shown below.  Make sure you are in the master branch when running this script.
+
+```
+./release.sh 5 11 4
+```
+
+This will tag and push the current commit and github actions will run the test suite, build the package, and push it to pypi.  If any issues are encountered with the automated tests, the build will fail and you will have a tag with no corresponding release.
+
+After a release is created, you can manually edit the release description through github.
+
 ## Documentation
 
 The project documentation is written in reStructuredText and is built using Sphinx, which also includes the docstring documentation from the `btrdb` Python package. For your convenience, the `Makefile` includes a target for building the documentation:
 
     $ make html
 
-This will build the HTML documentation in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built when pushed to GitHub and hosted on [Read The Docs](https://btrdb.readthedocs.io/en/latest/).
+This will build the HTML documentation locally in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built on every GitHub release and hosted on [Read The Docs](https://btrdb.readthedocs.io/en/latest/).
 
 Note that the documentation also requires Sphix and other dependencies to successfully build: `pip install -r docs/requirements.txt`.
-
-## Branches / Git Workflow
-
-When working on this codebase, keep in mind that the project is set up in a typical production/release/development cycle as described in _[A Successful Git Branching Model](http://nvie.com/posts/a-successful-git-branching-model/)_. A typical workflow is as follows:
-
-1. Select an issue from the [issues page](https://github.com/BTrDB/btrdb-python/issues) - preferably one that is "ready" then move it to "in-progress" using labels or just comment that you are working on it.
-
-2. Create a branch off of develop called "feature-[feature name]", work and commit into that branch.
-
-        ~$ git checkout -b feature-myfeature develop
-
-3. Once you are done working (and everything is tested) merge your feature into develop.
-
-        ~$ git checkout develop
-        ~$ git merge --no-ff feature-myfeature
-        ~$ git branch -d feature-myfeature
-        ~$ git push origin develop
-
-4. Repeat. Releases will be routinely pushed into master via release branches, then deployed to the server.
-
-Note that this process may change with the next major release of BTrDB with development moving to version branches and develop/integration branches from each version branch.
 
 ## Versioning
 
