@@ -15,13 +15,7 @@ Maintains version and package information for deployment.
 ## Module Info
 ##########################################################################
 
-__version_info__ = {
-    'major': 5,
-    'minor': 10,
-    'micro': 1,
-    'releaselevel': 'final',
-    'serial': 15,
-}
+__version_info__ = { 'major': 5, 'minor': 10, 'micro': 1, 'releaselevel': 'final'}
 
 ##########################################################################
 ## Helper Functions
@@ -36,6 +30,5 @@ def get_version(short=False):
     if __version_info__['micro']:
         vers.append(".%(micro)i" % __version_info__)
     if __version_info__['releaselevel'] != 'final' and not short:
-        vers.append('%s%i' % (__version_info__['releaselevel'][0],
-                              __version_info__['serial']))
+        vers.append('%s%i' % (__version_info__['releaselevel'][0]))
     return ''.join(vers)
