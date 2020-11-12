@@ -391,7 +391,7 @@ class TestTransformers(object):
         path = os.path.join(tmpdir.dirname, "to_csv_test.csv")
         streamset.to_dict = Mock(return_value=expected["to_dict"])
         to_csv(streamset, path)
-        with open(path, "r", newline='') as f:
+        with open(path, "rb") as f:
             content = f.read()
         print("Content: ")
         print(content)
