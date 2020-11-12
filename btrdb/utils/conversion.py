@@ -57,6 +57,10 @@ class AnnotationEncoder(json.JSONEncoder):
             # https://numpy.org/devdocs/reference/arrays.datetime.html#changes-with-numpy-1-11
             return pytz.utc.localize(obj.astype(datetime)).strftime(RFC3339)
 
+        # handle sets and frozensets
+        if isinstance(obj, (set, frozenset)):
+            return list(obj)
+
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
