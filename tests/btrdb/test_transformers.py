@@ -389,17 +389,11 @@ class TestTransformers(object):
 
     def test_to_csv_as_path(self, streamset, tmpdir):
         path = os.path.join(tmpdir.dirname, "to_csv_test.csv")
-        print("\nPath1: " + path)
+        assert path == ''
         streamset.to_dict = Mock(return_value=expected["to_dict"])
         to_csv(streamset, path)
         with open(path, "r") as f:
-            print("\nPath2: " + path)
             content = f.read()
-        print("\nhere1")
-        print(content)
-        print("here2")
-        print(expected["csv"])
-        print("here3")
 
         assert content == expected["csv"]
         os.remove(path)
