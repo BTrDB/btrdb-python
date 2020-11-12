@@ -393,8 +393,6 @@ class TestTransformers(object):
         to_csv(streamset, path)
         with open(path, "r") as f:
             content = f.read()
-        print("Content: ")
-        print(content)
         assert content == expected["csv"]
         os.remove(path)
 
