@@ -391,16 +391,9 @@ class TestTransformers(object):
         path = os.path.join(tmpdir.dirname, "to_csv_test.csv")
         streamset.to_dict = Mock(return_value=expected["to_dict"])
         to_csv(streamset, path)
-        with open(path, "r") as f:
+        with open(path, "r", newline='') as f:
             content = f.read()
-
-        print("Content:")
-        print(content)
-        print("expected:")
-        print(expected["csv"])
-        # strip extra lines in windows?
-        content.replace("\n\n", "\n")
-        print("Content cleaned:")
+        print("Content: ")
         print(content)
         assert content == expected["csv"]
         os.remove(path)
