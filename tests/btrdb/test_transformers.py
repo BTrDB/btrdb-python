@@ -395,7 +395,8 @@ class TestTransformers(object):
             content = f.read()
 
         print("Content: " + content)
-        print("Expected: " + expected)
+        print("expected:")
+        print(expected)
         assert expected["csv"] in content
         assert content == expected["csv"]
         os.remove(path)
