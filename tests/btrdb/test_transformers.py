@@ -392,11 +392,11 @@ class TestTransformers(object):
         streamset.to_dict = Mock(return_value=expected["to_dict"])
         to_csv(streamset, path)
         with open(path, "r") as f:
-            print("\nPath: " + path)
             content = f.read()
-            print("Content: " + content)
-            assert content[0:18] == 'time,test/stream0,'
 
+        print("Content: " + content)
+        print("Expected: " + expected)
+        assert expected["csv"] in content
         assert content == expected["csv"]
         os.remove(path)
 
