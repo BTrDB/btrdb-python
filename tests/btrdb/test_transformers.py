@@ -394,7 +394,8 @@ class TestTransformers(object):
         with open(path, "r") as f:
             print("\nPath: " + path)
             content = f.read()
-            assert content[0] == 't'
+            print("Content: " + content)
+            assert content[0:18] == 'time,test/stream0,'
 
         assert content == expected["csv"]
         os.remove(path)
