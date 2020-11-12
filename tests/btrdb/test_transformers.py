@@ -394,10 +394,14 @@ class TestTransformers(object):
         with open(path, "r") as f:
             content = f.read()
 
-        print("Content: " + content)
+        print("Content:")
+        print(content)
         print("expected:")
-        print(expected)
-        assert expected["csv"] in content
+        print(expected["csv"])
+        # strip extra lines in windows?
+        content.replace("\n\n", "\n")
+        print("Content cleaned:")
+        print(content)
         assert content == expected["csv"]
         os.remove(path)
 
