@@ -48,9 +48,9 @@ value within the stream.
 StatPoint
 ^^^^^^^^^^^^
 The StatPoint provides statistics about multiple points and gives
-aggregation values such as `min`, `max`, `mean`, etc.  This is most useful when you
-don't need to touch every individual value such as when you only need the count
-of the values over a range of time.
+aggregation values such as `min`, `max`, `mean`, and `stddev` (standard deviation).
+This is most useful when you don't need to touch every individual value such as
+when you only need the count of the values over a range of time.
 
 These statistical queries execute in time proportional to the number of
 results, not the number of underlying points (i.e logarithmic time) and so you
