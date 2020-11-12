@@ -267,7 +267,7 @@ def to_csv(streamset, fobj, dialect=None, fieldnames=None, agg="mean", name_call
     @contextlib.contextmanager
     def open_path_or_file(path_or_file):
         if isinstance(path_or_file, str):
-            f = file_to_close = open(path_or_file, 'w')
+            f = file_to_close = open(path_or_file, 'w', newline='')
         else:
             f = path_or_file
             file_to_close = None
