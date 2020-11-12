@@ -389,10 +389,14 @@ class TestTransformers(object):
 
     def test_to_csv_as_path(self, streamset, tmpdir):
         path = os.path.join(tmpdir.dirname, "to_csv_test.csv")
-        assert path == '/tmp/pytest-of-runner/pytest-0/to_csv_test.csv'
+        print("\nPath1: " + path)
         streamset.to_dict = Mock(return_value=expected["to_dict"])
+        print(streamset.values()[1][1][1])
+        assert streamset.values()[1][1][1] == 3.0
+
         to_csv(streamset, path)
         with open(path, "r") as f:
+            print("\nPath2: " + path)
             content = f.read()
 
         assert content == expected["csv"]
