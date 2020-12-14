@@ -1059,7 +1059,7 @@ class TestStreamSet(object):
             stream1.uuid(): stream1.version()
         }
         result =  streams.pin_versions(expected)
-        assert result == expected
+        assert streams is result
 
 
     def test_pin_versions_with_argument(self):
@@ -1068,7 +1068,7 @@ class TestStreamSet(object):
         """
         streams = StreamSet([1,2])
         expected = [3,4]
-        assert streams.pin_versions(expected) == expected
+        assert streams.pin_versions(expected) == streams
         assert streams._pinned_versions == expected
 
 
@@ -1081,7 +1081,7 @@ class TestStreamSet(object):
         expected = {
             uu: 42
         }
-        assert streams.pin_versions(expected) == expected
+        assert streams.pin_versions(expected) == streams
         assert streams._pinned_versions == expected
 
 
@@ -1095,7 +1095,7 @@ class TestStreamSet(object):
             uu: 42
         }
 
-        assert streams.pin_versions(expected) == expected
+        assert streams.pin_versions(expected) == streams
         assert streams._pinned_versions == expected
 
 

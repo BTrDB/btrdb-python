@@ -845,7 +845,7 @@ class StreamSetBase(Sequence):
 
 
         self._pinned_versions = self._latest_versions() if not versions else versions
-        return self._pinned_versions
+        return self
 
     def versions(self):
         """
@@ -864,7 +864,7 @@ class StreamSetBase(Sequence):
             A dict containing the stream UUID and version ints as key/values
 
         """
-        return self._pinned_versions if self._pinned_versions else self.pin_versions()
+        return self._pinned_versions if self._pinned_versions else self._latest_versions()
 
     def count(self):
         """
@@ -919,9 +919,10 @@ class StreamSetBase(Sequence):
         earliest = []
         params = self._params_from_filters()
         start = params.get("start", MINIMUM_TIME)
+        versions = self.versions()
 
         for s in self._streams:
-            version = self.versions()[s.uuid]
+            version = versions.get(s.uuid, 0)
             point, _ = s.nearest(start, version=version, backward=False)
             earliest.append(point)
 
@@ -944,9 +945,10 @@ class StreamSetBase(Sequence):
         latest = []
         params = self._params_from_filters()
         start = params.get("end", MAXIMUM_TIME)
+        versions = self.versions()
 
         for s in self._streams:
-            version = self.versions()[s.uuid]
+            version = versions.get(s.uuid, 0)
             point, _ = s.nearest(start, version=version, backward=True)
             latest.append(point)
 
