@@ -919,9 +919,10 @@ class StreamSetBase(Sequence):
         earliest = []
         params = self._params_from_filters()
         start = params.get("start", MINIMUM_TIME)
+        versions = self.versions()
 
         for s in self._streams:
-            version = self.versions()[s.uuid]
+            version = versions.get(s.uuid, 0)
             point, _ = s.nearest(start, version=version, backward=False)
             earliest.append(point)
 
@@ -944,9 +945,10 @@ class StreamSetBase(Sequence):
         latest = []
         params = self._params_from_filters()
         start = params.get("end", MAXIMUM_TIME)
+        versions = self.versions()
 
         for s in self._streams:
-            version = self.versions()[s.uuid]
+            version = versions.get(s.uuid, 0)
             point, _ = s.nearest(start, version=version, backward=True)
             latest.append(point)
 
