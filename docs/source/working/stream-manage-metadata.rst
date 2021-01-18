@@ -32,7 +32,7 @@ Tags
 Tags are special key/value metadata that is most often used by the database for
 internal purposes.  As an example, the name of a :code:`Stream` is actually
 stored in the tags.  While you can update tags, it is not recommended that you
-add new tags or delete existing tags.
+add new tags or delete existing tags. Tag values have a 255 character limit.
 
 .. code-block:: python
 
@@ -52,7 +52,7 @@ making changes to the underlying time series data.
 
 By default the method will attempt to provide a cached copy of the annotations
 however you can request the latest version from the server using the `refresh`
-argument.
+argument. As with tags, annotations values also have a 255 character limit.
 
 .. code-block:: python
 
