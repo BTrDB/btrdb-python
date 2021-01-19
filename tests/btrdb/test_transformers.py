@@ -21,12 +21,11 @@ from io import StringIO, BytesIO
 import pytest
 from unittest.mock import Mock, PropertyMock
 import numpy as np
-from pandas import Series, DataFrame, Index, to_datetime
+from pandas import Series, DataFrame, Index
 
 from btrdb.stream import Stream, StreamSet
 from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import *
-from btrdb.utils.timez import to_nanoseconds, ns_to_datetime
 
 ##########################################################################
 ## Transformer Tests
