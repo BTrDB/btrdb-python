@@ -21,11 +21,12 @@ from io import StringIO, BytesIO
 import pytest
 from unittest.mock import Mock, PropertyMock
 import numpy as np
-from pandas import Series, DataFrame, Index
+from pandas import Series, DataFrame, Index, to_datetime
 
 from btrdb.stream import Stream, StreamSet
 from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import *
+from btrdb.utils.timez import to_nanoseconds, ns_to_datetime
 
 ##########################################################################
 ## Transformer Tests
@@ -251,16 +252,19 @@ class TestTransformers(object):
         result = to_series(statpoint_streamset)
         values = [2.0, 4.0, 6.0, 8.0]
         index = [1500000000100000000, 1500000000300000000, 1500000000500000000, 1500000000700000000]
-        assert (result[0] == Series(values, index=index)).all()
+        times = Index(index, dtype='datetime64[ns]')
+        assert (result[0] == Series(values, index=times)).all()
 
         values = [3.0, 5.0, 7.0, 9.0]
         index = [1500000000100000000, 1500000000300000000, 1500000000500000000, 1500000000700000000]
-        assert (result[1] == Series(values, index=index)).all()
+        times = Index(index, dtype='datetime64[ns]')
+        assert (result[1] == Series(values, index=times)).all()
 
         result = to_series(statpoint_streamset, agg="max")
         values = [2.5, 4.5, 6.5, 8.5]
         index = [1500000000100000000, 1500000000300000000, 1500000000500000000, 1500000000700000000]
-        assert (result[0] == Series(values, index=index)).all()
+        times = Index(index, dtype='datetime64[ns]')
+        assert (result[0] == Series(values, index=times)).all()
 
     def test_to_series_index_type(self, streamset):
         """
@@ -269,14 +273,6 @@ class TestTransformers(object):
         result = to_series(streamset)
         for series in result:
             assert series.index.dtype.name == 'datetime64[ns]'
-
-    def test_to_series_index_as_int(self, streamset):
-        """
-        assert datetime64_index: False produces 'int64' index
-        """
-        result = to_series(streamset, False)
-        for series in result:
-            assert series.index.dtype.name == 'int64'
 
     def test_to_series_index_as_int(self, streamset):
         """
