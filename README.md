@@ -83,7 +83,7 @@ This project includes a suite of automated tests based upon [pytest](https://doc
 
     $ make test
 
-Aside from basic unit tests, the test suite is configured to use [pyflakes](https://github.com/PyCQA/pyflakes) for linting and style checking as well as [coverage](https://coverage.readthedocs.io) for measuring test coverage.
+Aside from basic unit tests, the test suite is configured to use [pytest-flake8](https://github.com/tholo/pytest-flake8) for linting and style checking as well as [coverage](https://coverage.readthedocs.io) for measuring test coverage.
 
 Note that the test suite has additional dependencies that must be installed for them to successfully run: `pip install -r tests/requirements.txt`.
 
