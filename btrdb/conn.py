@@ -26,7 +26,7 @@ from grpc._cython.cygrpc import CompressionAlgorithm
 from btrdb.stream import Stream, StreamSet
 from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.conversion import to_uuid
-from btrdb.exceptions import NotFound, InvalidOperation
+from btrdb.exceptions import StreamNotFoundError, InvalidOperation
 
 ##########################################################################
 ## Module Variables
@@ -187,7 +187,7 @@ class BTrDB(object):
                     if len(found) == 1:
                         streams.append(found[0])
                         continue
-                    raise NotFound(f"Could not identify stream `{ident}`")
+                    raise StreamNotFoundError(f"Could not identify stream `{ident}`")
 
             raise ValueError(f"Could not identify stream based on `{ident}`.  Identifier must be UUID or collection/name.")
 

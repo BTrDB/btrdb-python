@@ -11,11 +11,22 @@
 Module for custom exceptions
 """
 
+# Handles grpc errors
+def handle_grpc_error(err):
+    if err.details() == "[404] stream does not exist":
+        raise StreamNotFoundError(
+            "Stream not found with provided uuid"
+        ) from None
+    elif err.details() == "failed to connect to all addresses":
+        raise ConnectionError() from None
+    raise err
+
 
 class BTrDBError(Exception):
     """
     The primary exception for grpc related errors.
     """
+
     def __init__(self, code, msg, mash):
         self.code = code
         self.msg = msg
@@ -50,17 +61,20 @@ class ConnectionError(Exception):
     """
     pass
 
+
 class InvalidOperation(Exception):
     """
     An invalid BTrDB operation has been requested.
     """
     pass
 
-class NotFound(Exception):
+
+class StreamNotFoundError(Exception):
     """
     A problem interacting with the BTrDB server.
     """
     pass
+
 
 class BTRDBValueError(ValueError):
     """
@@ -68,17 +82,20 @@ class BTRDBValueError(ValueError):
     """
     pass
 
+
 class BTRDBTypeError(TypeError):
     """
     A problem interacting with the BTrDB server.
     """
     pass
 
+
 class CredentialsFileNotFound(FileNotFoundError):
     """
     The credentials file could not be found.
     """
     pass
+
 
 class ProfileNotFound(Exception):
     """
