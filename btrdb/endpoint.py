@@ -25,30 +25,28 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import grpc
-
 from btrdb.grpcinterface import btrdb_pb2
 from btrdb.grpcinterface import btrdb_pb2_grpc
 from btrdb.point import RawPoint
-from btrdb.exceptions import BTrDBError, handle_grpc_error
+from btrdb.exceptions import BTrDBError
 from btrdb.utils.general import unpack_stream_descriptor
+from btrdb.errors import error_handler, gen_error_handler, check_proto_stat
 
 
 class Endpoint(object):
     def __init__(self, channel):
         self.stub = btrdb_pb2_grpc.BTrDBStub(channel)
 
+    @gen_error_handler
     def rawValues(self, uu, start, end, version=0):
         params = btrdb_pb2.RawValuesParams(
             uuid=uu.bytes, start=start, end=end, versionMajor=version
         )
-        try:
-            for result in self.stub.RawValues(params):
-                BTrDBError.checkProtoStat(result.stat)
-                yield result.values, result.versionMajor
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for result in self.stub.RawValues(params):
+            check_proto_stat(result.stat)
+            yield result.values, result.versionMajor
 
+    @gen_error_handler
     def alignedWindows(self, uu, start, end, pointwidth, version=0):
         params = btrdb_pb2.AlignedWindowsParams(
             uuid=uu.bytes,
@@ -57,13 +55,11 @@ class Endpoint(object):
             versionMajor=version,
             pointWidth=int(pointwidth),
         )
-        try:
-            for result in self.stub.AlignedWindows(params):
-                BTrDBError.checkProtoStat(result.stat)
-                yield result.values, result.versionMajor
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for result in self.stub.AlignedWindows(params):
+            check_proto_stat(result.stat)
+            yield result.values, result.versionMajor
 
+    @gen_error_handler
     def windows(self, uu, start, end, width, depth, version=0):
         params = btrdb_pb2.WindowsParams(
             uuid=uu.bytes,
@@ -73,34 +69,28 @@ class Endpoint(object):
             width=width,
             depth=depth,
         )
-        try:
-            for result in self.stub.Windows(params):
-                BTrDBError.checkProtoStat(result.stat)
-                yield result.values, result.versionMajor
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for result in self.stub.Windows(params):
+            check_proto_stat(result.stat)
+            yield result.values, result.versionMajor
 
+    @error_handler
     def streamInfo(self, uu, omitDescriptor, omitVersion):
         params = btrdb_pb2.StreamInfoParams(
             uuid=uu.bytes, omitVersion=omitVersion, omitDescriptor=omitDescriptor
         )
-        try:
-            result = self.stub.StreamInfo(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        result = self.stub.StreamInfo(params)
         desc = result.descriptor
-        BTrDBError.checkProtoStat(result.stat)
+        check_proto_stat(result.stat)
         tagsanns = unpack_stream_descriptor(desc)
         return desc.collection, desc.propertyVersion, tagsanns[0], tagsanns[1], result.versionMajor
 
+    @error_handler
     def obliterate(self, uu):
         params = btrdb_pb2.ObliterateParams(uuid=uu.bytes)
-        try:
-            result = self.stub.Obliterate(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.Obliterate(params)
+        check_proto_stat(result.stat)
 
+    @error_handler
     def setStreamAnnotations(self, uu, expected, changes, removals):
         annkvlist = []
         for k, v in changes.items():
@@ -118,12 +108,10 @@ class Endpoint(object):
             changes=annkvlist,
             removals=removals,
         )
-        try:
-            result = self.stub.SetStreamAnnotations(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.SetStreamAnnotations(params)
+        check_proto_stat(result.stat)
 
+    @error_handler
     def setStreamTags(self, uu, expected, tags, collection):
         tag_data = []
         for k, v in tags.items():
@@ -141,12 +129,10 @@ class Endpoint(object):
             tags=tag_data,
             collection=collection,
         )
-        try:
-            result = self.stub.SetStreamTags(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.SetStreamTags(params)
+        check_proto_stat(result.stat)
 
+    @error_handler
     def create(self, uu, collection, tags, annotations):
         tagkvlist = []
         for k, v in tags.items():
@@ -159,12 +145,10 @@ class Endpoint(object):
         params = btrdb_pb2.CreateParams(
             uuid=uu.bytes, collection=collection, tags=tagkvlist, annotations=annkvlist
         )
-        try:
-            result = self.stub.Create(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.Create(params)
+        check_proto_stat(result.stat)
 
+    @gen_error_handler
     def listCollections(self, prefix):
         """
         Returns a generator for windows of collection paths matching search
@@ -174,13 +158,11 @@ class Endpoint(object):
         collection paths : list[str]
         """
         params = btrdb_pb2.ListCollectionsParams(prefix=prefix)
-        try:
-            for msg in self.stub.ListCollections(params):
-                BTrDBError.checkProtoStat(msg.stat)
-                yield msg.collections
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for msg in self.stub.ListCollections(params):
+            check_proto_stat(msg.stat)
+            yield msg.collections
 
+    @gen_error_handler
     def lookupStreams(self, collection, isCollectionPrefix, tags, annotations):
         tagkvlist = []
         for k, v in tags.items():
@@ -208,24 +190,20 @@ class Endpoint(object):
             tags=tagkvlist,
             annotations=annkvlist,
         )
-        try:
-            for result in self.stub.LookupStreams(params):
-                BTrDBError.checkProtoStat(result.stat)
-                yield result.results
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for result in self.stub.LookupStreams(params):
+            check_proto_stat(result.stat)
+            yield result.results
 
+    @error_handler
     def nearest(self, uu, time, version, backward):
         params = btrdb_pb2.NearestParams(
             uuid=uu.bytes, time=time, versionMajor=version, backward=backward
         )
-        try:
-            result = self.stub.Nearest(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.Nearest(params)
+        check_proto_stat(result.stat)
         return result.value, result.versionMajor
-
+    
+    @gen_error_handler
     def changes(self, uu, fromVersion, toVersion, resolution):
         params = btrdb_pb2.ChangesParams(
             uuid=uu.bytes,
@@ -233,13 +211,11 @@ class Endpoint(object):
             toMajor=toVersion,
             resolution=resolution,
         )
-        try:
-            for result in self.stub.Changes(params):
-                BTrDBError.checkProtoStat(result.stat)
-                yield result.ranges, result.versionMajor
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for result in self.stub.Changes(params):
+            check_proto_stat(result.stat)
+            yield result.ranges, result.versionMajor
 
+    @error_handler
     def insert(self, uu, values, policy):
         policy_map = {
             "never": btrdb_pb2.MergePolicy.NEVER,
@@ -254,57 +230,45 @@ class Endpoint(object):
             values=protoValues,
             merge_policy=policy_map[policy],
         )
-        try:
-            result = self.stub.Insert(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.Insert(params)
+        check_proto_stat(result.stat)
         return result.versionMajor
 
+    @error_handler
     def deleteRange(self, uu, start, end):
         params = btrdb_pb2.DeleteParams(uuid=uu.bytes, start=start, end=end)
-        try:
-            result = self.stub.Delete(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.Delete(params)
+        check_proto_stat(result.stat)
         return result.versionMajor
 
+    @error_handler
     def info(self):
         params = btrdb_pb2.InfoParams()
-        try:
-            result = self.stub.Info(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.Info(params)
+        check_proto_stat(result.stat)
         return result
 
+    @error_handler
     def faultInject(self, typ, args):
         params = btrdb_pb2.FaultInjectParams(type=typ, params=args)
-        try:
-            result = self.stub.FaultInject(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.FaultInject(params)
+        check_proto_stat(result.stat)
         return result.rv
 
+    @error_handler
     def flush(self, uu):
         params = btrdb_pb2.FlushParams(uuid=uu.bytes)
-        try:
-            result = self.stub.Flush(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.Flush(params)
+        check_proto_stat(result.stat)
 
+    @error_handler
     def getMetadataUsage(self, prefix):
         params = btrdb_pb2.MetadataUsageParams(prefix=prefix)
-        try:
-            result = self.stub.GetMetadataUsage(params)
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
-        BTrDBError.checkProtoStat(result.stat)
+        result = self.stub.GetMetadataUsage(params)
+        check_proto_stat(result.stat)
         return result.tags, result.annotations
 
+    @gen_error_handler
     def generateCSV(self, queryType, start, end, width, depth, includeVersions, *streams):
         protoStreams = [btrdb_pb2.StreamCSVConfig(version = stream[0],
                         label = stream[1],
@@ -317,18 +281,13 @@ class Endpoint(object):
                                             depth = depth,
                                             includeVersions = includeVersions,
                                             streams = protoStreams)
-        try:
-            for result in self.stub.GenerateCSV(params):
-                BTrDBError.checkProtoStat(result.stat)
-                yield result.row
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for result in self.stub.GenerateCSV(params):
+            check_proto_stat(result.stat)
+            yield result.row
 
+    @gen_error_handler
     def sql_query(self, stmt, params=[]):
         request = btrdb_pb2.SQLQueryParams(query=stmt, params=params)
-        try:
-            for page in self.stub.SQLQuery(request):
-                BTrDBError.checkProtoStat(page.stat)
-                yield page.SQLQueryRow
-        except grpc.RpcError as e:
-            handle_grpc_error(e)
+        for page in self.stub.SQLQuery(request):
+            check_proto_stat(page.stat)
+            yield page.SQLQueryRow
