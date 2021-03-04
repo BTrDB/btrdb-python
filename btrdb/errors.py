@@ -124,7 +124,7 @@ gen_error_handler = partial(_error, generator=True)
 ##########################################################################
 
 # NOTE: this function relies on matching strings and isn't really ideal.
-# this is more of a band-aid solution while we figure out how to send 
+# this is more of a band-aid solution while we figure out how to send
 # better errors from btrdb-server
 def handle_grpc_error(err):
     """
