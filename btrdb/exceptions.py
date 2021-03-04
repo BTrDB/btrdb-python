@@ -71,6 +71,12 @@ class AmbiguousStream(InvalidOperation):
     """
     pass
 
+class PermissionDenied(InvalidOperation):
+    """
+    User does not have permission to perform an operation
+    """
+    pass
+
 class BTRDBValueError(ValueError, BTrDBError):
     """
     An invalid value has been passed to a BTrDB operation.

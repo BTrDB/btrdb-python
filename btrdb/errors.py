@@ -28,7 +28,8 @@ from btrdb.exceptions import (
     BadValue,
     RecycledUUID,
     BadSQLValue,
-    VersionNotAvailable
+    VersionNotAvailable,
+    PermissionDenied
 )
 
 ##########################################################################
@@ -141,9 +142,11 @@ def handle_grpc_error(err):
         raise StreamNotFoundError("Stream not found with provided uuid") from None
     elif details == "failed to connect to all addresses":
         raise ConnectionError("Failed to connect to BTrDB") from None
-    elif any(e in err.debug_error_string() for e in BTRDB_SERVER_ERRORS):
+    elif any(str(e) in err.debug_error_string() for e in BTRDB_SERVER_ERRORS):
         raise BTRDBServerError("An error has occured with btrdb-server") from None
-    raise BTrDBError(err.code(), details, None) from None
+    elif str(err.code()) == "StatusCode.PERMISSION_DENIED":
+        raise PermissionDenied(details) from None
+    raise BTrDBError(details) from None
 
 def check_proto_stat(stat):
     """
