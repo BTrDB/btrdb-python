@@ -12,6 +12,7 @@
 ##########################################################################
 
 import grpc
+import inspect
 from functools import partial, wraps
 from btrdb.exceptions import (
     BTrDBError,
@@ -90,21 +91,19 @@ BTRDB_SERVER_ERRORS = [
 def consume_generator(fn, *args, **kwargs):
     yield from fn(*args, **kwargs)
 
-def _error(fn, generator):
+def error_handler(fn):
     """
     Base decorator that checks endpoint functions for grpc.RpcErrors
 
     Parameters
     ----------
     fn: function
-    generator: bool
-        specifies whether or not the input function is a generator
     """
     # allows input func to keep its name and metadata
     @wraps(fn)
     def wrap(*args, **kwargs):
         try:
-            if generator:
+            if inspect.isgeneratorfunction(fn):
                 # putting yield directly in this function turns it into a generator,
                 # so keeping it separate
                 consume_generator(fn, *args, **kwargs)
@@ -112,13 +111,6 @@ def _error(fn, generator):
         except grpc.RpcError as e:
             handle_grpc_error(e)
     return wrap
-
-
-# Create two partial functions to be used as error handling decorators for
-# endpoint functions. One is used for regular endpoints, and one is used for
-# endpoints that are generators
-error_handler = partial(_error, generator=False)
-gen_error_handler = partial(_error, generator=True)
 
 ##########################################################################
 ## gRPC error handling
@@ -129,7 +121,7 @@ gen_error_handler = partial(_error, generator=True)
 # better errors from btrdb-server
 def handle_grpc_error(err):
     """
-    Gets called by endpoint functions when a gRPC error is encountered.
+    Called by endpoint functions when a gRPC error is encountered.
     Checks error details strings to catch known errors, if error is not
     known then a generic BTrDBError gets raised
 
@@ -142,11 +134,12 @@ def handle_grpc_error(err):
         raise StreamNotFoundError("Stream not found with provided uuid") from None
     elif details == "failed to connect to all addresses":
         raise ConnectionError("Failed to connect to BTrDB") from None
-    elif any(str(e) in err.debug_error_string() for e in BTRDB_SERVER_ERRORS):
+    elif any(str(e) in err.details() for e in BTRDB_SERVER_ERRORS):
         raise BTRDBServerError("An error has occured with btrdb-server") from None
     elif str(err.code()) == "StatusCode.PERMISSION_DENIED":
         raise PermissionDenied(details) from None
     raise BTrDBError(details) from None
+
 
 def check_proto_stat(stat):
     """

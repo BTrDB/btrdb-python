@@ -30,14 +30,14 @@ from btrdb.grpcinterface import btrdb_pb2_grpc
 from btrdb.point import RawPoint
 from btrdb.exceptions import BTrDBError
 from btrdb.utils.general import unpack_stream_descriptor
-from btrdb.errors import error_handler, gen_error_handler, check_proto_stat
+from btrdb.errors import error_handler, check_proto_stat
 
 
 class Endpoint(object):
     def __init__(self, channel):
         self.stub = btrdb_pb2_grpc.BTrDBStub(channel)
 
-    @gen_error_handler
+    @error_handler
     def rawValues(self, uu, start, end, version=0):
         params = btrdb_pb2.RawValuesParams(
             uuid=uu.bytes, start=start, end=end, versionMajor=version
@@ -46,7 +46,7 @@ class Endpoint(object):
             check_proto_stat(result.stat)
             yield result.values, result.versionMajor
 
-    @gen_error_handler
+    @error_handler
     def alignedWindows(self, uu, start, end, pointwidth, version=0):
         params = btrdb_pb2.AlignedWindowsParams(
             uuid=uu.bytes,
@@ -59,7 +59,7 @@ class Endpoint(object):
             check_proto_stat(result.stat)
             yield result.values, result.versionMajor
 
-    @gen_error_handler
+    @error_handler
     def windows(self, uu, start, end, width, depth, version=0):
         params = btrdb_pb2.WindowsParams(
             uuid=uu.bytes,
@@ -148,7 +148,7 @@ class Endpoint(object):
         result = self.stub.Create(params)
         check_proto_stat(result.stat)
 
-    @gen_error_handler
+    @error_handler
     def listCollections(self, prefix):
         """
         Returns a generator for windows of collection paths matching search
@@ -162,7 +162,7 @@ class Endpoint(object):
             check_proto_stat(msg.stat)
             yield msg.collections
 
-    @gen_error_handler
+    @error_handler
     def lookupStreams(self, collection, isCollectionPrefix, tags, annotations):
         tagkvlist = []
         for k, v in tags.items():
@@ -203,7 +203,7 @@ class Endpoint(object):
         check_proto_stat(result.stat)
         return result.value, result.versionMajor
     
-    @gen_error_handler
+    @error_handler
     def changes(self, uu, fromVersion, toVersion, resolution):
         params = btrdb_pb2.ChangesParams(
             uuid=uu.bytes,
@@ -268,7 +268,7 @@ class Endpoint(object):
         check_proto_stat(result.stat)
         return result.tags, result.annotations
 
-    @gen_error_handler
+    @error_handler
     def generateCSV(self, queryType, start, end, width, depth, includeVersions, *streams):
         protoStreams = [btrdb_pb2.StreamCSVConfig(version = stream[0],
                         label = stream[1],
@@ -285,7 +285,7 @@ class Endpoint(object):
             check_proto_stat(result.stat)
             yield result.row
 
-    @gen_error_handler
+    @error_handler
     def sql_query(self, stmt, params=[]):
         request = btrdb_pb2.SQLQueryParams(query=stmt, params=params)
         for page in self.stub.SQLQuery(request):
