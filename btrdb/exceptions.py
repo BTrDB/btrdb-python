@@ -11,8 +11,8 @@
 ## Imports
 ##########################################################################
 
-import grpc
 import inspect
+from grpc import RpcError
 from functools import wraps
 
 ##########################################################################
@@ -24,7 +24,7 @@ def consume_generator(fn, *args, **kwargs):
     # when trying to call next(), in that case we want to yield an Exception
     try:
         yield from fn(*args, **kwargs)
-    except grpc.RpcError as e:
+    except RpcError as e:
         handle_grpc_error(e)
 
 def error_handler(fn):
@@ -42,7 +42,7 @@ def error_handler(fn):
             return consume_generator(fn, *args, **kwargs)
         try:
             return fn(*args, **kwargs)
-        except grpc.RpcError as e:
+        except RpcError as e:
             handle_grpc_error(e)
     return wrap
 
