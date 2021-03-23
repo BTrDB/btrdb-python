@@ -24,10 +24,18 @@ from collections.abc import Sequence
 from btrdb.utils.buffer import PointBuffer
 from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import StreamSetTransformer
-from btrdb.exceptions import BTrDBError, InvalidOperation
 from btrdb.utils.timez import currently_as_ns, to_nanoseconds
 from btrdb.utils.conversion import AnnotationEncoder, AnnotationDecoder
 from btrdb.utils.general import pointwidth as pw
+from btrdb.exceptions import (
+    BTrDBError,
+    BTRDBTypeError,
+    BTRDBValueError,
+    InvalidOperation,
+    InvalidCollection,
+    StreamNotFoundError,
+    NoSuchPoint
+)
 
 
 ##########################################################################
@@ -70,7 +78,7 @@ class Stream(object):
             setattr(self, "_{}".format(key), value)
         if db_values:
             bad_keys = ", ".join(db_values.keys())
-            raise TypeError("got unexpected db_values argument(s) '{}'".format(bad_keys))
+            raise BTRDBTypeError("got unexpected db_values argument(s) '{}'".format(bad_keys))
 
         self._btrdb = btrdb
         self._uuid = uuid
@@ -119,7 +127,7 @@ class Stream(object):
             self.refresh_metadata()
             return True
         except BTrDBError as bte:
-            if bte.code == 404:
+            if isinstance(bte, StreamNotFoundError):
                 return False
             raise bte
 
@@ -442,7 +450,7 @@ class Stream(object):
         tags = self.tags() if tags is None else tags
         collection = self.collection if collection is None else collection
         if collection is None:
-            raise ValueError("collection must be provided to update tags or collection")
+            raise BTRDBValueError("collection must be provided to update tags or collection")
 
         self._btrdb.ep.setStreamTags(
             uu=self.uuid,
@@ -521,16 +529,16 @@ class Stream(object):
 
         """
         if tags is None and annotations is None and collection is None:
-            raise ValueError("you must supply a tags, annotations, or collection argument")
+            raise BTRDBValueError("you must supply a tags, annotations, or collection argument")
 
         if tags is not None and isinstance(tags, dict) is False:
-            raise TypeError("tags must be of type dict")
+            raise BTRDBTypeError("tags must be of type dict")
 
         if annotations is not None and isinstance(annotations, dict) is False:
-            raise TypeError("annotations must be of type dict")
+            raise BTRDBTypeError("annotations must be of type dict")
 
         if collection is not None and isinstance(collection, str) is False:
-            raise TypeError("collection must be of type string")
+            raise InvalidCollection("collection must be of type string")
 
         if tags is not None or collection is not None:
             self._update_tags_collection(tags, collection)
@@ -755,12 +763,11 @@ class Stream(object):
             the value was retrieved at (tuple(RawPoint, int)).
 
         """
-
         try:
             rp, version = self._btrdb.ep.nearest(self._uuid,
                 to_nanoseconds(time), version, backward)
         except BTrDBError as exc:
-            if exc.code != 401:
+            if not isinstance(exc, NoSuchPoint):
                 raise
             return None
 
@@ -837,11 +844,11 @@ class StreamSetBase(Sequence):
         """
         if versions is not None:
             if not isinstance(versions, dict):
-                raise TypeError("`versions` argument must be dict")
+                raise BTRDBTypeError("`versions` argument must be dict")
 
             for key in versions.keys():
                 if not isinstance(key, uuidlib.UUID):
-                    raise TypeError("version keys must be type UUID")
+                    raise BTRDBTypeError("version keys must be type UUID")
 
 
         self._pinned_versions = self._latest_versions() if not versions else versions
@@ -976,7 +983,7 @@ class StreamSetBase(Sequence):
         start = params.get("start", None)
 
         if (end is not None and end <= now) or (start is not None and start > now):
-            raise ValueError("current time is not included in filtered stream range")
+            raise BTRDBValueError("current time is not included in filtered stream range")
 
         for s in self._streams:
             version = self.versions()[s.uuid]
@@ -1040,7 +1047,7 @@ class StreamSetBase(Sequence):
             elif isinstance(collection, str):
                 obj._streams = [s for s in obj._streams if s.collection.lower() == collection.lower()]
             else:
-                raise TypeError("collection must be string or compiled regex")
+                raise BTRDBTypeError("collection must be string or compiled regex")
 
         # filter by name
         if name is not None:
@@ -1049,7 +1056,7 @@ class StreamSetBase(Sequence):
             elif isinstance(name, str):
                 obj._streams = [s for s in obj._streams if s.name.lower() == name.lower()]
             else:
-                raise TypeError("name must be string or compiled regex")
+                raise BTRDBTypeError("name must be string or compiled regex")
 
         # filter by unit
         if unit is not None:
@@ -1058,7 +1065,7 @@ class StreamSetBase(Sequence):
             elif isinstance(unit, str):
                 obj._streams = [s for s in obj._streams if s.tags().get("unit", "").lower() == unit.lower()]
             else:
-                raise TypeError("unit must be string or compiled regex")
+                raise BTRDBTypeError("unit must be string or compiled regex")
 
         # filter by tags
         if tags:
@@ -1339,7 +1346,7 @@ class StreamFilter(object):
         self.end = to_nanoseconds(end) if end else None
 
         if self.start is None and self.end is None:
-            raise ValueError("A valid `start` or `end` must be supplied")
+            raise BTRDBValueError("A valid `start` or `end` must be supplied")
 
         if self.start is not None and self.end is not None and self.start >= self.end:
-            raise ValueError("`start` must be strictly less than `end` argument")
+            raise BTRDBValueError("`start` must be strictly less than `end` argument")

@@ -145,17 +145,17 @@ class TestBTrDB(object):
     @patch('btrdb.conn.BTrDB.streams_in_collection')
     def test_streams_raises_err(self, mock_func):
         """
-        Assert streams raises NotFound
+        Assert streams raises StreamNotFoundError
         """
         db = BTrDB(None)
         ident = "zoo/animal/dog"
 
         mock_func.return_value = []
-        with pytest.raises(NotFound) as exc:
+        with pytest.raises(StreamNotFoundError) as exc:
             db.streams(ident)
 
         mock_func.return_value = [1,2]
-        with pytest.raises(NotFound) as exc:
+        with pytest.raises(StreamNotFoundError) as exc:
             db.streams(ident)
 
         # check that does not raise if one returned

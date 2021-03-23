@@ -29,7 +29,13 @@ from btrdb.endpoint import Endpoint
 from btrdb import MINIMUM_TIME, MAXIMUM_TIME
 from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
 from btrdb.point import RawPoint, StatPoint
-from btrdb.exceptions import BTrDBError, InvalidOperation
+from btrdb.exceptions import (
+    BTrDBError,
+    InvalidOperation,
+    StreamNotFoundError,
+    InvalidCollection,
+    NoSuchPoint
+)
 from btrdb.grpcinterface import btrdb_pb2
 
 RawPointProto =  btrdb_pb2.RawPoint
@@ -198,7 +204,7 @@ class TestStream(object):
         assert "annotations must be of type dict" in str(exc)
 
         # collection not string
-        with pytest.raises(TypeError) as exc:
+        with pytest.raises(InvalidCollection) as exc:
             stream.update(collection=42)
         assert "collection must be of type string" in str(exc)
 
@@ -416,7 +422,9 @@ class TestStream(object):
         """
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         stream = Stream(btrdb=BTrDB(Mock(Endpoint)), uuid=uu)
-        stream.refresh_metadata = Mock(side_effect=BTrDBError(code=404, msg="hello", mash=""))
+        stream.refresh_metadata = Mock(side_effect=StreamNotFoundError(
+            "stream not found with provided uuid"
+        ))
 
         assert stream.exists() == False
         assert stream.refresh_metadata.call_count == 1
@@ -627,7 +635,7 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
+        endpoint.nearest = Mock(side_effect=NoSuchPoint("next point does not exist"))
 
         assert stream.earliest() is None
         endpoint.nearest.assert_called_once_with(uu, MINIMUM_TIME, 0, False)
@@ -640,11 +648,11 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+        endpoint.nearest = Mock(side_effect=BTrDBError("empty"))
 
         with pytest.raises(BTrDBError) as exc:
             stream.earliest()
-        assert exc.value.code == 999
+        assert exc.value.args[0] == "empty"
         endpoint.nearest.assert_called_once_with(uu, MINIMUM_TIME, 0, False)
 
 
@@ -669,7 +677,7 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
+        endpoint.nearest = Mock(side_effect=NoSuchPoint("empty"))
 
         assert stream.latest() is None
         endpoint.nearest.assert_called_once_with(uu, MAXIMUM_TIME, 0, True)
@@ -682,11 +690,11 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+        endpoint.nearest = Mock(side_effect=BTrDBError("empty"))
 
         with pytest.raises(BTrDBError) as exc:
             stream.latest()
-        assert exc.value.code == 999
+        assert exc.value.args[0] == "empty"
         endpoint.nearest.assert_called_once_with(uu, MAXIMUM_TIME, 0, True)
 
 
@@ -715,7 +723,7 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
+        endpoint.nearest = Mock(side_effect=NoSuchPoint("empty"))
         ns_fake_time = 1514808000000000000
         mocked.return_value = ns_fake_time
 
@@ -731,13 +739,13 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+        endpoint.nearest = Mock(side_effect=BTrDBError("empty"))
         ns_fake_time = 1514808000000000000
         mocked.return_value = ns_fake_time
 
         with pytest.raises(BTrDBError) as exc:
             stream.current()
-        assert exc.value.code == 999
+        assert exc.value.args[0] == "empty"
         endpoint.nearest.assert_called_once_with(uu, ns_fake_time, 0, True)
 
 
@@ -798,7 +806,7 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(401,"empty",None))
+        endpoint.nearest = Mock(side_effect=NoSuchPoint("next point does not exist"))
 
         assert stream.nearest(0, 0, False) is None
         endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
@@ -811,11 +819,11 @@ class TestStream(object):
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
-        endpoint.nearest = Mock(side_effect=BTrDBError(999,"empty",None))
+        endpoint.nearest = Mock(side_effect=BTrDBError("foo"))
 
         with pytest.raises(BTrDBError) as exc:
             stream.nearest(0, 0, False)
-        assert exc.value.code == 999
+        assert exc.value.args[0] == "foo"
         endpoint.nearest.assert_called_once_with(uu, 0, 0, False)
 
 
@@ -858,7 +866,7 @@ class TestStream(object):
         """
         uu = uuid.UUID('0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a')
         endpoint = Mock(Endpoint)
-        endpoint.obliterate = Mock(side_effect=BTrDBError(code=404, msg="hello", mash=""))
+        endpoint.obliterate = Mock(side_effect=StreamNotFoundError())
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         with pytest.raises(BTrDBError):
