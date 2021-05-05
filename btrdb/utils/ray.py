@@ -22,7 +22,8 @@ def register_serializer(conn_str=None, apikey=None, profile=None):
         found in the user's predictive grid credentials file
         `~/.predictivegrid/credentials.yaml`.
     """
-    ray.register_custom_serializer(
+    assert ray.is_initialized(), "Need to call ray.init() before registering custom serializer"
+    ray.util.register_serializer(
     BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
 
 def btrdb_serializer(_):
