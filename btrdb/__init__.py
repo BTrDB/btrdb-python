@@ -20,8 +20,8 @@ from btrdb.endpoint import Endpoint
 from btrdb.exceptions import ConnectionError
 from btrdb.version import get_version
 from btrdb.utils.credentials import credentials_by_profile, credentials
+from btrdb.utils.ray import register_serializer
 from btrdb.stream import MINIMUM_TIME, MAXIMUM_TIME
-from btrdb.utils import register_serializer
 from warnings import warn
 
 ##########################################################################
