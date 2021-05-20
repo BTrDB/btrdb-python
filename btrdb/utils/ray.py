@@ -23,8 +23,14 @@ def register_serializer(conn_str=None, apikey=None, profile=None):
         `~/.predictivegrid/credentials.yaml`.
     """
     assert ray.is_initialized(), "Need to call ray.init() before registering custom serializer"
-    ray.util.register_serializer(
-    BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
+    # TODO: check the version using the 'semver' package?
+    if ray.__version__ == "0.8.4":
+        ray.register_custom_serializer(
+        BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
+    elif ray.__version__ in ["1.2.0", "1.3.0"]:
+    # TODO: check different versions of ray?
+        ray.util.register_serializer(
+        BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
 
 def btrdb_serializer(_):
     """
