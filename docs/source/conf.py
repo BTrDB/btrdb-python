@@ -26,8 +26,8 @@ from btrdb.version import get_version
 # -- Project information -----------------------------------------------------
 
 project = 'btrdb'
-copyright = '2019, Michael P. Andersen'
-author = 'Michael P. Andersen'
+copyright = '2021, Ping Things, Inc.'
+author = 'PingThingsIO'
 
 # The short X.Y version
 version = get_version()
@@ -93,7 +93,7 @@ html_theme = 'alabaster'
 #
 html_theme_options = {
     'show_powered_by': False,
-    'github_user': 'BTrDB',
+    'github_user': 'PingThingsIO',
     'github_repo': 'btrdb-python',
     'travis_button': False,
     'github_banner': False,
@@ -159,7 +159,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'btrdb-python.tex', 'btrdb-python Documentation',
-     'Michael Andersen', 'manual'),
+     'PingThingsIO', 'manual'),
 ]
 
 
