@@ -26,7 +26,7 @@ from btrdb.version import get_version
 # -- Project information -----------------------------------------------------
 
 project = 'btrdb'
-copyright = '2021, PingThingsIO'
+copyright = '2021, Ping Things, Inc.'
 author = 'PingThingsIO'
 
 # The short X.Y version
