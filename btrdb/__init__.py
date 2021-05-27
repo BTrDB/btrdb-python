@@ -20,7 +20,9 @@ from btrdb.endpoint import Endpoint
 from btrdb.exceptions import ConnectionError
 from btrdb.version import get_version
 from btrdb.utils.credentials import credentials_by_profile, credentials
+from btrdb.utils.ray import register_serializer
 from btrdb.stream import MINIMUM_TIME, MAXIMUM_TIME
+from warnings import warn
 
 ##########################################################################
 ## Module Variables
@@ -40,7 +42,7 @@ BTRDB_PROFILE = "BTRDB_PROFILE"
 def _connect(endpoints=None, apikey=None):
     return BTrDB(Endpoint(Connection(endpoints, apikey=apikey).channel))
 
-def connect(conn_str=None, apikey=None, profile=None):
+def connect(conn_str=None, apikey=None, profile=None, shareable=False):
     """
     Connect to a BTrDB server.
 
@@ -57,6 +59,12 @@ def connect(conn_str=None, apikey=None, profile=None):
         The name of a profile containing the required connection information as
         found in the user's predictive grid credentials file
         `~/.predictivegrid/credentials.yaml`.
+    shareable: bool, default=False
+        Whether or not the connection can be "shared" in a distributed setting such
+        as Ray workers. If set to True, the connection can be serialized and sent
+        to other workers so that data can be retrieved in parallel; **however**, this
+        is less secure because it is possible for other users of the Ray cluster to
+        use your API key to fetch data.
 
     Returns
     -------
@@ -67,6 +75,11 @@ def connect(conn_str=None, apikey=None, profile=None):
     # do not allow user to provide both address and profile
     if conn_str and profile:
         raise ValueError("Received both conn_str and profile arguments.")
+
+    # check shareable flag and register custom serializer if necessary
+    if shareable:
+        warn("a shareable connection is potentially insecure; other users of the same cluster may be able to access your API key")
+        register_serializer(conn_str=conn_str, apikey=apikey, profile=profile)
 
     # use specific profile if requested
     if profile:

@@ -2,6 +2,8 @@ from functools import partial
 
 import ray
 
+import semver
+
 import btrdb
 from btrdb.conn import BTrDB
 
@@ -22,8 +24,18 @@ def register_serializer(conn_str=None, apikey=None, profile=None):
         found in the user's predictive grid credentials file
         `~/.predictivegrid/credentials.yaml`.
     """
-    ray.register_custom_serializer(
-    BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
+    assert ray.is_initialized(), "Need to call ray.init() before registering custom serializer"
+    # TODO: check the version using the 'semver' package?
+    ver = semver.VersionInfo.parse(ray.__version__)
+    if ver.major == 0:
+        ray.register_custom_serializer(
+        BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
+    elif ver.major == 1 and ver.minor in range(2, 4):
+    # TODO: check different versions of ray?
+        ray.util.register_serializer(
+        BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
+    else:
+        raise Exception("Ray version %s does not have custom serialization. Please upgrade to >= 1.2.0" % ray.__version__)
 
 def btrdb_serializer(_):
     """
