@@ -15,7 +15,7 @@ Maintains version and package information for deployment.
 ## Module Info
 ##########################################################################
 
-__version_info__ = { 'major': 5, 'minor': 11, 'micro': 5, 'releaselevel': 'final'}
+__version_info__ = { 'major': 5, 'minor': 11, 'micro': 6, 'releaselevel': 'final'}
 
 ##########################################################################
 ## Helper Functions
