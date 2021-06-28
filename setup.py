@@ -36,7 +36,7 @@ LICENSE      = "BSD-3-Clause"
 REPOSITORY   = "https://github.com/PingThingsIO/btrdb-python"
 PACKAGE      = "btrdb"
 URL          = "http://btrdb.io/"
-DOCS_URL     = "https://btrdb.readthedocs.io/en/latest/"
+DOCS_URL     = "https://btrdb-python.readthedocs.io/en/latest/"
 
 ## Define the keywords
 KEYWORDS     = ('btrdb', 'berkeley', 'timeseries', 'database', 'bindings' 'gRPC')
