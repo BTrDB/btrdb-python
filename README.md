@@ -5,7 +5,7 @@ These are BTrDB Bindings for Python allowing you painless and productive access 
 
 ## Sample Code
 
-Our goal is to make BTrDB as easy to use as possible, focusing on integration with other tools and the productivity of our users.  In keeping with this we continue to add new features such as easy transformation to numpy arrays, pandas Series, etc.  See the sample code below and then checkout our [documentation](https://btrdb.readthedocs.io/en/latest/) for more in depth instructions.
+Our goal is to make BTrDB as easy to use as possible, focusing on integration with other tools and the productivity of our users.  In keeping with this we continue to add new features such as easy transformation to numpy arrays, pandas Series, etc.  See the sample code below and then checkout our [documentation](https://btrdb-python.readthedocs.io/en/latest/) for more in depth instructions.
 
 
     import btrdb
