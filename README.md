@@ -105,7 +105,7 @@ The project documentation is written in reStructuredText and is built using Sphi
 
     $ make html
 
-This will build the HTML documentation locally in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built on every GitHub release and hosted on [Read The Docs](https://btrdb.readthedocs.io/en/latest/).
+This will build the HTML documentation locally in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built on every GitHub release and hosted on [Read The Docs](https://btrdb-python.readthedocs.io/en/latest/).
 
 Note that the documentation also requires Sphix and other dependencies to successfully build: `pip install -r docs/requirements.txt`.
 
