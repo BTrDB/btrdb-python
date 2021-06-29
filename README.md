@@ -5,7 +5,7 @@ These are BTrDB Bindings for Python allowing you painless and productive access 
 
 ## Sample Code
 
-Our goal is to make BTrDB as easy to use as possible, focusing on integration with other tools and the productivity of our users.  In keeping with this we continue to add new features such as easy transformation to numpy arrays, pandas Series, etc.  See the sample code below and then checkout our [documentation](https://btrdb-python.readthedocs.io/en/latest/) for more in depth instructions.
+Our goal is to make BTrDB as easy to use as possible, focusing on integration with other tools and the productivity of our users.  In keeping with this we continue to add new features such as easy transformation to numpy arrays, pandas Series, etc.  See the sample code below and then checkout our [documentation](https://btrdb.readthedocs.io/en/latest/) for more in depth instructions.
 
 
     import btrdb
@@ -105,7 +105,7 @@ The project documentation is written in reStructuredText and is built using Sphi
 
     $ make html
 
-This will build the HTML documentation locally in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built on every GitHub release and hosted on [Read The Docs](https://btrdb-python.readthedocs.io/en/latest/).
+This will build the HTML documentation locally in `docs/build`, which can be viewed using `open docs/build/index.html`. Other formats (PDF, epub, etc) can be built using `docs/Makefile`. The documentation is automatically built on every GitHub release and hosted on [Read The Docs](https://btrdb.readthedocs.io/en/latest/).
 
 Note that the documentation also requires Sphix and other dependencies to successfully build: `pip install -r docs/requirements.txt`.
 
