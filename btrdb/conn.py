@@ -18,6 +18,7 @@ Connection related objects for the BTrDB library
 import os
 import re
 import json
+import certifi
 import uuid as uuidlib
 
 import grpc
@@ -66,10 +67,15 @@ class Connection(object):
             # certificates but will fail for custom CA certs. Allow the user
             # to specify a CA bundle via env var to overcome this
             env_bundle = os.getenv("BTRDB_CA_BUNDLE", "")
-            os_certs = "/etc/ssl/certs/ca-certificates.crt"
+
+            # certifi certs are provided as part of this package install
+            # https://github.com/certifi/python-certifi
+            lib_certs = certifi.where()
+
             ca_bundle = env_bundle
+
             if ca_bundle == "":
-                ca_bundle = os_certs
+                ca_bundle = lib_certs
             try:
                 with open(ca_bundle, "rb") as f:
                     contents = f.read()
