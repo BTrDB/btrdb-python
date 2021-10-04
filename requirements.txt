@@ -7,3 +7,4 @@ pytz
 
 # Misc libraries
 pyyaml
+certifi
