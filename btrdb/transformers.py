@@ -145,13 +145,15 @@ def to_dataframe(streamset, columns=None, agg="mean", name_callable=None):
 
 
     df = pd.DataFrame(to_dict(streamset,agg=agg))
-    df = df.set_index("time")
 
-    if agg == "all" and not streamset.allow_window:
-        stream_names = [[s.collection, s.name, prop] for s in streamset._streams for prop in _STAT_PROPERTIES]
-        df.columns=pd.MultiIndex.from_tuples(stream_names)
-    else:
-        df.columns =  columns if columns else _stream_names(streamset, name_callable)
+    if not df.empty:
+        df = df.set_index("time")
+
+        if agg == "all" and not streamset.allow_window:
+            stream_names = [[s.collection, s.name, prop] for s in streamset._streams for prop in _STAT_PROPERTIES]
+            df.columns=pd.MultiIndex.from_tuples(stream_names)
+        else:
+            df.columns =  columns if columns else _stream_names(streamset, name_callable)
 
     return df
 
