@@ -18,6 +18,7 @@ Connection related objects for the BTrDB library
 import os
 import re
 import json
+import certifi
 import uuid as uuidlib
 
 import grpc
@@ -65,12 +66,25 @@ class Connection(object):
             # grpc bundles its own CA certs which will work for all normal SSL
             # certificates but will fail for custom CA certs. Allow the user
             # to specify a CA bundle via env var to overcome this
-            ca_bundle = os.getenv("BTRDB_CA_BUNDLE","")
-            if ca_bundle != "":
+            env_bundle = os.getenv("BTRDB_CA_BUNDLE", "")
+
+            # certifi certs are provided as part of this package install
+            # https://github.com/certifi/python-certifi
+            lib_certs = certifi.where()
+
+            ca_bundle = env_bundle
+
+            if ca_bundle == "":
+                ca_bundle = lib_certs
+            try:
                 with open(ca_bundle, "rb") as f:
                     contents = f.read()
-            else:
-                contents = None
+            except Exception:
+                if env_bundle != "":
+                    # The user has given us something but we can't use it, we need to make noise
+                    raise Exception("BTRDB_CA_BUNDLE(%s) env is defined but could not read file" % ca_bundle)
+                else:
+                    contents = None
 
             if apikey is None:
                 self.channel = grpc.secure_channel(

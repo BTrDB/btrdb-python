@@ -1,8 +1,8 @@
 Welcome to btrdb docs!
 ======================
 
-.. image:: https://img.shields.io/travis/BTrDB/btrdb-python/master.svg
-    :target: https://travis-ci.org/BTrDB/btrdb-python
+.. image:: https://github.com/PingThingsIO/btrdb-python/actions/workflows/release.yaml/badge.svg
+    :target: https://github.com/PingThingsIO/btrdb-python/actions
 
 .. image:: https://readthedocs.org/projects/btrdb/badge/?version=latest
     :target: https://btrdb.readthedocs.io/en/latest/
