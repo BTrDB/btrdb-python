@@ -157,7 +157,7 @@ class StatPoint(object):
     @property
     def time(self):
         """
-        The stating time value of the time series within a range of time
+        The starting time of the time series within the stat point
         """
         return self._time
 
