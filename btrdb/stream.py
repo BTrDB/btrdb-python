@@ -690,11 +690,7 @@ class Stream(object):
             The end time in nanoseconds for the range to be queried. (see
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         width : int
-            The number of nanoseconds in each window, subject to the depth
-            parameter.
-        depth : int
-            The precision of the window duration as a power of 2 in nanoseconds.
-            E.g 30 would make the window duration accurate to roughly 1 second
+            The number of nanoseconds in each window.
         version : int
             The version of the stream to query.
 
@@ -716,13 +712,8 @@ class Stream(object):
         multiple of width, then end will be decreased to the greatest value less
         than end such that (end - start) is a multiple of `width` (i.e., we set
         end = start + width * floordiv(end - start, width). The `depth`
-        parameter is an optimization that can be used to speed up queries on
-        fast queries. Each window will be accurate to 2^depth nanoseconds. If
-        depth is zero, the results are accurate to the nanosecond. On a dense
-        stream for large windows, this accuracy may not be required. For example
-        for a window of a day, +- one second may be appropriate, so a depth of
-        30 can be specified. This is much faster to execute on the database
-        side.
+        parameter previously available has been deprecated. The only valid value
+        for depth is now 0.
 
         """
         materialized = []
@@ -1118,7 +1109,8 @@ class StreamSetBase(Sequence):
             The number of nanoseconds to use for each window size.
         depth : int
             The requested accuracy of the data up to 2^depth nanoseconds.  A
-            depth of 0 is accurate to the nanosecond.
+            depth of 0 is accurate to the nanosecond. This is now the only
+            valid value for depth.
 
         Returns
         -------
@@ -1136,13 +1128,8 @@ class StreamSetBase(Sequence):
         less than the end timestamp. If (end - start) is not a multiple of
         width, then end will be decreased to the greatest value less than end
         such that (end - start) is a multiple of width (i.e., we set end = start
-        + width * floordiv(end - start, width). The depth parameter is an
-        optimization that can be used to speed up queries on fast queries. Each
-        window will be accurate to 2^depth nanoseconds. If depth is zero, the
-        results are accurate to the nanosecond. On a dense stream for large
-        windows, this accuracy may not be required. For example for a window of
-        a day, +- one second may be appropriate, so a depth of 30 can be
-        specified. This is much faster to execute on the database side.
+        + width * floordiv(end - start, width).  The `depth` parameter previously
+        available has been deprecated. The only valid value for depth is now 0.
 
         """
         if not self.allow_window:
