@@ -105,8 +105,8 @@ class StatPoint(object):
     Parameters
     ----------
     time : int
-        The time in which the aggregated values represent in nanoseconds since
-        the Unix epoch.
+        The start time of the window which spans the aggregated values. Represented
+        in nanoseconds since the Unix epoch.
     min : float
         The minimum value in a time series within a specified range of time.
     mean : float
@@ -157,7 +157,7 @@ class StatPoint(object):
     @property
     def time(self):
         """
-        The mean value of the time series point within a range of time
+        The starting time of the time series within the stat point
         """
         return self._time
 
