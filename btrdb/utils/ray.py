@@ -2,6 +2,7 @@ import btrdb
 from btrdb.conn import BTrDB
 from functools import partial
 
+
 def register_serializer(conn_str=None, apikey=None, profile=None):
     """
     Register serializer for BTrDB Object
@@ -27,19 +28,21 @@ def register_serializer(conn_str=None, apikey=None, profile=None):
         import semver
     except ImportError:
         raise ImportError("must pip install semver to register custom serializer")
-  
+    
     assert ray.is_initialized(), "Need to call ray.init() before registering custom serializer"
-    # TODO: check the version using the 'semver' package?
     ver = semver.VersionInfo.parse(ray.__version__)
     if ver.major == 0:
         ray.register_custom_serializer(
-        BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
-    elif ver.major == 1 and ver.minor in range(2, 4):
+            BTrDB, serializer=btrdb_serializer,
+            deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
+    elif ver.major == 1 and ver.minor in range(2, 13):  # as of May 2022, latest Ray version is at 1.12
         # TODO: check different versions of ray?
         ray.util.register_serializer(
-        BTrDB, serializer=btrdb_serializer, deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
+            BTrDB, serializer=btrdb_serializer,
+            deserializer=partial(btrdb_deserializer, conn_str=conn_str, apikey=apikey, profile=profile))
     else:
-        raise Exception("Ray version %s does not have custom serialization. Please upgrade to >= 1.2.0" % ray.__version__)
+        raise Exception("Ray version %s does not have custom serialization. Please upgrade to >= 1.4.0" % ray.__version__)
+
 
 def btrdb_serializer(_):
     """
