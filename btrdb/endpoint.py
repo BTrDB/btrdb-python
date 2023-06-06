@@ -38,6 +38,8 @@ logger = logging.getLogger(__name__)
 
 
 class Endpoint(object):
+    """Server endpoint where we make specific requests."""
+
     def __init__(self, channel):
         self.stub = btrdb_pb2_grpc.BTrDBStub(channel)
 
