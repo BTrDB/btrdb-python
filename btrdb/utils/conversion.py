@@ -17,11 +17,11 @@ Conversion utilities for btrdb
 ## Imports
 ##########################################################################
 
-import uuid
 import json
-import pytz
-
+import uuid
 from datetime import datetime
+
+import pytz
 
 try:
     import numpy as np
@@ -35,6 +35,7 @@ RFC3339 = "%Y-%m-%d %H:%M:%S.%f%z"
 ##########################################################################
 ## Classes
 ##########################################################################
+
 
 class AnnotationEncoder(json.JSONEncoder):
     """Default JSON encoder class for saving stream annotations"""
@@ -87,6 +88,7 @@ class AnnotationDecoder(json.JSONDecoder):
 ## Functions
 ##########################################################################
 
+
 def to_uuid(obj):
     """
     Converts argument to UUID
@@ -104,6 +106,4 @@ def to_uuid(obj):
     if isinstance(obj, str):
         return uuid.UUID(obj)
 
-    raise TypeError("Cannot convert object to UUID ({})".format(
-        obj.__class__.__name__)
-    )
+    raise TypeError("Cannot convert object to UUID ({})".format(obj.__class__.__name__))

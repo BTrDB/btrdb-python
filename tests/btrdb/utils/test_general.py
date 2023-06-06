@@ -11,41 +11,45 @@
 Testing for the btrdb.utils.general module
 """
 
+from datetime import timedelta
+
 import pytest
 
-from datetime import timedelta
-from btrdb.utils.timez import ns_delta
 from btrdb.utils.general import pointwidth
+from btrdb.utils.timez import ns_delta
 
 
 class TestPointwidth(object):
-
-    @pytest.mark.parametrize("delta, expected", [
-        (timedelta(days=365), 54),
-        (timedelta(days=30), 51),
-        (timedelta(days=7), 49),
-        (timedelta(days=1), 46),
-        (timedelta(hours=4), 43),
-        (timedelta(minutes=15), 39),
-        (timedelta(seconds=30), 34),
-    ])
-
+    @pytest.mark.parametrize(
+        "delta, expected",
+        [
+            (timedelta(days=365), 54),
+            (timedelta(days=30), 51),
+            (timedelta(days=7), 49),
+            (timedelta(days=1), 46),
+            (timedelta(hours=4), 43),
+            (timedelta(minutes=15), 39),
+            (timedelta(seconds=30), 34),
+        ],
+    )
     def test_from_timedelta(self, delta, expected):
         """
         Test getting the closest point width from a timedelta
         """
         assert pointwidth.from_timedelta(delta) == expected
 
-    @pytest.mark.parametrize("nsec, expected", [
-        (ns_delta(days=365), 54),
-        (ns_delta(days=30), 51),
-        (ns_delta(days=7), 49),
-        (ns_delta(days=1), 46),
-        (ns_delta(hours=12), 45),
-        (ns_delta(minutes=30), 40),
-        (ns_delta(seconds=1), 29),
-    ])
-
+    @pytest.mark.parametrize(
+        "nsec, expected",
+        [
+            (ns_delta(days=365), 54),
+            (ns_delta(days=30), 51),
+            (ns_delta(days=7), 49),
+            (ns_delta(days=1), 46),
+            (ns_delta(hours=12), 45),
+            (ns_delta(minutes=30), 40),
+            (ns_delta(seconds=1), 29),
+        ],
+    )
     def test_from_nanoseconds(self, nsec, expected):
         """
         Test getting the closest point width from nanoseconds

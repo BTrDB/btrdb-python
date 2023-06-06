@@ -29,10 +29,9 @@ import uuid
 
 import grpc
 
-from btrdb.grpcinterface import btrdb_pb2
-from btrdb.grpcinterface import btrdb_pb2_grpc
+from btrdb.exceptions import BTrDBError, check_proto_stat, error_handler
+from btrdb.grpcinterface import btrdb_pb2, btrdb_pb2_grpc
 from btrdb.point import RawPoint
-from btrdb.exceptions import BTrDBError, error_handler, check_proto_stat
 from btrdb.utils.general import unpack_stream_descriptor
 
 logger = logging.getLogger(__name__)

@@ -109,5 +109,3 @@ If you would like to remove any keys from your annotations you must use the `rep
     annotations, _ = stream.anotations()
     del annotations["key_to_delete"]
     stream.update(annotations=annotations, replace=True)
-
-

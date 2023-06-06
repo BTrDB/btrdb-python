@@ -1655,7 +1655,7 @@ class StreamSetBase(Sequence):
                     )
                 data = main_table
         return data
-
+  
     def rows(self):
         """
         Returns a materialized list of tuples where each tuple contains the

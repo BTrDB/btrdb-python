@@ -17,23 +17,22 @@ Testing package for the btrdb point module
 
 import pytest
 
-from btrdb.point import RawPoint, StatPoint
 from btrdb.grpcinterface import btrdb_pb2
-
+from btrdb.point import RawPoint, StatPoint
 
 ##########################################################################
 ## ProtoBuff Classes
 ##########################################################################
 
-RawPointProto =  btrdb_pb2.RawPoint
-StatPointProto =  btrdb_pb2.StatPoint
+RawPointProto = btrdb_pb2.RawPoint
+StatPointProto = btrdb_pb2.StatPoint
 
 ##########################################################################
 ## RawPoint Tests
 ##########################################################################
 
-class TestRawPoint(object):
 
+class TestRawPoint(object):
     def test_create(self):
         """
         Ensure we can create the object
@@ -150,19 +149,19 @@ class TestRawPoint(object):
 ## StatPoint Tests
 ##########################################################################
 
-class TestStatPoint(object):
 
+class TestStatPoint(object):
     def test_create(self):
         """
         Ensure we can create the object
         """
-        StatPoint(1,1,1,1,1,1)
+        StatPoint(1, 1, 1, 1, 1, 1)
 
     def test_from_proto(self):
         """
         Assert from_proto creates a correct object
         """
-        proto = StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6)
+        proto = StatPointProto(time=1, min=2, mean=3, max=4, count=5, stddev=6)
         point = StatPoint.from_proto(proto)
         assert point.time == proto.time
         assert point.min == proto.min
@@ -175,7 +174,7 @@ class TestStatPoint(object):
         """
         Assert from_proto creates a new instance of StatPoint
         """
-        proto = StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6)
+        proto = StatPointProto(time=1, min=2, mean=3, max=4, count=5, stddev=6)
         point = StatPoint.from_proto(proto)
         assert isinstance(point, StatPoint)
 
@@ -183,8 +182,10 @@ class TestStatPoint(object):
         """
         Assert from_proto_list creates valid objects
         """
-        protos = [StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6),
-            StatPointProto(time=11,min=12,mean=13,max=14,count=15,stddev=16)]
+        protos = [
+            StatPointProto(time=1, min=2, mean=3, max=4, count=5, stddev=6),
+            StatPointProto(time=11, min=12, mean=13, max=14, count=15, stddev=16),
+        ]
         points = StatPoint.from_proto_list(protos)
         assert points[0].time == protos[0].time
         assert points[0].min == protos[0].min
@@ -203,8 +204,10 @@ class TestStatPoint(object):
         """
         Assert from_proto_list returns list of StatPoint
         """
-        protos = [StatPointProto(time=1,min=2,mean=3,max=4,count=5,stddev=6),
-            StatPointProto(time=11,min=12,mean=13,max=14,count=15,stddev=16)]
+        protos = [
+            StatPointProto(time=1, min=2, mean=3, max=4, count=5, stddev=6),
+            StatPointProto(time=11, min=12, mean=13, max=14, count=15, stddev=16),
+        ]
         points = StatPoint.from_proto_list(protos)
 
         assert len(points) == 2

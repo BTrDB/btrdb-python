@@ -1,0 +1,76 @@
+[project]
+name = "btrdb"
+version = "5.28.1"
+authors = [
+    {name="PingThingsIO", email="support@pingthings.io"},
+]
+description = "Bindings to interact with the Berkeley Tree Database using gRPC."
+readme = "README.md"
+license = {file="LICENSE.txt"}
+requires-python = ">=3.7,<=3.10"
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Information Technology',
+    'Intended Audience :: Science/Research',
+    'License :: OSI Approved :: BSD License',
+    'Natural Language :: English',
+    'Operating System :: OS Independent',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Topic :: Database',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+]
+keywords = [
+    'btrdb', 'berkeley', 'timeseries', 'database', 'bindings', 'gRPC',
+]
+dependencies = [
+    "grpcio",
+    "grpcio-tools",
+    "pytz",
+    "pyyaml",
+    "certifi",
+]
+
+[project.optional-dependencies]
+data = [
+    "pyarrow",
+    "pandas>=2.0",
+    "polars",
+    "numpy",
+    "tabulate",
+]
+ray = [
+    "btrdb[data]",
+    "ray"
+]
+testing = [
+    "btrdb[data]",
+    "pytest",
+    "freezegun",
+    "pytest-cov",
+    "pytest-flake8"
+]
+all = [
+    "btrdb[data]",
+    "btrdb[ray]",
+    "btrdb[testing]",
+]
+
+[project.urls]
+"Homepage" = "https://btrdb.io"
+"Docs" = "https://btrdb.readthedocs.io"
+"Repository" = "https://github.com/pingthingsio/btrdb-python.git"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.exclude-package-data]
+drop = [
+    "tests",
+    "docs"
+]

@@ -15,8 +15,8 @@ Value transformation utilities
 ## Imports
 ##########################################################################
 
-import csv
 import contextlib
+import csv
 from collections import OrderedDict
 from warnings import warn
 

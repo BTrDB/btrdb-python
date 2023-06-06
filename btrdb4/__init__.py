@@ -21,11 +21,13 @@ import warnings
 ## Warning
 ##########################################################################
 
-MESSAGE = ("The btrdb4 package is not available in this version. To install "
-          "with pip use `pip install btrdb==4.*`")
+MESSAGE = (
+    "The btrdb4 package is not available in this version. To install "
+    "with pip use `pip install btrdb==4.*`"
+)
 
 # raise exception on ImportWarning
-warnings.simplefilter('error', ImportWarning)
+warnings.simplefilter("error", ImportWarning)
 
 # warn user of version issue
 warnings.warn(MESSAGE, ImportWarning)

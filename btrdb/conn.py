@@ -15,21 +15,20 @@ Connection related objects for the BTrDB library
 ## Imports
 ##########################################################################
 
+import json
 import os
 import re
-import json
-import certifi
-import logging
 import uuid as uuidlib
 from concurrent.futures import ThreadPoolExecutor
 
+import certifi
 import grpc
 from grpc._cython.cygrpc import CompressionAlgorithm
 
+from btrdb.exceptions import InvalidOperation, StreamNotFoundError
 from btrdb.stream import Stream, StreamSet
-from btrdb.utils.general import unpack_stream_descriptor
 from btrdb.utils.conversion import to_uuid
-from btrdb.exceptions import StreamNotFoundError, InvalidOperation
+from btrdb.utils.general import unpack_stream_descriptor
 
 ##########################################################################
 ## Module Variables
@@ -127,7 +126,6 @@ def _is_arrow_enabled(info):
         return True
     else:
         return False
-
 
 class BTrDB(object):
     """

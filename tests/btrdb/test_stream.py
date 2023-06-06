@@ -16,28 +16,31 @@ import concurrent.futures
 ## Imports
 ##########################################################################
 
+import datetime
+import json
 import re
 import sys
-import json
 import uuid
-import pytz
-import pytest
-import datetime
-from unittest.mock import Mock, PropertyMock, patch, call
+from unittest.mock import Mock, PropertyMock, call, patch
 
+import pytest
+import pytz
+
+from btrdb import MAXIMUM_TIME, MINIMUM_TIME
 from btrdb.conn import BTrDB
 from btrdb.endpoint import Endpoint
-from btrdb import MINIMUM_TIME, MAXIMUM_TIME
-from btrdb.stream import Stream, StreamSet, StreamFilter, INSERT_BATCH_SIZE
-from btrdb.point import RawPoint, StatPoint
 from btrdb.exceptions import (
     BTrDBError,
+    InvalidCollection,
     InvalidOperation,
+    NoSuchPoint,
     StreamNotFoundError,
     InvalidCollection,
     NoSuchPoint,
 )
 from btrdb.grpcinterface import btrdb_pb2
+from btrdb.point import RawPoint, StatPoint
+from btrdb.stream import INSERT_BATCH_SIZE, Stream, StreamFilter, StreamSet
 
 RawPointProto = btrdb_pb2.RawPoint
 StatPointProto = btrdb_pb2.StatPoint
