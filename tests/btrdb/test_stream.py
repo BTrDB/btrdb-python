@@ -10,7 +10,7 @@
 """
 Testing package for the btrdb stream module
 """
-
+import concurrent.futures
 ##########################################################################
 ## Imports
 ##########################################################################
@@ -58,6 +58,8 @@ def stream1():
     type(stream).name = PropertyMock(return_value="gala")
     stream.tags = Mock(return_value={"name": "gala", "unit": "volts"})
     stream.annotations = Mock(return_value=({"owner": "ABC", "color": "red"}, 11))
+    stream._btrdb = Mock()
+    stream._btrdb._executor = concurrent.futures.ThreadPoolExecutor()
     return stream
 
 
@@ -72,6 +74,8 @@ def stream2():
     type(stream).name = PropertyMock(return_value="blood")
     stream.tags = Mock(return_value={"name": "blood", "unit": "amps"})
     stream.annotations = Mock(return_value=({"owner": "ABC", "color": "orange"}, 22))
+    stream._btrdb = Mock()
+    stream._btrdb._executor = Mock()
     return stream
 
 
@@ -1181,7 +1185,7 @@ class TestStreamSet(object):
         Assert earliest returns correct time code
         """
         streams = StreamSet([stream1, stream2])
-        assert streams.latest() == (RawPoint(time=10, value=1), RawPoint(time=20, value=1))
+        assert streams.earliest() == (RawPoint(time=10, value=1), RawPoint(time=20, value=1))
 
 
     def test_latest(self, stream1, stream2):

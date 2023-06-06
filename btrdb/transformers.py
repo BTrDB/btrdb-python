@@ -188,8 +188,8 @@ def to_array(streamset, agg="mean"):
                 segment.append(point.value)
             else:
                 segment.append(getattr(point, agg))
-        results.append(segment)
-    return np.array(results)
+        results.append(np.array(segment))
+    return np.array(results, dtype=object)
 
 
 def to_dict(streamset, agg="mean", name_callable=None):
