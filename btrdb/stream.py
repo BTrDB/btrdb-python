@@ -24,7 +24,6 @@ from copy import deepcopy
 
 import pyarrow as pa
 
-import btrdb.grpcinterface.btrdb_pb2_grpc
 from btrdb.exceptions import (
     BTrDBError,
     BTRDBTypeError,
@@ -1169,7 +1168,7 @@ class StreamSetBase(Sequence):
             self._pinned_versions if self._pinned_versions else self._latest_versions()
         )
 
-    def count(self, precise:bool=False):
+    def count(self, precise: bool = False):
         """
         Compute the total number of points in the streams using filters.
 
@@ -1196,10 +1195,14 @@ class StreamSetBase(Sequence):
         start = params.get("start", MINIMUM_TIME)
         end = params.get("end", MAXIMUM_TIME)
 
-        versions = self._pinned_versions if self._pinned_versions else self._latest_versions()
+        versions = (
+            self._pinned_versions if self._pinned_versions else self._latest_versions()
+        )
 
         my_counts_gen = self._btrdb._executor.map(
-            lambda s: s.count(start, end, version=versions.get(s.uuid, 0), precise=precise),
+            lambda s: s.count(
+                start, end, version=versions.get(s.uuid, 0), precise=precise
+            ),
             self._streams,
         )
 
@@ -1655,7 +1658,7 @@ class StreamSetBase(Sequence):
                     )
                 data = main_table
         return data
-  
+
     def rows(self):
         """
         Returns a materialized list of tuples where each tuple contains the
@@ -1703,7 +1706,7 @@ class StreamSetBase(Sequence):
     def arrow_rows(self):
         """Return tuples of rows from arrow table"""
         raise NotImplementedError(
-            f"arrow_rows has not been implemented yet, please use `rows` if you need this functionality."
+            "arrow_rows has not been implemented yet, please use `rows` if you need this functionality."
         )
 
     def insert(self, data_map: dict, merge: str = "never") -> dict:

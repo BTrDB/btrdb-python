@@ -24,7 +24,7 @@ repos:
   hooks:
   - id: flake8
     args: [--config=setup.cfg]
-    exclude: ^(btrdb/grpcinterface|tests|setup.py|btrdb4|docs)
+    exclude: ^(btrdb/grpcinterface|tests|setup.py|btrdb4|docs|benchmarks)
 - repo: local
   hooks:
     - id: pytest-check

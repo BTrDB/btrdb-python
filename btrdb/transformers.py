@@ -22,7 +22,6 @@ from warnings import warn
 
 import pandas as pd
 
-
 ##########################################################################
 ## Helper Functions
 ##########################################################################
@@ -119,7 +118,7 @@ def arrow_to_series(streamset, agg="mean", name_callable=None):
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
-            f"arrow_to_series requires an arrow-enabled BTrDB server."
+            "arrow_to_series requires an arrow-enabled BTrDB server."
         )
     arrow_df = arrow_to_dataframe(
         streamset=streamset, agg=agg, name_callable=name_callable
@@ -150,7 +149,7 @@ def arrow_to_dataframe(
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
-            f"arrow_to_dataframe requires an arrow-enabled BTrDB server."
+            "arrow_to_dataframe requires an arrow-enabled BTrDB server."
         )
 
     try:
@@ -182,7 +181,6 @@ def arrow_to_dataframe(
     if not callable(name_callable):
         name_callable = lambda s: s.collection + "/" + s.name
     tmp_table = streamset.arrow_values()
-    my_cols = [c for c in tmp_table.column_names]
     col_names = _stream_names(streamset, name_callable)
     cols = []
     for name in col_names:
@@ -299,7 +297,7 @@ def arrow_to_polars(streamset, agg="mean", name_callable=None):
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
-            f"arrow_to_polars requires an arrow-enabled BTrDB server."
+            "arrow_to_polars requires an arrow-enabled BTrDB server."
         )
     try:
         import polars as pl
@@ -314,7 +312,7 @@ def arrow_to_polars(streamset, agg="mean", name_callable=None):
 def arrow_to_arrow_table(streamset):
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
-            f"arrow_to_arrow_table requires an arrow-enabled BTrDB server."
+            "arrow_to_arrow_table requires an arrow-enabled BTrDB server."
         )
     return streamset.arrow_values()
 
@@ -427,7 +425,7 @@ def arrow_to_numpy(streamset, agg="mean"):
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
-            f"arrow_to_numpy requires an arrow-enabled BTrDB server."
+            "arrow_to_numpy requires an arrow-enabled BTrDB server."
         )
     arrow_df = arrow_to_dataframe(streamset=streamset, agg=agg, name_callable=None)
     return arrow_df.values
@@ -496,7 +494,7 @@ def arrow_to_dict(streamset, agg="mean", name_callable=None):
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
-            f"arrow_to_dict requires an arrow-enabled BTrDB server."
+            "arrow_to_dict requires an arrow-enabled BTrDB server."
         )
     arrow_df = arrow_to_dataframe(
         streamset=streamset, agg=agg, name_callable=name_callable

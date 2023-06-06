@@ -16,6 +16,7 @@ Connection related objects for the BTrDB library
 ##########################################################################
 
 import json
+import logging
 import os
 import re
 import uuid as uuidlib
@@ -113,6 +114,7 @@ class Connection(object):
                 )
             self.channel = grpc.insecure_channel(addrportstr, chan_ops)
 
+
 def _is_arrow_enabled(info):
     info = {
         "majorVersion": info.majorVersion,
@@ -127,6 +129,7 @@ def _is_arrow_enabled(info):
     else:
         return False
 
+
 class BTrDB(object):
     """
     The primary server connection object for communicating with a BTrDB server.
@@ -135,7 +138,7 @@ class BTrDB(object):
     def __init__(self, endpoint):
         self.ep = endpoint
         self._executor = ThreadPoolExecutor()
-        self._ARROW_ENABLED = True #_is_arrow_enabled(self.ep.info())
+        self._ARROW_ENABLED = True  # _is_arrow_enabled(self.ep.info())
         logger.debug(f"ARROW ENABLED: {self._ARROW_ENABLED}")
 
     def query(self, stmt, params=[]):

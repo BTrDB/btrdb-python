@@ -65,7 +65,7 @@ class Endpoint(object):
             start=start,
             end=end,
             versionMajor=[ver for ver in version_list],
-            snapPeriodNs=int(snap_periodNS)
+            snapPeriodNs=int(snap_periodNS),
         )
         for result in self.stub.ArrowMultiValues(params):
             check_proto_stat(result.stat)

@@ -11,11 +11,6 @@
 Testing package for the btrdb stream module
 """
 import concurrent.futures
-
-##########################################################################
-## Imports
-##########################################################################
-
 import datetime
 import json
 import re
@@ -35,12 +30,15 @@ from btrdb.exceptions import (
     InvalidOperation,
     NoSuchPoint,
     StreamNotFoundError,
-    InvalidCollection,
-    NoSuchPoint,
 )
 from btrdb.grpcinterface import btrdb_pb2
 from btrdb.point import RawPoint, StatPoint
 from btrdb.stream import INSERT_BATCH_SIZE, Stream, StreamFilter, StreamSet
+
+##########################################################################
+## Imports
+##########################################################################
+
 
 RawPointProto = btrdb_pb2.RawPoint
 StatPointProto = btrdb_pb2.StatPoint
@@ -85,6 +83,7 @@ def stream2():
     stream._btrdb._ARROW_ENABLED = Mock(return_value=False)
     return stream
 
+
 @pytest.fixture
 def arrow_stream3():
     uu = uuid.UUID("17dbe387-89ea-42b6-864b-f505cdb483f5")
@@ -100,6 +99,7 @@ def arrow_stream3():
     stream._btrdb._executor = Mock()
     stream._btrdb._ARROW_ENABLED = Mock(return_value=True)
     return stream
+
 
 ##########################################################################
 ## Stream Tests
@@ -1195,6 +1195,7 @@ class TestStreamSet(object):
             RawPoint(time=10, value=1),
             RawPoint(time=20, value=1),
         )
+
     def test_latest(self, stream1, stream2):
         """
         Assert latest returns correct time code

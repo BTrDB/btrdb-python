@@ -102,7 +102,11 @@ def time_streamset_arrow_raw_values(
 
 
 def time_streamset_windows_values(
-    streamset: btrdb.stream.StreamSet, start: int, end: int, width_ns: int, version: int = 0
+    streamset: btrdb.stream.StreamSet,
+    start: int,
+    end: int,
+    width_ns: int,
+    version: int = 0,
 ) -> Dict[str, Union[str, int, float]]:
     """Return the elapsed time for the streamset windows values query
 
@@ -139,7 +143,11 @@ def time_streamset_windows_values(
 
 
 def time_streamset_arrow_windows_values(
-    streamset: btrdb.stream.StreamSet, start: int, end: int, width_ns: int, version: int = 0
+    streamset: btrdb.stream.StreamSet,
+    start: int,
+    end: int,
+    width_ns: int,
+    version: int = 0,
 ) -> Dict[str, Union[str, int, float]]:
     """Return the elapsed time for the streamset arrow window values query
 
@@ -180,7 +188,11 @@ def time_streamset_arrow_windows_values(
 
 
 def time_streamset_aligned_windows_values(
-    streamset: btrdb.stream.StreamSet, start: int, end: int, pointwidth: int, version: int = 0
+    streamset: btrdb.stream.StreamSet,
+    start: int,
+    end: int,
+    pointwidth: int,
+    version: int = 0,
 ) -> Dict[str, Union[str, int, float]]:
     """Return the elapsed time for the streamset window values query
 
@@ -217,7 +229,11 @@ def time_streamset_aligned_windows_values(
 
 
 def time_streamset_arrow_aligned_windows_values(
-    streamset: btrdb.stream.StreamSet, start: int, end: int, pointwidth: int, version: int = 0
+    streamset: btrdb.stream.StreamSet,
+    start: int,
+    end: int,
+    pointwidth: int,
+    version: int = 0,
 ) -> Dict[str, Union[str, int, float]]:
     """Return the elapsed time for the streamset arrow aligned window values query
 
@@ -264,7 +280,6 @@ def _create_streamset_result_dict(
     return {
         "n_streams": len(streamset),
         "total_points": point_count,
-
         "total_time_seconds": total_time,
         "streamset_version": version,
     }
@@ -274,9 +289,15 @@ def main():
     """Run a single run of the benchmarks"""
     conn = btrdb.connect(profile="andy")
     stream1 = conn.stream_from_uuid(
-        list(conn.streams_in_collection("andy/7064-6684-5e6e-9e14-ff9ca7bae46e"))[0].uuid
+        list(conn.streams_in_collection("andy/7064-6684-5e6e-9e14-ff9ca7bae46e"))[
+            0
+        ].uuid
     )
-    stream2 = conn.stream_from_uuid(list(conn.streams_in_collection("andy/30e6-d72f-5cc7-9966-bc1579dc4a72"))[0].uuid)
+    stream2 = conn.stream_from_uuid(
+        list(conn.streams_in_collection("andy/30e6-d72f-5cc7-9966-bc1579dc4a72"))[
+            0
+        ].uuid
+    )
     streamset = btrdb.stream.StreamSet([stream1, stream2])
     start = max(stream1.earliest()[0].time, stream2.earliest()[0].time)
     end = min(stream1.latest()[0].time, stream2.latest()[0].time)
@@ -286,7 +307,7 @@ def main():
     res_list = []
     for f in [time_streamset_raw_values, time_streamset_arrow_raw_values]:
         res = f(streamset, start, end, 0)
-        res["func"] =  f.__name__
+        res["func"] = f.__name__
     # for f in [time_streamset_windows_values, time_streamset_arrow_windows_values]:
     #     res = f(streamset, start, end, width_ns=width_ns, version=0)
     #     res["func"] = f.__name__
@@ -295,6 +316,8 @@ def main():
     #     res["func"] = res
 
     return res
-if __name__=="__main__":
+
+
+if __name__ == "__main__":
     results = main()
     print(pandas.DataFrame(results))

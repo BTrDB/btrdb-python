@@ -258,7 +258,9 @@ def main():
     """Run a single run of the benchmarks"""
     conn = btrdb.connect(profile="andy")
     stream1 = conn.stream_from_uuid(
-        list(conn.streams_in_collection("andy/7064-6684-5e6e-9e14-ff9ca7bae46e"))[0].uuid
+        list(conn.streams_in_collection("andy/7064-6684-5e6e-9e14-ff9ca7bae46e"))[
+            0
+        ].uuid
     )
     start = stream1.earliest()[0].time
     end = stream1.latest()[0].time
@@ -267,10 +269,17 @@ def main():
     print(f"pointwidth of: {pointwidth}")
     for f in [time_single_stream_arrow_raw_values, time_single_stream_raw_values]:
         print(f(stream1, start, end, 0))
-    for f in [time_single_stream_arrow_windows_values, time_single_stream_windows_values]:
+    for f in [
+        time_single_stream_arrow_windows_values,
+        time_single_stream_windows_values,
+    ]:
         print(f(stream1, start, end, width_ns=width_ns, version=0))
-    for f in [time_single_stream_arrow_aligned_windows_values, time_single_stream_aligned_windows_values]:
+    for f in [
+        time_single_stream_arrow_aligned_windows_values,
+        time_single_stream_aligned_windows_values,
+    ]:
         print(f(stream1, start, end, pointwidth=pointwidth, version=0))
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
