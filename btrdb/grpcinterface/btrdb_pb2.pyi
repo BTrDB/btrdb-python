@@ -36,6 +36,78 @@ class AlignedWindowsResponse(_message.Message):
     versionMinor: int
     def __init__(self, stat: _Optional[_Union[Status, _Mapping]] = ..., versionMajor: _Optional[int] = ..., versionMinor: _Optional[int] = ..., values: _Optional[_Iterable[_Union[StatPoint, _Mapping]]] = ...) -> None: ...
 
+class ArrowAlignedWindowsResponse(_message.Message):
+    __slots__ = ["arrowBytes", "stat", "versionMajor", "versionMinor"]
+    ARROWBYTES_FIELD_NUMBER: _ClassVar[int]
+    STAT_FIELD_NUMBER: _ClassVar[int]
+    VERSIONMAJOR_FIELD_NUMBER: _ClassVar[int]
+    VERSIONMINOR_FIELD_NUMBER: _ClassVar[int]
+    arrowBytes: bytes
+    stat: Status
+    versionMajor: int
+    versionMinor: int
+    def __init__(self, stat: _Optional[_Union[Status, _Mapping]] = ..., versionMajor: _Optional[int] = ..., versionMinor: _Optional[int] = ..., arrowBytes: _Optional[bytes] = ...) -> None: ...
+
+class ArrowInsertParams(_message.Message):
+    __slots__ = ["arrowBytes", "merge_policy", "rounding", "sync", "uuid"]
+    ARROWBYTES_FIELD_NUMBER: _ClassVar[int]
+    MERGE_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ROUNDING_FIELD_NUMBER: _ClassVar[int]
+    SYNC_FIELD_NUMBER: _ClassVar[int]
+    UUID_FIELD_NUMBER: _ClassVar[int]
+    arrowBytes: bytes
+    merge_policy: MergePolicy
+    rounding: RoundSpec
+    sync: bool
+    uuid: bytes
+    def __init__(self, uuid: _Optional[bytes] = ..., sync: bool = ..., merge_policy: _Optional[_Union[MergePolicy, str]] = ..., rounding: _Optional[_Union[RoundSpec, _Mapping]] = ..., arrowBytes: _Optional[bytes] = ...) -> None: ...
+
+class ArrowMultiValuesParams(_message.Message):
+    __slots__ = ["end", "snapPeriodNs", "start", "uuid", "versionMajor"]
+    END_FIELD_NUMBER: _ClassVar[int]
+    SNAPPERIODNS_FIELD_NUMBER: _ClassVar[int]
+    START_FIELD_NUMBER: _ClassVar[int]
+    UUID_FIELD_NUMBER: _ClassVar[int]
+    VERSIONMAJOR_FIELD_NUMBER: _ClassVar[int]
+    end: int
+    snapPeriodNs: int
+    start: int
+    uuid: _containers.RepeatedScalarFieldContainer[bytes]
+    versionMajor: _containers.RepeatedScalarFieldContainer[int]
+    def __init__(self, uuid: _Optional[_Iterable[bytes]] = ..., versionMajor: _Optional[_Iterable[int]] = ..., start: _Optional[int] = ..., end: _Optional[int] = ..., snapPeriodNs: _Optional[int] = ...) -> None: ...
+
+class ArrowMultiValuesResponse(_message.Message):
+    __slots__ = ["arrowBytes", "stat"]
+    ARROWBYTES_FIELD_NUMBER: _ClassVar[int]
+    STAT_FIELD_NUMBER: _ClassVar[int]
+    arrowBytes: bytes
+    stat: Status
+    def __init__(self, stat: _Optional[_Union[Status, _Mapping]] = ..., arrowBytes: _Optional[bytes] = ...) -> None: ...
+
+class ArrowRawValuesResponse(_message.Message):
+    __slots__ = ["arrowBytes", "stat", "versionMajor", "versionMinor"]
+    ARROWBYTES_FIELD_NUMBER: _ClassVar[int]
+    STAT_FIELD_NUMBER: _ClassVar[int]
+    VERSIONMAJOR_FIELD_NUMBER: _ClassVar[int]
+    VERSIONMINOR_FIELD_NUMBER: _ClassVar[int]
+    arrowBytes: bytes
+    stat: Status
+    versionMajor: int
+    versionMinor: int
+    def __init__(self, stat: _Optional[_Union[Status, _Mapping]] = ..., versionMajor: _Optional[int] = ..., versionMinor: _Optional[int] = ..., arrowBytes: _Optional[bytes] = ...) -> None: ...
+
+class ArrowWindowsResponse(_message.Message):
+    __slots__ = ["arrowBytes", "stat", "versionMajor", "versionMinor"]
+    ARROWBYTES_FIELD_NUMBER: _ClassVar[int]
+    STAT_FIELD_NUMBER: _ClassVar[int]
+    VERSIONMAJOR_FIELD_NUMBER: _ClassVar[int]
+    VERSIONMINOR_FIELD_NUMBER: _ClassVar[int]
+    arrowBytes: bytes
+    stat: Status
+    versionMajor: int
+    versionMinor: int
+    def __init__(self, stat: _Optional[_Union[Status, _Mapping]] = ..., versionMajor: _Optional[int] = ..., versionMinor: _Optional[int] = ..., arrowBytes: _Optional[bytes] = ...) -> None: ...
+
 class ChangedRange(_message.Message):
     __slots__ = ["end", "start"]
     END_FIELD_NUMBER: _ClassVar[int]
@@ -212,16 +284,18 @@ class InfoResponse(_message.Message):
     def __init__(self, stat: _Optional[_Union[Status, _Mapping]] = ..., mash: _Optional[_Union[Mash, _Mapping]] = ..., majorVersion: _Optional[int] = ..., minorVersion: _Optional[int] = ..., build: _Optional[str] = ..., proxy: _Optional[_Union[ProxyInfo, _Mapping]] = ...) -> None: ...
 
 class InsertParams(_message.Message):
-    __slots__ = ["merge_policy", "sync", "uuid", "values"]
+    __slots__ = ["merge_policy", "rounding", "sync", "uuid", "values"]
     MERGE_POLICY_FIELD_NUMBER: _ClassVar[int]
+    ROUNDING_FIELD_NUMBER: _ClassVar[int]
     SYNC_FIELD_NUMBER: _ClassVar[int]
     UUID_FIELD_NUMBER: _ClassVar[int]
     VALUES_FIELD_NUMBER: _ClassVar[int]
     merge_policy: MergePolicy
+    rounding: RoundSpec
     sync: bool
     uuid: bytes
     values: _containers.RepeatedCompositeFieldContainer[RawPoint]
-    def __init__(self, uuid: _Optional[bytes] = ..., sync: bool = ..., merge_policy: _Optional[_Union[MergePolicy, str]] = ..., values: _Optional[_Iterable[_Union[RawPoint, _Mapping]]] = ...) -> None: ...
+    def __init__(self, uuid: _Optional[bytes] = ..., sync: bool = ..., merge_policy: _Optional[_Union[MergePolicy, str]] = ..., rounding: _Optional[_Union[RoundSpec, _Mapping]] = ..., values: _Optional[_Iterable[_Union[RawPoint, _Mapping]]] = ...) -> None: ...
 
 class InsertResponse(_message.Message):
     __slots__ = ["stat", "versionMajor", "versionMinor"]
@@ -412,6 +486,14 @@ class RawPoint(_message.Message):
     value: float
     def __init__(self, time: _Optional[int] = ..., value: _Optional[float] = ...) -> None: ...
 
+class RawPointVec(_message.Message):
+    __slots__ = ["time", "value"]
+    TIME_FIELD_NUMBER: _ClassVar[int]
+    VALUE_FIELD_NUMBER: _ClassVar[int]
+    time: int
+    value: _containers.RepeatedScalarFieldContainer[float]
+    def __init__(self, time: _Optional[int] = ..., value: _Optional[_Iterable[float]] = ...) -> None: ...
+
 class RawValuesParams(_message.Message):
     __slots__ = ["end", "start", "uuid", "versionMajor"]
     END_FIELD_NUMBER: _ClassVar[int]
@@ -451,6 +533,12 @@ class Role(_message.Message):
     NAME_FIELD_NUMBER: _ClassVar[int]
     name: str
     def __init__(self, name: _Optional[str] = ...) -> None: ...
+
+class RoundSpec(_message.Message):
+    __slots__ = ["bits"]
+    BITS_FIELD_NUMBER: _ClassVar[int]
+    bits: int
+    def __init__(self, bits: _Optional[int] = ...) -> None: ...
 
 class SQLQueryParams(_message.Message):
     __slots__ = ["params", "query", "role"]

@@ -39,6 +39,8 @@ def streamset():
         stream = Mock(Stream)
         type(stream).collection = PropertyMock(return_value="test")
         type(stream).name = PropertyMock(return_value="stream{}".format(idx))
+        stream._btrdb = Mock()
+        stream._btrdb._ARROW_ENABLED = Mock(return_value=False)
         streams.append(stream)
 
     rows = [

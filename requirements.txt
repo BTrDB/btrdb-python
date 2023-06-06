@@ -1,6 +1,11 @@
 # GRPC / Protobuff related
-grpcio>=1.19.0,<=1.48.2
-grpcio-tools>=1.19.0,<=1.48.2
+grpcio
+grpcio-tools
+
+# pyarrow and other tools
+pyarrow
+pandas
+polars
 
 # Time related utils
 pytz

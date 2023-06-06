@@ -189,6 +189,7 @@ class TestBTrDB(object):
 
         truth = {
             "majorVersion": 5,
+            "minorVersion": 0,
             "build": "5.0.0",
             "proxy": { "proxyEndpoints": ["localhost:4410"], },
         }
