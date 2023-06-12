@@ -1,3 +1,4 @@
+import pprint
 import uuid
 from time import perf_counter
 from typing import Dict, Union
@@ -33,14 +34,14 @@ def time_streamset_raw_values(
         The performance results of the streamset method
     """
     streamset = streamset.filter(start=start, end=end)
-    versions = {s.uuid: 0 for s in streamset._streams}
+    versions = {s.uuid: 0 for s in streamset}
     streamset.pin_versions(versions)
-    expected_count = streamset.count(precise=True)
+    # minus 1 * n_streams to account for the exclusive end time
+    expected_count = streamset.count(precise=True) - len(streamset)
     tic = perf_counter()
     vals = streamset.values()
     toc = perf_counter()
     # print(vals)
-    # minus 1 to account for the exclusive end time
     queried_points = 0
     for points in vals:
         print(len(points))
@@ -83,12 +84,14 @@ def time_streamset_arrow_raw_values(
         The performance results of the streamset method
     """
     streamset = streamset.filter(start=start, end=end)
-    versions = {s.uuid: 0 for s in streamset._streams}
+    versions = {s.uuid: 0 for s in streamset}
     streamset.pin_versions(versions)
-    expected_count = streamset.count(precise=True)
+    # minus 1 * n_streams to account for the exclusive end time
+    expected_count = streamset.count(precise=True) - len(streamset)
     tic = perf_counter()
     vals = streamset.arrow_values()
     toc = perf_counter()
+    # TODO: These point counts and assertion needs to be column specific
     queried_points = len(streamset) * (vals.num_rows - 1)
     print(queried_points)
     print(expected_count)
@@ -128,16 +131,20 @@ def time_streamset_windows_values(
     results : dict
         The performance results of the streamset method
     """
+    streamset = streamset.filter(start=start, end=end)
+    versions = {s.uuid: 0 for s in streamset}
+    streamset.pin_versions(versions)
+    streamset = streamset.windows(width=width_ns)
     tic = perf_counter()
-    vals = streamset.windows(start, end, width=width_ns, version=version)
+    vals = streamset.values()
     toc = perf_counter()
     # num of statpoints
-    queried_points = len(vals)
+    queried_points = len(vals[0]) * len(streamset)
     assert queried_points != 0
     # time in seconds to run
     run_time = toc - tic
     results = _create_streamset_result_dict(
-        streamset.uuid, point_count=queried_points, total_time=run_time, version=version
+        streamset, point_count=queried_points, total_time=run_time, version=version
     )
     return results
 
@@ -173,16 +180,20 @@ def time_streamset_arrow_windows_values(
     results : dict
         The performance results of the streamset method
     """
+    streamset = streamset.filter(start=start, end=end)
+    versions = {s.uuid: 0 for s in streamset}
+    streamset.pin_versions(versions)
+    streamset = streamset.windows(width=width_ns)
     tic = perf_counter()
-    vals = streamset.arrow_windows(start, end, width=width_ns, version=version)
+    vals = streamset.arrow_values()
     toc = perf_counter()
     # num of statpoints
-    queried_points = vals.num_rows
+    queried_points = vals.num_rows * len(streamset)
     assert queried_points != 0
     # time in seconds to run
     run_time = toc - tic
     results = _create_streamset_result_dict(
-        streamset.uuid, point_count=queried_points, total_time=run_time, version=version
+        streamset, point_count=queried_points, total_time=run_time, version=version
     )
     return results
 
@@ -214,16 +225,20 @@ def time_streamset_aligned_windows_values(
     results : dict
         The performance results of the streamset method
     """
+    streamset = streamset.filter(start=start, end=end)
+    versions = {s.uuid: 0 for s in streamset}
+    streamset.pin_versions(versions)
+    streamset = streamset.aligned_windows(pointwidth=pointwidth)
     tic = perf_counter()
-    vals = streamset.aligned_windows(start, end, pointwidth=pointwidth, version=version)
+    vals = streamset.values()
     toc = perf_counter()
     # num of statpoints
-    queried_points = len(vals)
+    queried_points = len(vals[0]) * len(streamset)
     assert queried_points != 0
     # time in seconds to run
     run_time = toc - tic
     results = _create_streamset_result_dict(
-        streamset.uuid, point_count=queried_points, total_time=run_time, version=version
+        streamset, point_count=queried_points, total_time=run_time, version=version
     )
     return results
 
@@ -255,18 +270,20 @@ def time_streamset_arrow_aligned_windows_values(
     results : dict
         The performance results of the streamset method
     """
+    streamset = streamset.filter(start=start, end=end)
+    versions = {s.uuid: 0 for s in streamset}
+    streamset.pin_versions(versions)
+    streamset = streamset.aligned_windows(pointwidth=pointwidth)
     tic = perf_counter()
-    vals = streamset.arrow_aligned_windows(
-        start, end, pointwidth=pointwidth, version=version
-    )
+    vals = streamset.arrow_values()
     toc = perf_counter()
     # num of statpoints
-    queried_points = vals.num_rows
+    queried_points = vals.num_rows * len(streamset)
     assert queried_points != 0
     # time in seconds to run
     run_time = toc - tic
     results = _create_streamset_result_dict(
-        streamset.uuid, point_count=queried_points, total_time=run_time, version=version
+        streamset, point_count=queried_points, total_time=run_time, version=version
     )
     return results
 
@@ -308,16 +325,23 @@ def main():
     for f in [time_streamset_raw_values, time_streamset_arrow_raw_values]:
         res = f(streamset, start, end, 0)
         res["func"] = f.__name__
-    # for f in [time_streamset_windows_values, time_streamset_arrow_windows_values]:
-    #     res = f(streamset, start, end, width_ns=width_ns, version=0)
-    #     res["func"] = f.__name__
-    # for f in [time_streamset_aligned_windows_values, time_streamset_arrow_aligned_windows_values]:
-    #     res = f(streamset, start, end, pointwidth=pointwidth, version=0)
-    #     res["func"] = res
+        res_list.append(res)
+    for f in [time_streamset_windows_values, time_streamset_arrow_windows_values]:
+        res = f(streamset, start, end, width_ns=width_ns, version=0)
+        res["func"] = f.__name__
+        res_list.append(res)
+    for f in [
+        time_streamset_aligned_windows_values,
+        time_streamset_arrow_aligned_windows_values,
+    ]:
+        res = f(streamset, start, end, pointwidth=pointwidth, version=0)
+        res["func"] = f.__name__
+        res_list.append(res)
 
-    return res
+    return res_list
 
 
 if __name__ == "__main__":
     results = main()
-    print(pandas.DataFrame(results))
+    pprint.pprint(results)
+    print(pandas.DataFrame.from_dict(results, orient="columns"))

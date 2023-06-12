@@ -1,6 +1,9 @@
+import pprint
 import uuid
 from time import perf_counter
 from typing import Dict, Union
+
+import pandas as pd
 
 import btrdb
 
@@ -267,19 +270,29 @@ def main():
     width_ns = btrdb.utils.timez.ns_delta(minutes=1)
     pointwidth = btrdb.utils.general.pointwidth(38)
     print(f"pointwidth of: {pointwidth}")
+    res_list = []
     for f in [time_single_stream_arrow_raw_values, time_single_stream_raw_values]:
-        print(f(stream1, start, end, 0))
+        res = f(stream1, start, end, 0)
+        res["func"] = f.__name__
+        res_list.append(res)
     for f in [
         time_single_stream_arrow_windows_values,
         time_single_stream_windows_values,
     ]:
-        print(f(stream1, start, end, width_ns=width_ns, version=0))
+        res = f(stream1, start, end, width_ns=width_ns, version=0)
+        res["func"] = f.__name__
+        res_list.append(res)
     for f in [
         time_single_stream_arrow_aligned_windows_values,
         time_single_stream_aligned_windows_values,
     ]:
-        print(f(stream1, start, end, pointwidth=pointwidth, version=0))
+        res = f(stream1, start, end, pointwidth=pointwidth, version=0)
+        res["func"] = f.__name__
+        res_list.append(res)
+    return res_list
 
 
 if __name__ == "__main__":
-    main()
+    result = main()
+    pprint.pprint(result)
+    print(pd.DataFrame.from_dict(result, orient="columns"))
