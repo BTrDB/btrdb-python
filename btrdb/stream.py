@@ -1837,8 +1837,10 @@ class StreamSetBase(Sequence):
         params = self._params_from_filters()
         versions = self.versions()
         params["uu_list"] = [s.uuid for s in self._streams]
-        params["versions"] = [versions[s.uuid] for s in self._streams]
+        params["version_list"] = [versions[s.uuid] for s in self._streams]
         params["snap_periodNS"] = period_ns
+        # dict.pop(key, default_return_value_if_no_key)
+        _ = params.pop("sampling_frequency", None)
         arr_bytes = self._btrdb.ep.arrowMultiValues(**params)
         # exhausting the generator from above
         bytes_materialized = list(arr_bytes)

@@ -71,7 +71,7 @@ class Endpoint(object):
         )
         for result in self.stub.ArrowMultiValues(params):
             check_proto_stat(result.stat)
-            yield result.arrowBytes, result.versionMajor
+            yield result.arrowBytes, None
 
     @error_handler
     def arrowInsertValues(self, uu: uuid.UUID, values: bytearray, policy: str):
