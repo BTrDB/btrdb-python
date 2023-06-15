@@ -10,6 +10,8 @@
 """
 Module for Stream and related classes
 """
+import io
+
 ##########################################################################
 ## Imports
 ##########################################################################
@@ -512,8 +514,8 @@ class Stream(object):
         logger.debug(f"tmp_table schema: {tmp_table.schema}")
         new_schema = pa.schema(
             [
-                (pa.field("time", pa.timestamp(unit="ns", tz="UTC"))),
-                (pa.field("value", pa.float64())),
+                (pa.field("time", pa.timestamp(unit="ns", tz="UTC"), nullable=False)),
+                (pa.field("value", pa.float64(), nullable=False)),
             ]
         )
         tmp_table = tmp_table.cast(new_schema)
@@ -1930,10 +1932,12 @@ def _materialize_stream_as_table(arrow_bytes):
 
 
 def _table_slice_to_feather_bytes(table_slice: pa.Table) -> bytes:
-    sink = pa.BufferOutputStream()
+    # sink = pa.BufferOutputStream()
+    sink = io.BytesIO()
     with pa.ipc.new_stream(sink=sink, schema=table_slice.schema) as writer:
-        writer.write_table(table_slice)
-    return sink.readall()
+        writer.write(table_slice)
+    buf = sink.getvalue()
+    return buf
 
 
 def _coalesce_table_deque(tables: deque):
