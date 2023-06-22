@@ -34,8 +34,8 @@ def test_arrow_insert_and_values(conn, tmp_collection):
         values.append(i)
     schema = pa.schema([
         pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
-        pa.field('value', pa.float64(), nullable=False)]
-    )
+        pa.field('value', pa.float64(), nullable=False),
+    ])
     data = pa.Table.from_arrays([
         pa.array(times),
         pa.array(values),
