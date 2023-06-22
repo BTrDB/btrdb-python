@@ -737,7 +737,7 @@ class Stream(object):
                 materialized.append((RawPoint.from_proto(point), version))
         return materialized
 
-    def arrow_values(self, start: int, end: int, version: int = 0) -> pa.Table:
+    def arrow_values(self, start, end, version: int = 0) -> pa.Table:
         """Read raw values from BTrDB between time [a, b) in nanoseconds.
 
         RawValues queries BTrDB for the raw time series data points between
@@ -771,17 +771,12 @@ class Stream(object):
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_values"))
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        logger.debug(f"For stream - {self.uuid} -  {self.name}")
         arr_bytes = self._btrdb.ep.arrowRawValues(
             uu=self.uuid, start=start, end=end, version=version
         )
         # exhausting the generator from above
         bytes_materialized = list(arr_bytes)
-
-        logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
-        logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
-        materialized_tables = _materialize_stream_as_table(bytes_materialized)
-        return materialized_tables.rename_columns(["time", str(self.uuid)])
+        return _materialize_stream_as_table(bytes_materialized)
 
     def aligned_windows(self, start, end, pointwidth, version=0):
         """

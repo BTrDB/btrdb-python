@@ -29,7 +29,7 @@ from btrdb.exceptions import ConnectionError
 
 
 class TestConnect(object):
-    def setup(self):
+    def setup_method(self):
         for env in ["BTRDB_ENDPOINTS", "BTRDB_PROFILE", "BTRDB_API_KEY"]:
             try:
                 del os.environ[env]
