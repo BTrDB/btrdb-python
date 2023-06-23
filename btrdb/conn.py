@@ -108,12 +108,42 @@ class Connection(object):
                     options=chan_ops,
                 )
         else:
-            if apikey is not None:
-                raise ValueError(
-                    "cannot use an API key with an insecure (port 4410) BTrDB API. Try port 4411"
-                )
             self.channel = grpc.insecure_channel(addrportstr, chan_ops)
-
+            if apikey is not None:
+                class AuthCallDetails(grpc.ClientCallDetails):
+                    def __init__(self, apikey, client_call_details):
+                        metadata = []
+                        if client_call_details.metadata is not None:
+                            metadata = list(client_call_details.metadata)
+                        metadata.append(
+                            ('authorization', "Bearer " + apikey)
+                        )
+                        self.method = client_call_details.method
+                        self.timeout = client_call_details.timeout
+                        self.credentials = client_call_details.credentials
+                        self.wait_for_ready = client_call_details.wait_for_ready
+                        self.compression = client_call_details.compression
+                        self.metadata = metadata
+                class AuthorizationInterceptor(
+                    grpc.UnaryUnaryClientInterceptor,
+                    grpc.UnaryStreamClientInterceptor,
+                    grpc.StreamUnaryClientInterceptor,
+                    grpc.StreamStreamClientInterceptor,
+                ):
+                    def __init__(self, apikey):
+                        self.apikey = apikey
+                    def intercept_unary_unary(self, continuation, client_call_details, request):
+                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
+                    def intercept_unary_stream(self, continuation, client_call_details, request):
+                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
+                    def intercept_stream_unary(self, continuation, client_call_details, request_iterator):
+                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
+                    def intercept_stream_stream(self, continuation, client_call_details, request_iterator):
+                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
+                self.channel = grpc.intercept_channel(
+                    self.channel,
+                    AuthorizationInterceptor(apikey),
+                )
 
 def _is_arrow_enabled(info):
     info = {
