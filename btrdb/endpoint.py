@@ -274,14 +274,19 @@ class Endpoint(object):
 
     @error_handler
     def nearest(self, uu, time, version, backward):
-        logger.debug(f"nearest function params: {uu}\t{time}\t{version}\t{backward}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(
+                f"nearest function params: {uu}\t{time}\t{version}\t{backward}"
+            )
         params = btrdb_pb2.NearestParams(
             uuid=uu.bytes, time=time, versionMajor=version, backward=backward
         )
-        logger.debug(f"params from nearest: {params}")
-        logger.debug(f"uuid: {uu}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"params from nearest: {params}")
+            logger.debug(f"uuid: {uu}")
         result = self.stub.Nearest(params)
-        logger.debug(f"nearest, results: {result}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"nearest, results: {result}")
         check_proto_stat(result.stat)
         return result.value, result.versionMajor
 

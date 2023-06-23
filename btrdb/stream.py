@@ -46,6 +46,7 @@ from btrdb.utils.timez import currently_as_ns, to_nanoseconds
 ## Module Variables
 ##########################################################################
 logger = logging.getLogger(__name__)
+IS_DEBUG = logger.isEnabledFor(logging.DEBUG)
 INSERT_BATCH_SIZE = 50000
 MINIMUM_TIME = -(16 << 56)
 MAXIMUM_TIME = (48 << 56) - 1
@@ -511,7 +512,8 @@ class Stream(object):
         chunksize = INSERT_BATCH_SIZE
         assert isinstance(data, pa.Table)
         tmp_table = data.rename_columns(["time", "value"])
-        logger.debug(f"tmp_table schema: {tmp_table.schema}")
+        if IS_DEBUG:
+            logger.debug(f"tmp_table schema: {tmp_table.schema}")
         new_schema = pa.schema(
             [
                 (pa.field("time", pa.timestamp(unit="ns", tz="UTC"), nullable=False)),
@@ -536,7 +538,8 @@ class Stream(object):
         # Process the batches as needed
         version = []
         for tab in table_slices:
-            logger.debug(f"Table Slice: {tab}")
+            if IS_DEBUG:
+                logger.debug(f"Table Slice: {tab}")
             feather_bytes = _table_slice_to_feather_bytes(table_slice=tab)
             version.append(
                 self._btrdb.ep.arrowInsertValues(
@@ -730,7 +733,8 @@ class Stream(object):
         materialized = []
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        logger.debug(f"For stream - {self.uuid} -  {self.name}")
+        if IS_DEBUG:
+            logger.debug(f"For stream - {self.uuid} -  {self.name}")
         point_windows = self._btrdb.ep.rawValues(self._uuid, start, end, version)
         for point_list, version in point_windows:
             for point in point_list:
@@ -883,7 +887,8 @@ class Stream(object):
                 _arrow_not_impl_str.format("arrow_aligned_windows")
             )
 
-        logger.debug(f"For stream - {self.uuid} -  {self.name}")
+        if IS_DEBUG:
+            logger.debug(f"For stream - {self.uuid} -  {self.name}")
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
         arr_bytes = self._btrdb.ep.arrowAlignedWindows(
@@ -892,8 +897,9 @@ class Stream(object):
         # exhausting the generator from above
         bytes_materialized = list(arr_bytes)
 
-        logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
-        logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
+        if IS_DEBUG:
+            logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
+            logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
         # ignore versions for now
         materialized_table = _materialize_stream_as_table(bytes_materialized)
         stream_names = [
@@ -1005,8 +1011,9 @@ class Stream(object):
         # exhausting the generator from above
         bytes_materialized = list(arr_bytes)
 
-        logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
-        logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
+        if IS_DEBUG:
+            logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
+            logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
         # ignore versions for now
         materialized = _materialize_stream_as_table(bytes_materialized)
         stream_names = [
@@ -1042,11 +1049,15 @@ class Stream(object):
 
         """
         try:
-            logger.debug(f"checking nearest for: {self.uuid}\t\t{time}\t\t{version}")
+            if IS_DEBUG:
+                logger.debug(
+                    f"checking nearest for: {self.uuid}\t\t{time}\t\t{version}"
+                )
             rp, version = self._btrdb.ep.nearest(
                 self._uuid, to_nanoseconds(time), version, backward
             )
-            logger.debug(f"Nearest for stream: {self.uuid} - {rp}")
+            if IS_DEBUG:
+                logger.debug(f"Nearest for stream: {self.uuid} - {rp}")
         except BTrDBError as exc:
             if not isinstance(exc, NoSuchPoint):
                 raise
@@ -1223,7 +1234,8 @@ class StreamSetBase(Sequence):
         params = self._params_from_filters()
         start = params.get("start", MINIMUM_TIME)
         versions = self.versions()
-        logger.debug(f"versions: {versions}")
+        if IS_DEBUG:
+            logger.debug(f"versions: {versions}")
         earliest_points_gen = self._btrdb._executor.map(
             lambda s: s.nearest(start, version=versions.get(s.uuid, 0), backward=False),
             self._streams,
@@ -1842,8 +1854,9 @@ class StreamSetBase(Sequence):
         # exhausting the generator from above
         bytes_materialized = list(arr_bytes)
 
-        logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
-        logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
+        if IS_DEBUG:
+            logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
+            logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
         data = _materialize_stream_as_table(bytes_materialized)
         return data
 
@@ -1919,9 +1932,11 @@ def _materialize_stream_as_table(arrow_bytes):
     for b, _ in arrow_bytes:
         with pa.ipc.open_stream(b) as reader:
             schema = reader.schema
-            logger.debug(f"schema: {schema}")
+            if IS_DEBUG:
+                logger.debug(f"schema: {schema}")
             table_list.append(reader.read_all())
-    logger.debug(f"table list: {table_list}")
+    if IS_DEBUG:
+        logger.debug(f"table list: {table_list}")
     table = pa.concat_tables(table_list)
     return table
 
