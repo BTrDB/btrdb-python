@@ -110,20 +110,20 @@ class Connection(object):
         else:
             self.channel = grpc.insecure_channel(addrportstr, chan_ops)
             if apikey is not None:
+
                 class AuthCallDetails(grpc.ClientCallDetails):
                     def __init__(self, apikey, client_call_details):
                         metadata = []
                         if client_call_details.metadata is not None:
                             metadata = list(client_call_details.metadata)
-                        metadata.append(
-                            ('authorization', "Bearer " + apikey)
-                        )
+                        metadata.append(("authorization", "Bearer " + apikey))
                         self.method = client_call_details.method
                         self.timeout = client_call_details.timeout
                         self.credentials = client_call_details.credentials
                         self.wait_for_ready = client_call_details.wait_for_ready
                         self.compression = client_call_details.compression
                         self.metadata = metadata
+
                 class AuthorizationInterceptor(
                     grpc.UnaryUnaryClientInterceptor,
                     grpc.UnaryStreamClientInterceptor,
@@ -132,18 +132,42 @@ class Connection(object):
                 ):
                     def __init__(self, apikey):
                         self.apikey = apikey
-                    def intercept_unary_unary(self, continuation, client_call_details, request):
-                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
-                    def intercept_unary_stream(self, continuation, client_call_details, request):
-                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
-                    def intercept_stream_unary(self, continuation, client_call_details, request_iterator):
-                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
-                    def intercept_stream_stream(self, continuation, client_call_details, request_iterator):
-                        return continuation(AuthCallDetails(self.apikey, client_call_details), request)
+
+                    def intercept_unary_unary(
+                        self, continuation, client_call_details, request
+                    ):
+                        return continuation(
+                            AuthCallDetails(self.apikey, client_call_details), request
+                        )
+
+                    def intercept_unary_stream(
+                        self, continuation, client_call_details, request
+                    ):
+                        return continuation(
+                            AuthCallDetails(self.apikey, client_call_details), request
+                        )
+
+                    def intercept_stream_unary(
+                        self, continuation, client_call_details, request_iterator
+                    ):
+                        return continuation(
+                            AuthCallDetails(self.apikey, client_call_details),
+                            request_iterator,
+                        )
+
+                    def intercept_stream_stream(
+                        self, continuation, client_call_details, request_iterator
+                    ):
+                        return continuation(
+                            AuthCallDetails(self.apikey, client_call_details),
+                            request_iterator,
+                        )
+
                 self.channel = grpc.intercept_channel(
                     self.channel,
                     AuthorizationInterceptor(apikey),
                 )
+
 
 def _is_arrow_enabled(info):
     info = {
@@ -152,8 +176,9 @@ def _is_arrow_enabled(info):
     }
     major = info.get("majorVersion", -1)
     minor = info.get("minorVersion", -1)
-    logger.debug(f"major version: {major}")
-    logger.debug(f"minor version: {minor}")
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug(f"major version: {major}")
+        logger.debug(f"minor version: {minor}")
     if major >= 5 and minor >= 30:
         return True
     else:
@@ -169,7 +194,8 @@ class BTrDB(object):
         self.ep = endpoint
         self._executor = ThreadPoolExecutor()
         self._ARROW_ENABLED = True  # _is_arrow_enabled(self.ep.info())
-        logger.debug(f"ARROW ENABLED: {self._ARROW_ENABLED}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"ARROW ENABLED: {self._ARROW_ENABLED}")
 
     def query(self, stmt, params=[]):
         """

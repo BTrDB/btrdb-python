@@ -46,6 +46,7 @@ from btrdb.utils.timez import currently_as_ns, to_nanoseconds
 ## Module Variables
 ##########################################################################
 logger = logging.getLogger(__name__)
+IS_DEBUG = logger.isEnabledFor(logging.DEBUG)
 INSERT_BATCH_SIZE = 50000
 MINIMUM_TIME = -(16 << 56)
 MAXIMUM_TIME = (48 << 56) - 1
@@ -876,7 +877,8 @@ class Stream(object):
                 _arrow_not_impl_str.format("arrow_aligned_windows")
             )
 
-        logger.debug(f"For stream - {self.uuid} -  {self.name}")
+        if IS_DEBUG:
+            logger.debug(f"For stream - {self.uuid} -  {self.name}")
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
         tables = list(self._btrdb.ep.arrowAlignedWindows(
@@ -1035,11 +1037,15 @@ class Stream(object):
 
         """
         try:
-            logger.debug(f"checking nearest for: {self.uuid}\t\t{time}\t\t{version}")
+            if IS_DEBUG:
+                logger.debug(
+                    f"checking nearest for: {self.uuid}\t\t{time}\t\t{version}"
+                )
             rp, version = self._btrdb.ep.nearest(
                 self._uuid, to_nanoseconds(time), version, backward
             )
-            logger.debug(f"Nearest for stream: {self.uuid} - {rp}")
+            if IS_DEBUG:
+                logger.debug(f"Nearest for stream: {self.uuid} - {rp}")
         except BTrDBError as exc:
             if not isinstance(exc, NoSuchPoint):
                 raise
@@ -1216,7 +1222,8 @@ class StreamSetBase(Sequence):
         params = self._params_from_filters()
         start = params.get("start", MINIMUM_TIME)
         versions = self.versions()
-        logger.debug(f"versions: {versions}")
+        if IS_DEBUG:
+            logger.debug(f"versions: {versions}")
         earliest_points_gen = self._btrdb._executor.map(
             lambda s: s.nearest(start, version=versions.get(s.uuid, 0), backward=False),
             self._streams,
@@ -1799,7 +1806,6 @@ class StreamSetBase(Sequence):
                     + [pa.field(name_callable(s), pa.float64(), nullable=False) for s in self._streams],
                 )
                 data = pa.Table.from_arrays([pa.array([]) for i in range(1+len(self._streams))], schema=schema)
-
         return data
 
     def __repr__(self):
