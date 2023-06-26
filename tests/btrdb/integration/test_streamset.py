@@ -47,11 +47,18 @@ def test_streamset_arrow_values(conn, tmp_collection):
     expected_col2 = [None, 5.0, None, 6.0, 7.0, 8.0, None, 9.0, None]
     values = ss.arrow_values()
     times = [t.value for t in values['time']]
-    col1 = [None if isnan(v) else v for v in values[tmp_collection + '/s1']]
-    col2 = [None if isnan(v) else v for v in values[tmp_collection + '/s2']]
+    col1 = [None if isnan(v.as_py()) else v.as_py() for v in values[tmp_collection + '/s1']]
+    col2 = [None if isnan(v.as_py()) else v.as_py() for v in values[tmp_collection + '/s2']]
     assert times == expected_times
     assert col1 == expected_col1
     assert col2 == expected_col2
+
+def test_streamset_empty_arrow_values(conn, tmp_collection):
+    s = conn.create(new_uuid(), tmp_collection, tags={"name":"s"})
+    ss = btrdb.stream.StreamSet([s]).filter(start=100, end=200)
+    values = ss.arrow_values()
+    assert [t.value for t in values['time']] == []
+    assert [v for v in values[tmp_collection + '/s']] == []
 
 def test_streamset_to_dataframe(conn, tmp_collection):
     s1 = conn.create(new_uuid(), tmp_collection, tags={"name":"s1"})

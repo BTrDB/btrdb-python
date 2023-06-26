@@ -9,7 +9,7 @@ try:
 except:
     pa = None
 
-def test_basic_insert_and_values(conn, tmp_collection):
+def test_grpc_insert_and_values(conn, tmp_collection):
     s = conn.create(new_uuid(), tmp_collection, tags={"name":"s"})
     t = currently_as_ns()
     data = []
@@ -43,3 +43,9 @@ def test_arrow_insert_and_values(conn, tmp_collection):
     s.arrow_insert(data)
     fetched_data = s.arrow_values(start=t, end=t+duration)
     assert data == fetched_data
+
+def test_arrow_empty_values(conn, tmp_collection):
+    s = conn.create(new_uuid(), tmp_collection, tags={"name":"s"})
+    data = s.arrow_values(start=100, end=1000)
+    assert len(data['time']) == 0
+    assert len(data['value']) == 0

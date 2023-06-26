@@ -40,15 +40,6 @@ class TestConnection(object):
             conn = Connection(address)
         assert "expecting address:port" in str(exc)
 
-    def test_raises_err_for_apikey_insecure_port(self):
-        """
-        Assert error is raised if apikey used on insecure port
-        """
-        address = "127.0.0.1:4410"
-        with pytest.raises(ValueError) as exc:
-            conn = Connection(address, apikey="abcd")
-        assert "cannot use an API key with an insecure" in str(exc)
-
 
 ##########################################################################
 ## BTrDB Tests

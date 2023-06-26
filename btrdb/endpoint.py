@@ -24,9 +24,8 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-import logging
+import io
 import uuid
-
 import grpc
 
 from btrdb.exceptions import BTrDBError, check_proto_stat, error_handler
@@ -34,8 +33,10 @@ from btrdb.grpcinterface import btrdb_pb2, btrdb_pb2_grpc
 from btrdb.point import RawPoint
 from btrdb.utils.general import unpack_stream_descriptor
 
-logger = logging.getLogger(__name__)
-
+try:
+    import pyarrow as pa
+except:
+    pa = None
 
 class Endpoint(object):
     """Server endpoint where we make specific requests."""
@@ -59,8 +60,10 @@ class Endpoint(object):
         )
         for result in self.stub.ArrowRawValues(params):
             check_proto_stat(result.stat)
-            yield result.arrowBytes, result.versionMajor
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all(), result.versionMajor
 
+    @error_handler
     def arrowMultiValues(self, uu_list, start, end, version_list, snap_periodNS):
         params = btrdb_pb2.ArrowMultiValuesParams(
             uuid=[uu.bytes for uu in uu_list],
@@ -71,20 +74,25 @@ class Endpoint(object):
         )
         for result in self.stub.ArrowMultiValues(params):
             check_proto_stat(result.stat)
-            yield result.arrowBytes, None
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all()
 
     @error_handler
-    def arrowInsertValues(self, uu: uuid.UUID, values: bytearray, policy: str):
+    def arrowInsertValues(self, uu: uuid.UUID, values: pa.Table, policy: str):
         policy_map = {
             "never": btrdb_pb2.MergePolicy.NEVER,
             "equal": btrdb_pb2.MergePolicy.EQUAL,
             "retain": btrdb_pb2.MergePolicy.RETAIN,
             "replace": btrdb_pb2.MergePolicy.REPLACE,
         }
+        byte_io = io.BytesIO()
+        with pa.ipc.new_stream(sink=byte_io, schema=values.schema) as writer:
+            writer.write(values)
+        arrow_bytes = byte_io.getvalue()
         params = btrdb_pb2.ArrowInsertParams(
             uuid=uu.bytes,
             sync=False,
-            arrowBytes=values,
+            arrowBytes=arrow_bytes,
             merge_policy=policy_map[policy],
         )
         result = self.stub.ArrowInsert(params)
@@ -115,7 +123,8 @@ class Endpoint(object):
         )
         for result in self.stub.ArrowAlignedWindows(params):
             check_proto_stat(result.stat)
-            yield result.arrowBytes, result.versionMajor
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all(), result.versionMajor
 
     @error_handler
     def windows(self, uu, start, end, width, depth, version=0):
@@ -143,7 +152,9 @@ class Endpoint(object):
         )
         for result in self.stub.ArrowWindows(params):
             check_proto_stat(result.stat)
-            yield result.arrowBytes, result.versionMajor
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all(), result.versionMajor
+
 
     @error_handler
     def streamInfo(self, uu, omitDescriptor, omitVersion):
@@ -274,14 +285,10 @@ class Endpoint(object):
 
     @error_handler
     def nearest(self, uu, time, version, backward):
-        logger.debug(f"nearest function params: {uu}\t{time}\t{version}\t{backward}")
         params = btrdb_pb2.NearestParams(
             uuid=uu.bytes, time=time, versionMajor=version, backward=backward
         )
-        logger.debug(f"params from nearest: {params}")
-        logger.debug(f"uuid: {uu}")
         result = self.stub.Nearest(params)
-        logger.debug(f"nearest, results: {result}")
         check_proto_stat(result.stat)
         return result.value, result.versionMajor
 

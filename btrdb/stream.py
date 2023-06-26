@@ -56,7 +56,6 @@ except Exception:
     RE_PATTERN = re.Pattern
 
 _arrow_not_impl_str = "The BTrDB server you are using does not support {}."
-_arrow_available_str = "Pyarrow and arrow table support is available for {}, you can access this method using {}."
 
 ##########################################################################
 ## Stream Classes
@@ -468,8 +467,6 @@ class Stream(object):
             The version of the stream after inserting new points.
 
         """
-        if self._btrdb._ARROW_ENABLED:
-            warnings.warn(_arrow_available_str.format("insert", "arrow_insert"))
         version = 0
         i = 0
         while i < len(data):
@@ -511,7 +508,6 @@ class Stream(object):
         chunksize = INSERT_BATCH_SIZE
         assert isinstance(data, pa.Table)
         tmp_table = data.rename_columns(["time", "value"])
-        logger.debug(f"tmp_table schema: {tmp_table.schema}")
         new_schema = pa.schema(
             [
                 (pa.field("time", pa.timestamp(unit="ns", tz="UTC"), nullable=False)),
@@ -536,11 +532,9 @@ class Stream(object):
         # Process the batches as needed
         version = []
         for tab in table_slices:
-            logger.debug(f"Table Slice: {tab}")
-            feather_bytes = _table_slice_to_feather_bytes(table_slice=tab)
             version.append(
                 self._btrdb.ep.arrowInsertValues(
-                    uu=self.uuid, values=feather_bytes, policy=merge
+                    uu=self.uuid, values=tab, policy=merge
                 )
             )
         return max(version)
@@ -725,12 +719,9 @@ class Stream(object):
         the vector nodes.
 
         """
-        if self._btrdb._ARROW_ENABLED:
-            warnings.warn(_arrow_available_str.format("values", "arrow_values"))
         materialized = []
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        logger.debug(f"For stream - {self.uuid} -  {self.name}")
         point_windows = self._btrdb.ep.rawValues(self._uuid, start, end, version)
         for point_list, version in point_windows:
             for point in point_list:
@@ -771,12 +762,18 @@ class Stream(object):
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_values"))
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        arr_bytes = self._btrdb.ep.arrowRawValues(
+        arrow_and_versions = self._btrdb.ep.arrowRawValues(
             uu=self.uuid, start=start, end=end, version=version
         )
-        # exhausting the generator from above
-        bytes_materialized = list(arr_bytes)
-        return _materialize_stream_as_table(bytes_materialized)
+        tables = [arrow for (arrow, _) in arrow_and_versions]
+        if len(tables) > 0:
+            return pa.concat_tables(tables)
+        else:
+            schema = pa.schema([
+                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
+                pa.field('value', pa.float64(), nullable=False),
+            ])
+            return pa.Table.from_arrays([pa.array([]), pa.array([])], schema=schema)
 
     def aligned_windows(self, start, end, pointwidth, version=0):
         """
@@ -821,10 +818,6 @@ class Stream(object):
         As the window-width is a power-of-two, it aligns with BTrDB internal
         tree data structure and is faster to execute than `windows()`.
         """
-        if self._btrdb._ARROW_ENABLED:
-            warnings.warn(
-                _arrow_available_str.format("aligned_windows", "arrow_aligned_windows")
-            )
         materialized = []
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
@@ -886,20 +879,21 @@ class Stream(object):
         logger.debug(f"For stream - {self.uuid} -  {self.name}")
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        arr_bytes = self._btrdb.ep.arrowAlignedWindows(
+        tables = list(self._btrdb.ep.arrowAlignedWindows(
             self.uuid, start=start, end=end, pointwidth=pointwidth, version=version
-        )
-        # exhausting the generator from above
-        bytes_materialized = list(arr_bytes)
-
-        logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
-        logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
-        # ignore versions for now
-        materialized_table = _materialize_stream_as_table(bytes_materialized)
-        stream_names = [
-            "/".join([self.collection, self.name, prop]) for prop in _STAT_PROPERTIES
-        ]
-        return materialized_table.rename_columns(["time", *stream_names])
+        ))
+        if len(tables) > 0:
+            return pa.concat_tables(tables)
+        else:
+            schema = pa.schema([
+                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
+                pa.field('mean', pa.float64(), nullable=False),
+                pa.field('min', pa.float64(), nullable=False),
+                pa.field('max', pa.float64(), nullable=False),
+                pa.field('count', pa.uint64(), nullable=False),
+                pa.field('stddev', pa.float64(), nullable=False),
+            ])
+            return pa.Table.from_arrays([pa.array([]) for _ in range(5)], schema=schema)
 
     def windows(self, start, end, width, depth=0, version=0):
         """
@@ -941,8 +935,6 @@ class Stream(object):
         for depth is now 0.
 
         """
-        if self._btrdb._ARROW_ENABLED:
-            warnings.warn(_arrow_available_str.format("windows", "arrow_windows"))
         materialized = []
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
@@ -994,25 +986,26 @@ class Stream(object):
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_windows"))
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        arr_bytes = self._btrdb.ep.arrowWindows(
+        tables = list(self._btrdb.ep.arrowWindows(
             self.uuid,
             start=start,
             end=end,
             width=width,
             depth=0,
             version=version,
-        )
-        # exhausting the generator from above
-        bytes_materialized = list(arr_bytes)
-
-        logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
-        logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
-        # ignore versions for now
-        materialized = _materialize_stream_as_table(bytes_materialized)
-        stream_names = [
-            "/".join([self.collection, self.name, prop]) for prop in _STAT_PROPERTIES
-        ]
-        return materialized.rename_columns(["time", *stream_names])
+        ))
+        if len(tables) > 0:
+            return pa.concat_tables(tables)
+        else:
+            schema = pa.schema([
+                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
+                pa.field('mean', pa.float64(), nullable=False),
+                pa.field('min', pa.float64(), nullable=False),
+                pa.field('max', pa.float64(), nullable=False),
+                pa.field('count', pa.uint64(), nullable=False),
+                pa.field('stddev', pa.float64(), nullable=False),
+            ])
+            return pa.Table.from_arrays([pa.array([]) for _ in range(5)], schema=schema)
 
     def nearest(self, time, version, backward=False):
         """
@@ -1541,7 +1534,9 @@ class StreamSetBase(Sequence):
         params = self._params_from_filters()
         # sampling freq not supported for non-arrow streamset ops
         _ = params.pop("sampling_frequency", None)
-        versions = self.versions()
+        versions = self._pinned_versions
+        if versions == None:
+            versions = {s.uuid : 0 for s in self}
 
         if self.pointwidth is not None:
             # create list of stream.aligned_windows data
@@ -1575,85 +1570,6 @@ class StreamSetBase(Sequence):
         if as_iterators:
             return [iter(ii) for ii in data]
 
-        return data
-
-    def _arrow_streamset_data(self):
-        params = self._params_from_filters()
-        versions = self.versions()
-        if params.get("sampling_frequency", None) is None:
-            _ = params.pop("sampling_frequency", None)
-
-        if self.pointwidth is not None:
-            # create list of stream.aligned_windows data
-            params.update({"pointwidth": self.pointwidth})
-            _ = params.pop("sampling_frequency", None)
-            # need to update params based on version of stream, use dict merge
-            # {**dict1, **dict2} creates a new dict which updates the key/values if there are any
-            # same keys in dict1 and dict2, then the second dict in the expansion (dict2 in this case)
-            # will update the key (similar to dict1.update(dict2))
-            aligned_windows_gen = self._btrdb._executor.map(
-                lambda s: s.arrow_aligned_windows(
-                    **{**params, **{"version": versions[s.uuid]}}
-                ),
-                self._streams,
-            )
-            data = list(aligned_windows_gen)
-            tablex = data.pop()
-            if data:
-                for tab in data:
-                    tablex = tablex.join(tab, "time", join_type="full outer")
-                data = tablex
-            else:
-                data = tablex
-
-        elif self.width is not None and self.depth is not None:
-            # create list of stream.windows data (the windows method should
-            # prevent the possibility that only one of these is None)
-            _ = params.pop("sampling_frequency", None)
-            params.update({"width": self.width})
-            windows_gen = self._btrdb._executor.map(
-                lambda s: s.arrow_windows(
-                    **{**params, **{"version": versions[s.uuid]}}
-                ),
-                self._streams,
-            )
-            data = list(windows_gen)
-            tablex = data.pop()
-            if data:
-                for tab in data:
-                    tablex = tablex.join(tab, "time", join_type="full outer")
-                data = tablex
-            else:
-                data = tablex
-
-        else:
-            # determine if we are aligning data or not
-            sampling_freq = params.get("sampling_frequency", None)
-            if sampling_freq is None:
-                sampling_freq = -1
-            if sampling_freq > 0:
-                # We are getting timesnapped data
-                data = self._arrow_multivalues(period_ns=_to_period_ns(sampling_freq))
-            elif sampling_freq == 0:
-                # outer-joined on time data
-                data = self._arrow_multivalues(period_ns=0)
-            else:
-                # getting raw value data from each stream multithreaded
-                # create list of stream.values
-                values_gen = self._btrdb._executor.map(
-                    lambda s: s.arrow_values(**params), self._streams
-                )
-                data = list(values_gen)
-                tables = deque(data)
-                main_table = tables.popleft()
-                idx = 0
-                while len(tables) != 0:
-                    idx = idx + 1
-                    t2 = tables.popleft()
-                    main_table = main_table.join(
-                        t2, "time", join_type="full outer", right_suffix=f"_{idx}"
-                    )
-                data = main_table
         return data
 
     def rows(self):
@@ -1700,12 +1616,6 @@ class StreamSetBase(Sequence):
 
         return result
 
-    def arrow_rows(self):
-        """Return tuples of rows from arrow table"""
-        raise NotImplementedError(
-            "arrow_rows has not been implemented yet, please use `rows` if you need this functionality."
-        )
-
     def insert(self, data_map: dict, merge: str = "never") -> dict:
         """Insert new data in the form (time, value) into their mapped streams.
 
@@ -1736,8 +1646,6 @@ class StreamSetBase(Sequence):
         dict[uuid, int]
             The versions of the stream after inserting new points.
         """
-        if self._btrdb._ARROW_ENABLED:
-            warnings.warn(_arrow_available_str.format("insert", "arrow_insert"))
         filtered_data_map = {s.uuid: data_map[s.uuid] for s in self._streams}
         for key, dat in filtered_data_map.items():
             data_list = [
@@ -1821,30 +1729,77 @@ class StreamSetBase(Sequence):
             result.append([point[0] for point in stream_data])
         return result
 
-    def arrow_values(self):
+    def arrow_values(self, name_callable=lambda s : s.collection + '/' + s.name):
         """Return a pyarrow table of stream values based on the streamset parameters."""
-        streamset_data = self._arrow_streamset_data()
-        return streamset_data
-
-    def _arrow_multivalues(self, period_ns: int):
-        if not self._btrdb._ARROW_ENABLED:
-            raise NotImplementedError(
-                _arrow_not_impl_str.format("arrow_multirawvalues")
-            )
         params = self._params_from_filters()
-        versions = self.versions()
-        params["uu_list"] = [s.uuid for s in self._streams]
-        params["version_list"] = [versions[s.uuid] for s in self._streams]
-        params["snap_periodNS"] = period_ns
-        # dict.pop(key, default_return_value_if_no_key)
-        _ = params.pop("sampling_frequency", None)
-        arr_bytes = self._btrdb.ep.arrowMultiValues(**params)
-        # exhausting the generator from above
-        bytes_materialized = list(arr_bytes)
+        versions = self._pinned_versions
+        if versions == None:
+            versions = {s.uuid : 0 for s in self}
 
-        logger.debug(f"Length of materialized list: {len(bytes_materialized)}")
-        logger.debug(f"materialized bytes[0:1]: {bytes_materialized[0:1]}")
-        data = _materialize_stream_as_table(bytes_materialized)
+        if params.get("sampling_frequency", None) is None:
+            _ = params.pop("sampling_frequency", None)
+
+        if self.pointwidth is not None:
+            # create list of stream.aligned_windows data
+            params.update({"pointwidth": self.pointwidth})
+            _ = params.pop("sampling_frequency", None)
+            # need to update params based on version of stream, use dict merge
+            # {**dict1, **dict2} creates a new dict which updates the key/values if there are any
+            # same keys in dict1 and dict2, then the second dict in the expansion (dict2 in this case)
+            # will update the key (similar to dict1.update(dict2))
+            aligned_windows_gen = self._btrdb._executor.map(
+                lambda s: s.arrow_aligned_windows(
+                    **{**params, **{"version": versions[s.uuid]}}
+                ),
+                self._streams,
+            )
+            data = list(aligned_windows_gen)
+            tablex = data.pop()
+            if data:
+                for tab in data:
+                    tablex = tablex.join(tab, "time", join_type="full outer")
+                data = tablex
+            else:
+                data = tablex
+
+        elif self.width is not None and self.depth is not None:
+            # create list of stream.windows data (the windows method should
+            # prevent the possibility that only one of these is None)
+            _ = params.pop("sampling_frequency", None)
+            params.update({"width": self.width})
+            windows_gen = self._btrdb._executor.map(
+                lambda s: s.arrow_windows(
+                    **{**params, **{"version": versions[s.uuid]}}
+                ),
+                self._streams,
+            )
+            data = list(windows_gen)
+            tablex = data.pop()
+            if data:
+                for tab in data:
+                    tablex = tablex.join(tab, "time", join_type="full outer")
+                data = tablex
+            else:
+                data = tablex
+        else:
+            sampling_freq = params.pop("sampling_frequency", 0)
+            period_ns = 0
+            if sampling_freq > 0:
+                period_ns = _to_period_ns(sampling_freq)
+            params["uu_list"] = [s.uuid for s in self._streams]
+            params["version_list"] = [versions[s.uuid] for s in self._streams]
+            params["snap_periodNS"] = period_ns
+            table = list(self._btrdb.ep.arrowMultiValues(**params))
+            if len(table) > 0:
+                data = pa.concat_tables(table)
+                data = data.rename_columns(["time"] + [name_callable(s) for s in self._streams])
+            else:
+                schema = pa.schema(
+                    [pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False)]
+                    + [pa.field(name_callable(s), pa.float64(), nullable=False) for s in self._streams],
+                )
+                data = pa.Table.from_arrays([pa.array([]) for i in range(1+len(self._streams))], schema=schema)
+
         return data
 
     def __repr__(self):
@@ -1906,34 +1861,11 @@ class StreamFilter(object):
         if self.start is not None and self.end is not None and self.start >= self.end:
             raise BTRDBValueError("`start` must be strictly less than `end` argument")
 
-
 def _to_period_ns(fs: int):
     """Convert sampling rate to sampling period in ns."""
     period = 1 / fs
     period_ns = period * 1e9
     return int(period_ns)
-
-
-def _materialize_stream_as_table(arrow_bytes):
-    table_list = []
-    for b, _ in arrow_bytes:
-        with pa.ipc.open_stream(b) as reader:
-            schema = reader.schema
-            logger.debug(f"schema: {schema}")
-            table_list.append(reader.read_all())
-    logger.debug(f"table list: {table_list}")
-    table = pa.concat_tables(table_list)
-    return table
-
-
-def _table_slice_to_feather_bytes(table_slice: pa.Table) -> bytes:
-    # sink = pa.BufferOutputStream()
-    sink = io.BytesIO()
-    with pa.ipc.new_stream(sink=sink, schema=table_slice.schema) as writer:
-        writer.write(table_slice)
-    buf = sink.getvalue()
-    return buf
-
 
 def _coalesce_table_deque(tables: deque):
     main_table = tables.popleft()
