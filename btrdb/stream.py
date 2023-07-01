@@ -396,9 +396,7 @@ class Stream(object):
         Returns a stream's annotations
 
         Annotations returns the annotations of the stream (and the annotation
-        version). It will always require a round trip to the server. If you are
-        ok with stale data and want a higher performance version, use
-        Stream.CachedAnnotations().
+        version).
 
         Do not modify the resulting map.
 

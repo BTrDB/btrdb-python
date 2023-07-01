@@ -49,3 +49,33 @@ def test_arrow_empty_values(conn, tmp_collection):
     data = s.arrow_values(start=100, end=1000)
     assert len(data['time']) == 0
     assert len(data['value']) == 0
+
+def test_stream_annotation_update(conn, tmp_collection):
+    s = conn.create(new_uuid(), tmp_collection, tags={"name":"s"}, annotations={"foo":"bar"})
+    annotations1, version1 = s.annotations()
+    assert version1 == 0
+    assert annotations1["foo"] == "bar"
+    s.update(annotations={"foo":"baz"})
+    annotations2, version2 = s.annotations()
+    assert version2 > version1
+    assert annotations2["foo"] == "baz"
+    s.update(annotations={}, replace=True)
+    annotations3, _ = s.annotations()
+    assert len(annotations3) == 0
+
+def test_create_count_obliterate_concurrency_bug(conn, tmp_collection):
+    # It is unclear if this was the cause of a bug, but it is an attempt
+    # at recreating an obliteration and metadata crash.
+    from concurrent.futures import ThreadPoolExecutor
+    n_streams = 10
+    def create_stream(i):
+        return conn.create(new_uuid(), tmp_collection, tags={"name":f"s{i}"})
+    def points_in_stream(s):
+        return s.count()
+    def obliterate_stream(s):
+        s.obliterate()
+    with ThreadPoolExecutor() as executor:
+        for i in range(2):
+            streams = list(executor.map(create_stream, range(n_streams)))
+            assert sum(executor.map(points_in_stream, streams)) == 0
+            _ = list(executor.map(obliterate_stream, streams))
