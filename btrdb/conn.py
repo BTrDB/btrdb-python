@@ -60,7 +60,7 @@ class Connection(object):
 
         """
         addrport = addrportstr.split(":", 2)
-        chan_ops = [("grpc.default_compression_algorithm", CompressionAlgorithm.gzip)]
+        chan_ops = []
 
         if len(addrport) != 2:
             raise ValueError("expecting address:port")
