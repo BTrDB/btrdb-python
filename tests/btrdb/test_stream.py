@@ -85,10 +85,27 @@ def stream2():
 
 
 @pytest.fixture
+def stream3():
+    uu = uuid.UUID("17dbe387-89ea-42b6-864b-e2ef0d22a53b")
+    stream = Mock(Stream)
+    stream.version = Mock(return_value=33)
+    stream.uuid = Mock(return_value=uu)
+    stream.nearest = Mock(return_value=(RawPoint(time=30, value=1), 33))
+    type(stream).collection = PropertyMock(return_value="fruits/banana")
+    type(stream).name = PropertyMock(return_value="yellow")
+    stream.tags = Mock(return_value={"name": "yellow", "unit": "watts"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "yellow"}, 3))
+    stream._btrdb = Mock()
+    stream._btrdb._executor = Mock()
+    stream._btrdb._ARROW_ENABLED = Mock(return_value=False)
+    return stream
+
+
+@pytest.fixture
 def arrow_stream3():
     uu = uuid.UUID("17dbe387-89ea-42b6-864b-f505cdb483f5")
     stream = Mock(Stream)
-    stream.version = Mock(return_value=22)
+    stream.version = Mock(return_value=33)
     stream.uuid = Mock(return_value=uu)
     stream.nearest = Mock(return_value=(RawPoint(time=20, value=1), 22))
     type(stream).collection = PropertyMock(return_value="fruits/orange")
@@ -111,7 +128,7 @@ class TestStream(object):
         """
         Assert we can create the object
         """
-        Stream(None, "FAKE")
+        Stream(None, "FAKE_UUID")
 
     def test_repr_str(self):
         """
@@ -924,7 +941,7 @@ class TestStreamSet(object):
         """
         Assert we can create the object
         """
-        StreamSet([1])
+        StreamSet([Stream(None, "1"), Stream(None, "2"), Stream(None, "3")])
 
     @pytest.mark.parametrize(
         "empty_container", [(tuple()), (dict()), (list()), (set())]
@@ -943,12 +960,17 @@ class TestStreamSet(object):
         """
         Assert StreamSet instance repr output
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
         expected = "<StreamSet(4 streams)>"
         assert streams.__repr__() == expected
 
-        data = [1]
+        data = [Stream(None, "1")]
         streams = StreamSet(data)
         expected = "<StreamSet(1 stream)>"
         assert streams.__repr__() == expected
@@ -957,12 +979,17 @@ class TestStreamSet(object):
         """
         Assert StreamSet instance str output
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
         expected = "StreamSet with 4 streams"
         assert str(streams) == expected
 
-        data = [1]
+        data = [Stream(None, "1")]
         streams = StreamSet(data)
         expected = "StreamSet with 1 stream"
         assert str(streams) == expected
@@ -971,7 +998,12 @@ class TestStreamSet(object):
         """
         Assert StreamSet instance is subscriptable
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
         for index, val in enumerate(data):
             assert streams[index] == val
@@ -980,7 +1012,12 @@ class TestStreamSet(object):
         """
         Assert StreamSet instance support len
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
         assert len(streams) == len(data)
 
@@ -988,7 +1025,12 @@ class TestStreamSet(object):
         """
         Assert StreamSet instance support iteration
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
         for index, stream in enumerate(streams):
             assert data[index] == stream
@@ -997,7 +1039,12 @@ class TestStreamSet(object):
         """
         Assert StreamSet instance supports indexing
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
 
         # verify index lookup
@@ -1030,19 +1077,24 @@ class TestStreamSet(object):
             streams[missing]
         assert str(missing) in str(e)
 
-    def test_contains(self):
+    def test_contains(self, stream1, stream2, stream3):
         """
         Assert StreamSet instance supports contains
         """
-        data = [11, 22, "dog", "cat"]
+        data = [stream1, stream2, stream3]
         streams = StreamSet(data)
-        assert "dog" in streams
+        assert "0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a" in streams
 
     def test_reverse(self):
         """
         Assert StreamSet instance supports reversal
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
         assert list(reversed(streams)) == list(reversed(data))
 
@@ -1050,7 +1102,12 @@ class TestStreamSet(object):
         """
         Assert StreamSet instance cast to list
         """
-        data = [11, 22, "dog", "cat"]
+        data = [
+            Stream(None, "11"),
+            Stream(None, "22"),
+            Stream(None, "dog"),
+            Stream(None, "cat"),
+        ]
         streams = StreamSet(data)
         assert list(streams) == data
 
@@ -1058,17 +1115,17 @@ class TestStreamSet(object):
     ## allow_window tests
     ##########################################################################
 
-    def test_allow_window(self):
+    def test_allow_window(self, stream1, stream2, stream3):
         """
         Assert allow_window returns False if window already requested
         """
-        streams = StreamSet([1, 2, 3])
+        streams = StreamSet([stream1, stream2, stream3])
         assert streams.allow_window == True
 
         streams.windows(30, 4)
         assert streams.allow_window == False
 
-        streams = StreamSet([1, 2, 3])
+        streams = StreamSet([stream1, stream2, stream3])
         streams.aligned_windows(30)
         assert streams.allow_window == False
 
@@ -1097,20 +1154,20 @@ class TestStreamSet(object):
         result = streams.pin_versions(expected)
         assert streams is result
 
-    def test_pin_versions_with_argument(self):
+    def test_pin_versions_with_argument(self, stream1, stream2):
         """
         Assert pin_versions uses supplied version numbers
         """
-        streams = StreamSet([1, 2])
+        streams = StreamSet([stream1, stream2])
         expected = [3, 4]
         assert streams.pin_versions(expected) == streams
         assert streams._pinned_versions == expected
 
-    def test_pin_versions_with_argument(self):
+    def test_pin_versions_with_argument(self, stream1, stream2):
         """
         Assert pin_versions uses supplied version numbers
         """
-        streams = StreamSet([1, 2])
+        streams = StreamSet([stream1, stream2])
         uu = uuid.UUID("0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
         expected = {uu: 42}
         assert streams.pin_versions(expected) == streams
@@ -1127,11 +1184,11 @@ class TestStreamSet(object):
         assert streams.pin_versions(expected) == streams
         assert streams._pinned_versions == expected
 
-    def test_pin_versions_raise_on_non_dict(self):
+    def test_pin_versions_raise_on_non_dict(self, stream1):
         """
         Assert pin_versions raises if versions argument is not dict
         """
-        streams = StreamSet([1])
+        streams = StreamSet([stream1])
         expected = "INVALID DATA"
 
         with pytest.raises(TypeError) as e:
@@ -1143,7 +1200,7 @@ class TestStreamSet(object):
         Assert pin_versions raises if versions argument dict does not have UUID
         for keys
         """
-        streams = StreamSet([1])
+        streams = StreamSet([Stream(None, "1")])
         expected = {"uuid": 42}
 
         with pytest.raises(TypeError) as e:
@@ -1218,7 +1275,7 @@ class TestStreamSet(object):
         stream2.nearest.assert_called_once_with(15, version=22, backward=True)
 
     @patch("btrdb.stream.currently_as_ns")
-    def test_currently_out_of_range(self, mocked):
+    def test_currently_out_of_range(self, mocked, stream1, stream2):
         """
         Assert currently raises an exception if it is not filtered
         """
@@ -1476,11 +1533,15 @@ class TestStreamSet(object):
         """
         Assert that clone returns a different object
         """
+        import pdb
+
+        pdb.set_trace()
         streams = StreamSet([stream1, stream2])
         clone = streams.clone()
 
         assert id(clone) != id(streams)
-        assert clone._streams is streams._streams
+        assert clone._streams is not streams._streams
+        assert clone._streams == streams._streams
 
     ##########################################################################
     ## windows tests

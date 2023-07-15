@@ -19,11 +19,61 @@ import uuid as uuidlib
 from unittest.mock import Mock, PropertyMock, call, patch
 
 import pytest
+import uuid
+
 
 from btrdb.conn import BTrDB, Connection
 from btrdb.endpoint import Endpoint
 from btrdb.exceptions import *
 from btrdb.grpcinterface import btrdb_pb2
+from btrdb.stream import Stream
+
+##########################################################################
+## Fixtures
+##########################################################################
+
+
+@pytest.fixture
+def stream1():
+    uu = uuid.UUID("0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
+    stream = Mock(Stream)
+    stream.version = Mock(return_value=11)
+    stream.uuid = Mock(return_value=uu)
+    type(stream).collection = PropertyMock(return_value="fruits/apple")
+    type(stream).name = PropertyMock(return_value="gala")
+    stream.tags = Mock(return_value={"name": "gala", "unit": "volts"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "red"}, 11))
+    stream._btrdb = Mock()
+    return stream
+
+
+@pytest.fixture
+def stream2():
+    uu = uuid.UUID("17dbe387-89ea-42b6-864b-f505cdb483f5")
+    stream = Mock(Stream)
+    stream.version = Mock(return_value=22)
+    stream.uuid = Mock(return_value=uu)
+    type(stream).collection = PropertyMock(return_value="fruits/orange")
+    type(stream).name = PropertyMock(return_value="blood")
+    stream.tags = Mock(return_value={"name": "blood", "unit": "amps"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "orange"}, 22))
+    stream._btrdb = Mock()
+    return stream
+
+
+@pytest.fixture
+def stream3():
+    uu = uuid.UUID("17dbe387-89ea-42b6-864b-e2ef0d22a53b")
+    stream = Mock(Stream)
+    stream.version = Mock(return_value=33)
+    stream.uuid = Mock(return_value=uu)
+    type(stream).collection = PropertyMock(return_value="fruits/banana")
+    type(stream).name = PropertyMock(return_value="yellow")
+    stream.tags = Mock(return_value={"name": "yellow", "unit": "watts"})
+    stream.annotations = Mock(return_value=({"owner": "ABC", "color": "yellow"}, 33))
+    stream._btrdb = Mock()
+    return stream
+
 
 ##########################################################################
 ## Connection Tests
@@ -91,7 +141,7 @@ class TestBTrDB(object):
         """
         db = BTrDB(None)
         uuid1 = uuidlib.UUID("0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
-        mock_func.return_value = [1]
+        mock_func.return_value = Stream(db, uuid1)
         db.streams(uuid1)
 
         mock_func.assert_called_once()
@@ -104,20 +154,22 @@ class TestBTrDB(object):
         """
         db = BTrDB(None)
         uuid1 = "0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a"
-        mock_func.return_value = [1]
+        mock_func.return_value = Stream(db, uuid1)
         db.streams(uuid1)
 
         mock_func.assert_called_once()
         assert mock_func.call_args[0][0] == uuid1
 
     @patch("btrdb.conn.BTrDB.streams_in_collection")
-    def test_streams_handles_path(self, mock_func):
+    def test_streams_handles_path(self, mock_func, stream1):
         """
         Assert streams calls streams_in_collection for collection/name paths
         """
         db = BTrDB(None)
         ident = "zoo/animal/dog"
-        mock_func.return_value = [1]
+        mock_func.return_value = [
+            Stream(db, "0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a"),
+        ]
         db.streams(ident, "0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
 
         mock_func.assert_called_once()
@@ -139,15 +191,13 @@ class TestBTrDB(object):
         with pytest.raises(StreamNotFoundError) as exc:
             db.streams(ident)
 
-        mock_func.return_value = [1, 2]
-        with pytest.raises(StreamNotFoundError) as exc:
-            db.streams(ident)
-
         # check that does not raise if one returned
-        mock_func.return_value = [1]
+        mock_func.return_value = [
+            Stream(db, ident),
+        ]
         db.streams(ident)
 
-    def test_streams_raises_valueerror(self):
+    def test_streams_raises_ValueError(self):
         """
         Assert streams raises ValueError if not uuid, uuid str, or path
         """

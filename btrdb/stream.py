@@ -18,6 +18,7 @@ import io
 import json
 import logging
 import re
+from typing import List
 import uuid as uuidlib
 import warnings
 from collections import deque
@@ -532,9 +533,7 @@ class Stream(object):
         version = []
         for tab in table_slices:
             version.append(
-                self._btrdb.ep.arrowInsertValues(
-                    uu=self.uuid, values=tab, policy=merge
-                )
+                self._btrdb.ep.arrowInsertValues(uu=self.uuid, values=tab, policy=merge)
             )
         return max(version)
 
@@ -768,10 +767,12 @@ class Stream(object):
         if len(tables) > 0:
             return pa.concat_tables(tables)
         else:
-            schema = pa.schema([
-                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
-                pa.field('value', pa.float64(), nullable=False),
-            ])
+            schema = pa.schema(
+                [
+                    pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False),
+                    pa.field("value", pa.float64(), nullable=False),
+                ]
+            )
             return pa.Table.from_arrays([pa.array([]), pa.array([])], schema=schema)
 
     def aligned_windows(self, start, end, pointwidth, version=0):
@@ -879,20 +880,24 @@ class Stream(object):
             logger.debug(f"For stream - {self.uuid} -  {self.name}")
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        tables = list(self._btrdb.ep.arrowAlignedWindows(
-            self.uuid, start=start, end=end, pointwidth=pointwidth, version=version
-        ))
+        tables = list(
+            self._btrdb.ep.arrowAlignedWindows(
+                self.uuid, start=start, end=end, pointwidth=pointwidth, version=version
+            )
+        )
         if len(tables) > 0:
             return pa.concat_tables(tables)
         else:
-            schema = pa.schema([
-                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
-                pa.field('mean', pa.float64(), nullable=False),
-                pa.field('min', pa.float64(), nullable=False),
-                pa.field('max', pa.float64(), nullable=False),
-                pa.field('count', pa.uint64(), nullable=False),
-                pa.field('stddev', pa.float64(), nullable=False),
-            ])
+            schema = pa.schema(
+                [
+                    pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False),
+                    pa.field("mean", pa.float64(), nullable=False),
+                    pa.field("min", pa.float64(), nullable=False),
+                    pa.field("max", pa.float64(), nullable=False),
+                    pa.field("count", pa.uint64(), nullable=False),
+                    pa.field("stddev", pa.float64(), nullable=False),
+                ]
+            )
             return pa.Table.from_arrays([pa.array([]) for _ in range(5)], schema=schema)
 
     def windows(self, start, end, width, depth=0, version=0):
@@ -986,25 +991,29 @@ class Stream(object):
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_windows"))
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        tables = list(self._btrdb.ep.arrowWindows(
-            self.uuid,
-            start=start,
-            end=end,
-            width=width,
-            depth=0,
-            version=version,
-        ))
+        tables = list(
+            self._btrdb.ep.arrowWindows(
+                self.uuid,
+                start=start,
+                end=end,
+                width=width,
+                depth=0,
+                version=version,
+            )
+        )
         if len(tables) > 0:
             return pa.concat_tables(tables)
         else:
-            schema = pa.schema([
-                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
-                pa.field('mean', pa.float64(), nullable=False),
-                pa.field('min', pa.float64(), nullable=False),
-                pa.field('max', pa.float64(), nullable=False),
-                pa.field('count', pa.uint64(), nullable=False),
-                pa.field('stddev', pa.float64(), nullable=False),
-            ])
+            schema = pa.schema(
+                [
+                    pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False),
+                    pa.field("mean", pa.float64(), nullable=False),
+                    pa.field("min", pa.float64(), nullable=False),
+                    pa.field("max", pa.float64(), nullable=False),
+                    pa.field("count", pa.uint64(), nullable=False),
+                    pa.field("stddev", pa.float64(), nullable=False),
+                ]
+            )
             return pa.Table.from_arrays([pa.array([]) for _ in range(5)], schema=schema)
 
     def nearest(self, time, version, backward=False):
@@ -1085,8 +1094,14 @@ class StreamSetBase(Sequence):
     A lighweight wrapper around a list of stream objects
     """
 
-    def __init__(self, streams):
-        self._streams = streams
+    def __init__(self, streams: List[Stream]):
+        self._streams: List[Stream] = []
+        for stream in streams:
+            if not isinstance(stream, Stream):
+                raise BTRDBTypeError(
+                    f"streams must be of type Stream {stream}, {type(stream)}"
+                )
+            self._streams.append(stream)
         if len(self._streams) < 1:
             raise ValueError(
                 f"Trying to create streamset with an empty list of streams {self._streams}."
@@ -1541,7 +1556,7 @@ class StreamSetBase(Sequence):
         _ = params.pop("sampling_frequency", None)
         versions = self._pinned_versions
         if versions == None:
-            versions = {s.uuid : 0 for s in self}
+            versions = {s.uuid: 0 for s in self}
 
         if self.pointwidth is not None:
             # create list of stream.aligned_windows data
@@ -1734,12 +1749,12 @@ class StreamSetBase(Sequence):
             result.append([point[0] for point in stream_data])
         return result
 
-    def arrow_values(self, name_callable=lambda s : s.collection + '/' + s.name):
+    def arrow_values(self, name_callable=lambda s: s.collection + "/" + s.name):
         """Return a pyarrow table of stream values based on the streamset parameters."""
         params = self._params_from_filters()
         versions = self._pinned_versions
         if versions == None:
-            versions = {s.uuid : 0 for s in self}
+            versions = {s.uuid: 0 for s in self}
 
         if params.get("sampling_frequency", None) is None:
             _ = params.pop("sampling_frequency", None)
@@ -1797,13 +1812,20 @@ class StreamSetBase(Sequence):
             table = list(self._btrdb.ep.arrowMultiValues(**params))
             if len(table) > 0:
                 data = pa.concat_tables(table)
-                data = data.rename_columns(["time"] + [name_callable(s) for s in self._streams])
+                data = data.rename_columns(
+                    ["time"] + [name_callable(s) for s in self._streams]
+                )
             else:
                 schema = pa.schema(
-                    [pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False)]
-                    + [pa.field(name_callable(s), pa.float64(), nullable=False) for s in self._streams],
+                    [pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False)]
+                    + [
+                        pa.field(name_callable(s), pa.float64(), nullable=False)
+                        for s in self._streams
+                    ],
                 )
-                data = pa.Table.from_arrays([pa.array([]) for i in range(1+len(self._streams))], schema=schema)
+                data = pa.Table.from_arrays(
+                    [pa.array([]) for i in range(1 + len(self._streams))], schema=schema
+                )
         return data
 
     def __repr__(self):
@@ -1827,6 +1849,15 @@ class StreamSetBase(Sequence):
             raise KeyError("Stream with uuid `{}` not found.".format(str(item)))
 
         return self._streams[item]
+
+    def __contains__(self, item):
+        if isinstance(item, str):
+            for stream in self._streams:
+                if str(stream.uuid()) == item:
+                    return True
+            return False
+
+        return item in self._streams
 
     def __len__(self):
         return len(self._streams)
@@ -1865,11 +1896,13 @@ class StreamFilter(object):
         if self.start is not None and self.end is not None and self.start >= self.end:
             raise BTRDBValueError("`start` must be strictly less than `end` argument")
 
+
 def _to_period_ns(fs: int):
     """Convert sampling rate to sampling period in ns."""
     period = 1 / fs
     period_ns = period * 1e9
     return int(period_ns)
+
 
 def _coalesce_table_deque(tables: deque):
     main_table = tables.popleft()
