@@ -25,8 +25,8 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import io
+import typing
 import uuid
-import grpc
 
 from btrdb.exceptions import BTrDBError, check_proto_stat, error_handler
 from btrdb.grpcinterface import btrdb_pb2, btrdb_pb2_grpc
@@ -35,8 +35,9 @@ from btrdb.utils.general import unpack_stream_descriptor
 
 try:
     import pyarrow as pa
-except:
+except ImportError:
     pa = None
+
 
 class Endpoint(object):
     """Server endpoint where we make specific requests."""
@@ -154,7 +155,6 @@ class Endpoint(object):
             check_proto_stat(result.stat)
             with pa.ipc.open_stream(result.arrowBytes) as reader:
                 yield reader.read_all(), result.versionMajor
-
 
     @error_handler
     def streamInfo(self, uu, omitDescriptor, omitVersion):
@@ -381,7 +381,7 @@ class Endpoint(object):
             yield result.row
 
     @error_handler
-    def sql_query(self, stmt, params=[]):
+    def sql_query(self, stmt, params: typing.List):
         request = btrdb_pb2.SQLQueryParams(query=stmt, params=params)
         for page in self.stub.SQLQuery(request):
             check_proto_stat(page.stat)

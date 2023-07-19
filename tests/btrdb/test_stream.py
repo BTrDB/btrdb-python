@@ -134,6 +134,7 @@ class TestStream(object):
         uu = uuid.UUID("0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        endpoint.info = Mock(return_value={"majorVersion": 5, "minorVersion": 30})
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         stream.refresh_metadata()
@@ -171,6 +172,7 @@ class TestStream(object):
 
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, serialized, None))
+        endpoint.info = Mock(return_value={"majorVersion": 5, "minorVersion": 30})
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         stream.refresh_metadata()
@@ -204,6 +206,7 @@ class TestStream(object):
         """
         uu = uuid.UUID("0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
         endpoint = Mock(Endpoint)
+        endpoint.info = Mock(return_value={"majorVersion": 5, "minorVersion": 30})
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         # no arguments
@@ -232,6 +235,7 @@ class TestStream(object):
         """
         uu = uuid.UUID("0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
         endpoint = Mock(Endpoint)
+        endpoint.info = Mock(return_value={"majorVersion": 5, "minorVersion": 30})
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
@@ -250,6 +254,7 @@ class TestStream(object):
         uu = uuid.UUID("0d22a53b-e2ef-4e0a-ab89-b2d48fb2592a")
         endpoint = Mock(Endpoint)
         endpoint.streamInfo = Mock(return_value=("koala", 42, {}, {}, None))
+        endpoint.info = Mock(return_value={"majorVersion": 5, "minorVersion": 30})
         stream = Stream(btrdb=BTrDB(endpoint), uuid=uu)
 
         collection = "giraffe"

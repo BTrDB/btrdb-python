@@ -12,13 +12,62 @@
 ##########################################################################
 
 import inspect
+import logging
+import time
 from functools import wraps
 
 from grpc import RpcError
 
 ##########################################################################
+## Module Variables and Constants
+##########################################################################
+MAX_RETRIES = 5
+INITIAL_RETRY_DELAY = 3  # time to wait before first retry in seconds
+RETRY_BACKOFF_FACTOR = (
+    4  # exponential factor by which retry backoff increases between tries
+)
+
+
+##########################################################################
 ## Decorators
 ##########################################################################
+
+# config logging for auto-retry
+logging.basicConfig(
+    format="%(asctime)s:%(levelname)s:%(message)s",
+    level=logging.INFO,
+    datefmt="%m/%d/%Y %I:%M:%S",
+)
+
+
+def retry(fn, *args, **kwargs):
+    """
+    decorates functions and retries it in the event of BTrDBErrors or RpcErrors
+    """
+
+    @wraps(fn)
+    def retry_func(*args, **kwargs):
+        # don't retry if arg is set to False
+        if not kwargs.get("auto_retry"):
+            return fn(*args, **kwargs)
+
+        total_retries = kwargs.get("retries") or MAX_RETRIES
+        retries = total_retries
+        delay = kwargs.get("retry_delay") or INITIAL_RETRY_DELAY
+        backoff = kwargs.get("retry_backoff") or RETRY_BACKOFF_FACTOR
+        while retries > 0:
+            try:
+                return fn(*args, **kwargs)
+            except (BTrDBError, RpcError) as e:
+                msg = f"ERROR: {e}, attempting retry {total_retries-retries+1}/{total_retries} in {delay} seconds..."
+                logging.info(msg)
+                time.sleep(delay)
+                retries -= 1
+                delay *= backoff
+                err = e
+        handle_grpc_error(err)
+
+    return retry_func
 
 
 def consume_generator(fn, *args, **kwargs):

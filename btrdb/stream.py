@@ -34,6 +34,7 @@ from btrdb.exceptions import (
     InvalidOperation,
     NoSuchPoint,
     StreamNotFoundError,
+    retry,
 )
 from btrdb.point import RawPoint, StatPoint
 from btrdb.transformers import _STAT_PROPERTIES, StreamSetTransformer
@@ -304,7 +305,15 @@ class Stream(object):
         self.refresh_metadata()
         return self._collection
 
-    def earliest(self, version=0):
+    @retry
+    def earliest(
+        self,
+        version=0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Returns the first point of data in the stream. Returns None if error
         encountered during lookup or no values in stream.
@@ -325,7 +334,15 @@ class Stream(object):
         start = MINIMUM_TIME
         return self.nearest(start, version=version, backward=False)
 
-    def latest(self, version=0):
+    @retry
+    def latest(
+        self,
+        version=0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Returns last point of data in the stream. Returns None if error
         encountered during lookup or no values in stream.
@@ -346,7 +363,15 @@ class Stream(object):
         start = MAXIMUM_TIME
         return self.nearest(start, version=version, backward=True)
 
-    def current(self, version=0):
+    @retry
+    def current(
+        self,
+        version=0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Returns the point that is closest to the current timestamp, e.g. the latest
         point in the stream up until now. Note that no future values will be returned.
@@ -367,7 +392,15 @@ class Stream(object):
         start = currently_as_ns()
         return self.nearest(start, version, backward=True)
 
-    def tags(self, refresh=False):
+    @retry
+    def tags(
+        self,
+        refresh=False,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Returns the stream's tags.
 
@@ -391,7 +424,15 @@ class Stream(object):
 
         return deepcopy(self._tags)
 
-    def annotations(self, refresh=False):
+    @retry
+    def annotations(
+        self,
+        refresh=False,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Returns a stream's annotations
 
@@ -418,7 +459,14 @@ class Stream(object):
 
         return deepcopy(self._annotations), deepcopy(self._property_version)
 
-    def version(self):
+    @retry
+    def version(
+        self,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Returns the current data version of the stream.
 
@@ -532,9 +580,7 @@ class Stream(object):
         version = []
         for tab in table_slices:
             version.append(
-                self._btrdb.ep.arrowInsertValues(
-                    uu=self.uuid, values=tab, policy=merge
-                )
+                self._btrdb.ep.arrowInsertValues(uu=self.uuid, values=tab, policy=merge)
             )
         return max(version)
 
@@ -575,6 +621,7 @@ class Stream(object):
             removals=removals,
         )
 
+    @retry
     def update(
         self,
         tags=None,
@@ -582,6 +629,10 @@ class Stream(object):
         collection=None,
         encoder=AnnotationEncoder,
         replace=False,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
     ):
         """
         Updates metadata including tags, annotations, and collection as an
@@ -655,7 +706,16 @@ class Stream(object):
 
         return self._property_version
 
-    def delete(self, start, end):
+    @retry
+    def delete(
+        self,
+        start,
+        end,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         "Delete" all points between [`start`, `end`)
 
@@ -683,7 +743,17 @@ class Stream(object):
             self._uuid, to_nanoseconds(start), to_nanoseconds(end)
         )
 
-    def values(self, start, end, version=0):
+    @retry
+    def values(
+        self,
+        start,
+        end,
+        version=0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Read raw values from BTrDB between time [a, b) in nanoseconds.
 
@@ -727,7 +797,17 @@ class Stream(object):
                 materialized.append((RawPoint.from_proto(point), version))
         return materialized
 
-    def arrow_values(self, start, end, version: int = 0) -> pa.Table:
+    @retry
+    def arrow_values(
+        self,
+        start,
+        end,
+        version: int = 0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ) -> pa.Table:
         """Read raw values from BTrDB between time [a, b) in nanoseconds.
 
         RawValues queries BTrDB for the raw time series data points between
@@ -764,17 +844,31 @@ class Stream(object):
         arrow_and_versions = self._btrdb.ep.arrowRawValues(
             uu=self.uuid, start=start, end=end, version=version
         )
-        tables = [arrow for (arrow, _) in arrow_and_versions]
+        tables = list(arrow_and_versions)
         if len(tables) > 0:
-            return pa.concat_tables(tables)
+            tabs, ver = zip(*tables)
+            return pa.concat_tables(tabs)
         else:
-            schema = pa.schema([
-                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
-                pa.field('value', pa.float64(), nullable=False),
-            ])
+            schema = pa.schema(
+                [
+                    pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False),
+                    pa.field("value", pa.float64(), nullable=False),
+                ]
+            )
             return pa.Table.from_arrays([pa.array([]), pa.array([])], schema=schema)
 
-    def aligned_windows(self, start, end, pointwidth, version=0):
+    @retry
+    def aligned_windows(
+        self,
+        start,
+        end,
+        pointwidth,
+        version=0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Read statistical aggregates of windows of data from BTrDB.
 
@@ -828,8 +922,17 @@ class Stream(object):
                 materialized.append((StatPoint.from_proto(point), version))
         return tuple(materialized)
 
+    @retry
     def arrow_aligned_windows(
-        self, start: int, end: int, pointwidth: int, version: int = 0
+        self,
+        start: int,
+        end: int,
+        pointwidth: int,
+        version: int = 0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
     ) -> pa.Table:
         """Read statistical aggregates of windows of data from BTrDB.
 
@@ -879,23 +982,40 @@ class Stream(object):
             logger.debug(f"For stream - {self.uuid} -  {self.name}")
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        tables = list(self._btrdb.ep.arrowAlignedWindows(
-            self.uuid, start=start, end=end, pointwidth=pointwidth, version=version
-        ))
+        tables = list(
+            self._btrdb.ep.arrowAlignedWindows(
+                self.uuid, start=start, end=end, pointwidth=pointwidth, version=version
+            )
+        )
         if len(tables) > 0:
-            return pa.concat_tables(tables)
+            tabs, ver = zip(*tables)
+            return pa.concat_tables(tabs)
         else:
-            schema = pa.schema([
-                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
-                pa.field('mean', pa.float64(), nullable=False),
-                pa.field('min', pa.float64(), nullable=False),
-                pa.field('max', pa.float64(), nullable=False),
-                pa.field('count', pa.uint64(), nullable=False),
-                pa.field('stddev', pa.float64(), nullable=False),
-            ])
+            schema = pa.schema(
+                [
+                    pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False),
+                    pa.field("min", pa.float64(), nullable=False),
+                    pa.field("mean", pa.float64(), nullable=False),
+                    pa.field("max", pa.float64(), nullable=False),
+                    pa.field("count", pa.uint64(), nullable=False),
+                    pa.field("stddev", pa.float64(), nullable=False),
+                ]
+            )
             return pa.Table.from_arrays([pa.array([]) for _ in range(5)], schema=schema)
 
-    def windows(self, start, end, width, depth=0, version=0):
+    @retry
+    def windows(
+        self,
+        start,
+        end,
+        width,
+        depth=0,
+        version=0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Read arbitrarily-sized windows of data from BTrDB.  StatPoint objects
         will be returned representing the data for each window.
@@ -945,8 +1065,17 @@ class Stream(object):
 
         return tuple(materialized)
 
+    @retry
     def arrow_windows(
-        self, start: int, end: int, width: int, version: int = 0
+        self,
+        start: int,
+        end: int,
+        width: int,
+        version: int = 0,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
     ) -> pa.Table:
         """Read arbitrarily-sized windows of data from BTrDB.
 
@@ -986,28 +1115,43 @@ class Stream(object):
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_windows"))
         start = to_nanoseconds(start)
         end = to_nanoseconds(end)
-        tables = list(self._btrdb.ep.arrowWindows(
-            self.uuid,
-            start=start,
-            end=end,
-            width=width,
-            depth=0,
-            version=version,
-        ))
+        tables = list(
+            self._btrdb.ep.arrowWindows(
+                self.uuid,
+                start=start,
+                end=end,
+                width=width,
+                depth=0,
+                version=version,
+            )
+        )
         if len(tables) > 0:
-            return pa.concat_tables(tables)
+            tabs, ver = zip(*tables)
+            return pa.concat_tables(tabs)
         else:
-            schema = pa.schema([
-                pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False),
-                pa.field('mean', pa.float64(), nullable=False),
-                pa.field('min', pa.float64(), nullable=False),
-                pa.field('max', pa.float64(), nullable=False),
-                pa.field('count', pa.uint64(), nullable=False),
-                pa.field('stddev', pa.float64(), nullable=False),
-            ])
+            schema = pa.schema(
+                [
+                    pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False),
+                    pa.field("min", pa.float64(), nullable=False),
+                    pa.field("mean", pa.float64(), nullable=False),
+                    pa.field("max", pa.float64(), nullable=False),
+                    pa.field("count", pa.uint64(), nullable=False),
+                    pa.field("stddev", pa.float64(), nullable=False),
+                ]
+            )
             return pa.Table.from_arrays([pa.array([]) for _ in range(5)], schema=schema)
 
-    def nearest(self, time, version, backward=False):
+    @retry
+    def nearest(
+        self,
+        time,
+        version,
+        backward=False,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Finds the closest point in the stream to a specified time.
 
@@ -1051,7 +1195,14 @@ class Stream(object):
 
         return RawPoint.from_proto(rp), version
 
-    def obliterate(self):
+    @retry
+    def obliterate(
+        self,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Obliterate deletes a stream from the BTrDB server.  An exception will be
         raised if the stream could not be found.
@@ -1064,7 +1215,14 @@ class Stream(object):
         """
         self._btrdb.ep.obliterate(self._uuid)
 
-    def flush(self):
+    @retry
+    def flush(
+        self,
+        auto_retry=False,
+        retries=5,
+        retry_delay=3,
+        retry_backoff=4,
+    ):
         """
         Flush writes the stream buffers out to persistent storage.
 
@@ -1540,8 +1698,8 @@ class StreamSetBase(Sequence):
         # sampling freq not supported for non-arrow streamset ops
         _ = params.pop("sampling_frequency", None)
         versions = self._pinned_versions
-        if versions == None:
-            versions = {s.uuid : 0 for s in self}
+        if versions is None:
+            versions = {s.uuid: 0 for s in self}
 
         if self.pointwidth is not None:
             # create list of stream.aligned_windows data
@@ -1734,12 +1892,14 @@ class StreamSetBase(Sequence):
             result.append([point[0] for point in stream_data])
         return result
 
-    def arrow_values(self, name_callable=lambda s : s.collection + '/' + s.name):
+    def arrow_values(
+        self,
+    ):
         """Return a pyarrow table of stream values based on the streamset parameters."""
         params = self._params_from_filters()
         versions = self._pinned_versions
-        if versions == None:
-            versions = {s.uuid : 0 for s in self}
+        if versions is None:
+            versions = {s.uuid: 0 for s in self}
 
         if params.get("sampling_frequency", None) is None:
             _ = params.pop("sampling_frequency", None)
@@ -1758,10 +1918,20 @@ class StreamSetBase(Sequence):
                 ),
                 self._streams,
             )
+            stream_uus = [str(s.uuid) for s in self._streams]
             data = list(aligned_windows_gen)
-            tablex = data.pop()
+            tablex = data.pop(0)
+            uu = stream_uus.pop(0)
+            tab_columns = [
+                c if c == "time" else uu + "/" + c for c in tablex.column_names
+            ]
+            tablex = tablex.rename_columns(tab_columns)
             if data:
-                for tab in data:
+                for tab, uu in zip(data, stream_uus):
+                    tab_columns = [
+                        c if c == "time" else uu + "/" + c for c in tab.column_names
+                    ]
+                    tab = tab.rename_columns(tab_columns)
                     tablex = tablex.join(tab, "time", join_type="full outer")
                 data = tablex
             else:
@@ -1778,10 +1948,20 @@ class StreamSetBase(Sequence):
                 ),
                 self._streams,
             )
+            stream_uus = [str(s.uuid) for s in self._streams]
             data = list(windows_gen)
-            tablex = data.pop()
+            tablex = data.pop(0)
+            uu = stream_uus.pop(0)
+            tab_columns = [
+                c if c == "time" else uu + "/" + c for c in tablex.column_names
+            ]
+            tablex = tablex.rename_columns(tab_columns)
             if data:
-                for tab in data:
+                for tab, uu in zip(data, stream_uus):
+                    tab_columns = [
+                        c if c == "time" else uu + "/" + c for c in tab.column_names
+                    ]
+                    tab = tab.rename_columns(tab_columns)
                     tablex = tablex.join(tab, "time", join_type="full outer")
                 data = tablex
             else:
@@ -1797,13 +1977,17 @@ class StreamSetBase(Sequence):
             table = list(self._btrdb.ep.arrowMultiValues(**params))
             if len(table) > 0:
                 data = pa.concat_tables(table)
-                data = data.rename_columns(["time"] + [name_callable(s) for s in self._streams])
             else:
                 schema = pa.schema(
-                    [pa.field('time', pa.timestamp('ns', tz='UTC'), nullable=False)]
-                    + [pa.field(name_callable(s), pa.float64(), nullable=False) for s in self._streams],
+                    [pa.field("time", pa.timestamp("ns", tz="UTC"), nullable=False)]
+                    + [
+                        pa.field(str(s.uuid), pa.float64(), nullable=False)
+                        for s in self._streams
+                    ],
                 )
-                data = pa.Table.from_arrays([pa.array([]) for i in range(1+len(self._streams))], schema=schema)
+                data = pa.Table.from_arrays(
+                    [pa.array([]) for i in range(1 + len(self._streams))], schema=schema
+                )
         return data
 
     def __repr__(self):
@@ -1865,11 +2049,13 @@ class StreamFilter(object):
         if self.start is not None and self.end is not None and self.start >= self.end:
             raise BTRDBValueError("`start` must be strictly less than `end` argument")
 
+
 def _to_period_ns(fs: int):
     """Convert sampling rate to sampling period in ns."""
     period = 1 / fs
     period_ns = period * 1e9
     return int(period_ns)
+
 
 def _coalesce_table_deque(tables: deque):
     main_table = tables.popleft()
