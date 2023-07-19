@@ -404,6 +404,67 @@ class BTrDB(object):
         """
         return [c for some in self.ep.listCollections(starts_with) for c in some]
 
+    def _list_unique_tags_annotations(self, key, collection):
+        """
+        Returns a SQL statement and parameters to get list of tags or annotations.
+        """
+        if key == "annotations":
+            query = "select distinct({}) as {} from streams".format(
+                "skeys(annotations)", "annotations"
+            )
+        else:
+            query = "select distinct({}) as {} from streams".format(key, key)
+        params = []
+        if isinstance(collection, str):
+            params.append("{}%".format(collection))
+            query = " where ".join([query, """collection like $1"""])
+        return [metadata[key] for metadata in self.query(query, params)]
+
+    def list_unique_annotations(self, collection=None):
+        """
+        Returns a list of annotation keys used in a given collection prefix.
+
+        Parameters
+        -------
+        collection: str
+            Prefix of the collection to filter.
+
+        Returns
+        -------
+        annotations: list[str]
+        """
+        return self._list_unique_tags_annotations("annotations", collection)
+
+    def list_unique_names(self, collection=None):
+        """
+        Returns a list of names used in a given collection prefix.
+
+        Parameters
+        -------
+        collection: str
+            Prefix of the collection to filter.
+
+        Returns
+        -------
+        names: list[str]
+        """
+        return self._list_unique_tags_annotations("name", collection)
+
+    def list_unique_units(self, collection=None):
+        """
+        Returns a list of units used in a given collection prefix.
+
+        Parameters
+        -------
+        collection: str
+            Prefix of the collection to filter.
+
+        Returns
+        -------
+        units: list[str]
+        """
+        return self._list_unique_tags_annotations("unit", collection)
+
     @retry
     def streams_in_collection(
         self,

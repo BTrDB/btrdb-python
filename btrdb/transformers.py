@@ -117,6 +117,10 @@ def arrow_to_series(streamset, agg="mean", name_callable=None):
     name_callable : lambda, default: lambda s: s.collection + "/" +  s.name
         Specify a callable that can be used to determine the series name given a
         Stream object.
+
+    Notes
+    -----
+    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -153,7 +157,11 @@ def arrow_to_dataframe(
 
     name_callable : lambda, default: lambda s: s.collection + "/" +  s.name
         Specify a callable that can be used to determine the series name given a
-        Stream object.  This is not compatible with agg == "all" at this time
+        Stream object.
+
+    Notes
+    -----
+    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -306,7 +314,7 @@ def arrow_to_polars(streamset, agg=None, name_callable=None):
 
     Notes
     -----
-    This requires a BTrDB server that has arrow support enabled.
+    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -329,6 +337,12 @@ def arrow_to_polars(streamset, agg=None, name_callable=None):
 
 
 def arrow_to_arrow_table(streamset):
+    """Return a pyarrow table of data.
+
+    Notes
+    -----
+    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+    """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
             "arrow_to_arrow_table requires an arrow-enabled BTrDB server."
@@ -443,7 +457,7 @@ def arrow_to_numpy(streamset, agg=None):
     -----
     This method first converts to a pandas data frame then to a numpy array.
 
-    This method requires the btrdb server to have arrow support enabled.
+    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -513,6 +527,9 @@ def arrow_to_dict(streamset, agg=None, name_callable=None):
         Specify a callable that can be used to determine the series name given a
         Stream object.
 
+    Notes
+    -----
+    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(

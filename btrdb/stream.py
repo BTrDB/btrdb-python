@@ -10,7 +10,6 @@
 """
 Module for Stream and related classes
 """
-import io
 
 ##########################################################################
 ## Imports
@@ -117,7 +116,7 @@ class Stream(object):
         ) = ep.streamInfo(self._uuid, False, True)
         self._known_to_exist = True
 
-        # deserialize annoation values
+        # deserialize annotation values
         self._annotations = {
             key: json.loads(val, cls=AnnotationDecoder)
             for key, val in self._annotations.items()
@@ -323,6 +322,17 @@ class Stream(object):
         version : int, default: 0
             Specify the version of the stream to query; if zero, queries the latest
             stream state rather than pinning to a version.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -352,6 +362,17 @@ class Stream(object):
         version : int, default: 0
             Specify the version of the stream to query; if zero, queries the latest
             stream state rather than pinning to a version.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -382,6 +403,17 @@ class Stream(object):
         version : int, default: 0
             Specify the version of the stream to query; if zero, queries the latest
             stream state rather than pinning to a version.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -409,9 +441,20 @@ class Stream(object):
 
         Parameters
         ----------
-        refresh: bool
+        refresh: bool, default: False
             Indicates whether a round trip to the server should be implemented
             regardless of whether there is a local copy.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -443,9 +486,20 @@ class Stream(object):
 
         Parameters
         ----------
-        refresh: bool
+        refresh: bool, default: False
             Indicates whether a round trip to the server should be implemented
             regardless of whether there is a local copy.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -476,7 +530,17 @@ class Stream(object):
 
         Parameters
         ----------
-        None
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -549,6 +613,9 @@ class Stream(object):
         int
             The version of the stream after inserting new points.
 
+        Notes
+        -----
+        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_insert"))
@@ -674,6 +741,17 @@ class Stream(object):
             Replace all annotations or tags with the specified dictionaries
             instead of performing the normal upsert operation. Specifying True
             is the only way to remove annotation keys.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -732,6 +810,17 @@ class Stream(object):
         end : int or datetime like object
             The end time in nanoseconds for the range to be deleted. (see
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -771,6 +860,17 @@ class Stream(object):
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         version: int
             The version of the stream to be queried
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         ------
@@ -822,6 +922,17 @@ class Stream(object):
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
         version: int
             The version of the stream to be queried
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         ------
@@ -836,6 +947,8 @@ class Stream(object):
         from a sensor). This is the lowest level of data with the finest time
         granularity. In the tree data structure of BTrDB, this data is stored in
         the vector nodes.
+
+        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_values"))
@@ -898,6 +1011,17 @@ class Stream(object):
             Specify the number of ns between data points (2**pointwidth)
         version : int
             Version of the stream to query
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -952,16 +1076,27 @@ class Stream(object):
 
         Parameters
         ----------
-        start : int or datetime like object
+        start : int or datetime like object, required
             The start time in nanoseconds for the range to be queried. (see
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
-        end : int or datetime like object
+        end : int or datetime like object, required
             The end time in nanoseconds for the range to be queried. (see
             :func:`btrdb.utils.timez.to_nanoseconds` for valid input types)
-        pointwidth : int
+        pointwidth : int, required
             Specify the number of ns between data points (2**pointwidth)
         version : int
             Version of the stream to query
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -972,6 +1107,8 @@ class Stream(object):
         -----
         As the window-width is a power-of-two, it aligns with BTrDB internal
         tree data structure and is faster to execute than `windows()`.
+
+        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(
@@ -1032,6 +1169,17 @@ class Stream(object):
             The number of nanoseconds in each window.
         version : int
             The version of the stream to query.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -1054,6 +1202,7 @@ class Stream(object):
         parameter previously available has been deprecated. The only valid value
         for depth is now 0.
 
+        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
         """
         materialized = []
         start = to_nanoseconds(start)
@@ -1091,6 +1240,17 @@ class Stream(object):
             The number of nanoseconds in each window.
         version : int, default=0, optional
             The version of the stream to query.
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -1110,6 +1270,7 @@ class Stream(object):
         end = start + width * floordiv(end - start, width). The `depth`
         parameter previously available has been deprecated. The only valid value
         for depth is now 0.
+        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_windows"))
@@ -1170,6 +1331,17 @@ class Stream(object):
             Version of the stream to use in search
         backward : boolean
             True to search backwards from time, else false for forward
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
 
         Returns
         -------
@@ -1207,11 +1379,24 @@ class Stream(object):
         Obliterate deletes a stream from the BTrDB server.  An exception will be
         raised if the stream could not be found.
 
+        Parameters
+        ----------
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
+
         Raises
         ------
         BTrDBError [404] stream does not exist
             The stream could not be found in BTrDB
-
         """
         self._btrdb.ep.obliterate(self._uuid)
 
@@ -1226,6 +1411,19 @@ class Stream(object):
         """
         Flush writes the stream buffers out to persistent storage.
 
+        Parameters
+        ----------
+        auto_retry: bool, default: False
+            Whether to retry this request in the event of an error
+        retries: int, default: 5
+            Number of times to retry this request if there is an error. Will
+            be ignored if auto_retry is False
+        retry_delay: int, default: 3
+            initial time to wait before retrying function call if there is an error.
+            Will be ignored if auto_retry is False
+        retry_backoff: int, default: 4
+            Exponential factor by which the backoff increases between retries.
+            Will be ignored if auto_retry is False
         """
         self._btrdb.ep.flush(self._uuid)
 
@@ -1848,6 +2046,7 @@ class StreamSetBase(Sequence):
         Notes
         -----
         BTrDB expects datetimes to be in UTC+0.
+        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
 
         Returns
         -------
@@ -1895,7 +2094,12 @@ class StreamSetBase(Sequence):
     def arrow_values(
         self,
     ):
-        """Return a pyarrow table of stream values based on the streamset parameters."""
+        """Return a pyarrow table of stream values based on the streamset parameters.
+
+        Notes
+        -----
+        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+        """
         params = self._params_from_filters()
         versions = self._pinned_versions
         if versions is None:
