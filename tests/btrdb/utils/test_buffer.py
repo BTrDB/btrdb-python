@@ -16,21 +16,21 @@ Testing for the btrdb.collection module
 ##########################################################################
 
 import pytest
-from btrdb.utils.buffer import PointBuffer
+
 from btrdb.point import RawPoint
+from btrdb.utils.buffer import PointBuffer
 
 ##########################################################################
 ## Test Constants
 ##########################################################################
 
 
-
 ##########################################################################
 ## Initialization Tests
 ##########################################################################
 
-class TestPointBuffer(object):
 
+class TestPointBuffer(object):
     def test_earliest(self):
         """
         Assert earliest returns correct key
@@ -106,7 +106,6 @@ class TestPointBuffer(object):
         buffer.deactivate(1)
         assert buffer.is_ready(2000) == True
 
-
     def test_next_key_ready_with_inactive(self):
         """
         Assert next_key_ready returns correct key with inactive stream
@@ -117,7 +116,6 @@ class TestPointBuffer(object):
         buffer.add_point(2, RawPoint(time=1000, value="leopard"))
         buffer.add_point(0, RawPoint(time=2000, value="leopard"))
         assert buffer.next_key_ready() == 1000
-
 
         # assert first key is 500 even though it was exhausted
         buffer = PointBuffer(3)

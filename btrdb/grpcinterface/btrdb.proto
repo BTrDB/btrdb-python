@@ -4,8 +4,12 @@ package v5api;
 
 service BTrDB {
   rpc RawValues(RawValuesParams) returns (stream RawValuesResponse);
+  rpc ArrowRawValues(RawValuesParams) returns (stream ArrowRawValuesResponse);
+  rpc ArrowMultiValues(ArrowMultiValuesParams) returns (stream ArrowMultiValuesResponse);
   rpc AlignedWindows(AlignedWindowsParams) returns (stream AlignedWindowsResponse);
+  rpc ArrowAlignedWindows(AlignedWindowsParams) returns (stream ArrowAlignedWindowsResponse);
   rpc Windows(WindowsParams) returns (stream WindowsResponse);
+  rpc ArrowWindows(WindowsParams) returns (stream ArrowWindowsResponse);
   rpc StreamInfo(StreamInfoParams) returns (StreamInfoResponse);
   rpc SetStreamAnnotations(SetStreamAnnotationsParams) returns (SetStreamAnnotationsResponse);
   rpc SetStreamTags(SetStreamTagsParams) returns (SetStreamTagsResponse);
@@ -15,6 +19,7 @@ service BTrDB {
   rpc Nearest(NearestParams) returns (NearestResponse);
   rpc Changes(ChangesParams) returns (stream ChangesResponse);
   rpc Insert(InsertParams) returns (InsertResponse);
+  rpc ArrowInsert(ArrowInsertParams) returns (InsertResponse);
   rpc Delete(DeleteParams) returns (DeleteResponse);
   rpc Info(InfoParams) returns (InfoResponse);
   rpc FaultInject(FaultInjectParams) returns (FaultInjectResponse);
@@ -39,6 +44,27 @@ message RawValuesResponse {
   uint64 versionMinor = 3;
   repeated RawPoint values = 4;
 }
+message ArrowRawValuesResponse {
+  Status stat = 1;
+  uint64 versionMajor = 2;
+  uint64 versionMinor = 3;
+  bytes arrowBytes = 4;
+}
+message ArrowMultiValuesParams {
+  repeated bytes uuid = 1;
+  repeated uint64 versionMajor = 2;
+  sfixed64 start = 3;
+  sfixed64 end = 4;
+  int64 snapPeriodNs = 5;
+}
+message ArrowMultiValuesResponse {
+  Status stat = 1;
+  bytes arrowBytes = 2;
+}
+message RawPointVec {
+  sfixed64 time = 1;
+  repeated double value = 2;
+};
 message AlignedWindowsParams {
   bytes uuid = 1;
   sfixed64 start = 2;
@@ -51,6 +77,12 @@ message AlignedWindowsResponse {
   uint64 versionMajor = 2;
   uint64 versionMinor = 3;
   repeated StatPoint values = 4;
+}
+message ArrowAlignedWindowsResponse {
+  Status stat = 1;
+  uint64 versionMajor = 2;
+  uint64 versionMinor = 3;
+  bytes arrowBytes = 4;
 }
 message WindowsParams {
   bytes uuid = 1;
@@ -65,6 +97,12 @@ message WindowsResponse {
   uint64 versionMajor = 2;
   uint64 versionMinor = 3;
   repeated StatPoint values = 4;
+}
+message ArrowWindowsResponse {
+  Status stat = 1;
+  uint64 versionMajor = 2;
+  uint64 versionMinor = 3;
+  bytes arrowBytes = 4;
 }
 message StreamInfoParams {
   bytes uuid = 1;
@@ -175,11 +213,24 @@ enum MergePolicy {
   RETAIN = 2;	// When timestamps are equal, keep old value
   REPLACE = 3;	// When timestamps are equal, keep new value
 }
+message RoundSpec {
+  oneof spec {
+    int32 bits = 2;
+  }
+}
 message InsertParams {
   bytes uuid = 1;
   bool sync = 2;
   MergePolicy merge_policy = 4;
+  RoundSpec rounding=5;
   repeated RawPoint values = 3;
+}
+message ArrowInsertParams {
+  bytes uuid = 1;
+  bool sync = 2;
+  MergePolicy merge_policy = 3;
+  RoundSpec rounding = 4;
+  bytes arrowBytes = 5;
 }
 message InsertResponse {
   Status stat = 1;

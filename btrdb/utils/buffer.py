@@ -17,19 +17,17 @@ Module for buffering utilities
 
 from collections import defaultdict
 
-
 ##########################################################################
 ## Classes
 ##########################################################################
 
-class PointBuffer(defaultdict):
 
+class PointBuffer(defaultdict):
     def __init__(self, length, *args, **kwargs):
         super().__init__(lambda: [None] * length, *args, **kwargs)
         self.num_streams = length
         self.active = [True] * length
         self.last_known_time = [None] * length
-
 
     def add_point(self, stream_index, point):
         self.last_known_time[stream_index] = max(
@@ -53,7 +51,6 @@ class PointBuffer(defaultdict):
         """
         # check each stream value to see if its valid/ready
         for idx, latest_time in enumerate(self.last_known_time):
-
             # return False if stream is active and we are waiting on val
             if self.active[idx] and (latest_time is None or key > latest_time):
                 return False
@@ -61,9 +58,7 @@ class PointBuffer(defaultdict):
         return True
 
     def next_key_ready(self):
-        """
-
-        """
+        """ """
         keys = list(self.keys())
         keys.sort()
         for key in keys:

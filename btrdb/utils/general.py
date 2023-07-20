@@ -36,6 +36,7 @@ def unpack_stream_descriptor(desc):
 ## Pointwidth Helpers
 ##########################################################################
 
+
 class pointwidth(object):
     """
     A representation of a period of time described by the BTrDB tree (and used in
@@ -58,7 +59,7 @@ class pointwidth(object):
         specified duration. Because pointwidths are in powers of 2, be sure to check
         that the returned real duration is sufficient.
         """
-        return cls.from_nanoseconds(int(delta.total_seconds()*1e9))
+        return cls.from_nanoseconds(int(delta.total_seconds() * 1e9))
 
     @classmethod
     def from_nanoseconds(cls, nsec):
@@ -117,10 +118,10 @@ class pointwidth(object):
         return self.nanoseconds / 3.154e16
 
     def decr(self):
-        return pointwidth(self-1)
+        return pointwidth(self - 1)
 
     def incr(self):
-        return pointwidth(self+1)
+        return pointwidth(self + 1)
 
     def __int__(self):
         return self._pointwidth
@@ -141,10 +142,10 @@ class pointwidth(object):
         return int(self) >= int(other)
 
     def __add__(self, other):
-        return pointwidth(int(self)+int(other))
+        return pointwidth(int(self) + int(other))
 
     def __sub__(self, other):
-        return pointwidth(int(self)-int(other))
+        return pointwidth(int(self) - int(other))
 
     def __str__(self):
         """

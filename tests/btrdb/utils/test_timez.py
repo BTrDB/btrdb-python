@@ -15,22 +15,27 @@ Testing for the btrdb.timez module
 ## Imports
 ##########################################################################
 
-import pytz
-import pytest
 import datetime
+
 import numpy as np
+import pytest
+import pytz
 from freezegun import freeze_time
 
-from btrdb.utils.timez import (currently_as_ns, datetime_to_ns, ns_to_datetime,
-                              to_nanoseconds, ns_delta)
-
+from btrdb.utils.timez import (
+    currently_as_ns,
+    datetime_to_ns,
+    ns_delta,
+    ns_to_datetime,
+    to_nanoseconds,
+)
 
 ##########################################################################
 ## Initialization Tests
 ##########################################################################
 
-class TestCurrentlyAsNs(object):
 
+class TestCurrentlyAsNs(object):
     def test_currently_as_ns(self):
         """
         Assert currently_as_ns returns correct value
@@ -41,25 +46,23 @@ class TestCurrentlyAsNs(object):
 
 
 class TestDatetimeToNs(object):
-
     def test_datetime_to_ns_naive(self):
         """
         Assert datetime_to_ns handles naive datetime
         """
-        dt = datetime.datetime(2018,1,1,12)
+        dt = datetime.datetime(2018, 1, 1, 12)
         localized = pytz.utc.localize(dt)
         expected = int(localized.timestamp() * 1e9)
 
         assert dt.tzinfo is None
         assert datetime_to_ns(dt) == expected
 
-
     def test_datetime_to_ns_aware(self):
         """
         Assert datetime_to_ns handles tz aware datetime
         """
         eastern = pytz.timezone("US/Eastern")
-        dt = datetime.datetime(2018,1,1,17, tzinfo=eastern)
+        dt = datetime.datetime(2018, 1, 1, 17, tzinfo=eastern)
         expected = int(dt.astimezone(pytz.utc).timestamp() * 1e9)
 
         assert dt.tzinfo is not None
@@ -67,7 +70,6 @@ class TestDatetimeToNs(object):
 
 
 class TestNsToDatetime(object):
-
     def test_ns_to_datetime_is_utc(self):
         """
         Assert ns_to_datetime returns UTC aware datetime
@@ -83,18 +85,17 @@ class TestNsToDatetime(object):
         Assert ns_to_datetime returns correct datetime
         """
         val = 1514808000000000000
-        expected = datetime.datetime(2018,1,1,12, tzinfo=pytz.UTC)
+        expected = datetime.datetime(2018, 1, 1, 12, tzinfo=pytz.UTC)
 
         assert ns_to_datetime(val) == expected
 
 
 class TestToNanoseconds(object):
-
     def test_datetime_to_ns_naive(self):
         """
         Assert to_nanoseconds handles naive datetime
         """
-        dt = datetime.datetime(2018,1,1,12)
+        dt = datetime.datetime(2018, 1, 1, 12)
         localized = pytz.utc.localize(dt)
         expected = int(localized.timestamp() * 1e9)
 
@@ -106,7 +107,7 @@ class TestToNanoseconds(object):
         Assert to_nanoseconds handles tz aware datetime
         """
         eastern = pytz.timezone("US/Eastern")
-        dt = datetime.datetime(2018,1,1,17, tzinfo=eastern)
+        dt = datetime.datetime(2018, 1, 1, 17, tzinfo=eastern)
         expected = int(dt.astimezone(pytz.utc).timestamp() * 1e9)
 
         assert dt.tzinfo is not None
@@ -116,7 +117,7 @@ class TestToNanoseconds(object):
         """
         Assert to_nanoseconds handles RFC3339 format
         """
-        dt = datetime.datetime(2018,1,1,12, tzinfo=pytz.utc)
+        dt = datetime.datetime(2018, 1, 1, 12, tzinfo=pytz.utc)
         expected = int(dt.timestamp() * 1e9)
 
         dt_str = "2018-1-1 12:00:00.0-0000"
@@ -124,12 +125,12 @@ class TestToNanoseconds(object):
         assert to_nanoseconds(dt_str) == expected
 
         dt_str = "2018-1-1 7:00:00.0-0500"
-        dt = datetime.datetime(2018,1,1,12, tzinfo=pytz.timezone("US/Eastern"))
+        dt = datetime.datetime(2018, 1, 1, 12, tzinfo=pytz.timezone("US/Eastern"))
         assert dt.tzinfo is not None
         assert to_nanoseconds(dt_str) == expected
 
         dt_str = "2018-01-15 07:32:49"
-        dt = datetime.datetime(2018,1,15,7,32,49, tzinfo=pytz.utc)
+        dt = datetime.datetime(2018, 1, 15, 7, 32, 49, tzinfo=pytz.utc)
         expected = int(dt.timestamp() * 1e9)
         assert to_nanoseconds(dt_str) == expected
 
@@ -173,20 +174,19 @@ class TestToNanoseconds(object):
         """
         Assert to_nanoseconds handles float
         """
-        dt = datetime.datetime(2018,1,1,12, tzinfo=pytz.utc)
+        dt = datetime.datetime(2018, 1, 1, 12, tzinfo=pytz.utc)
         expected = int(dt.timestamp() * 1e9)
 
-        dt64 = np.datetime64('2018-01-01T12:00')
+        dt64 = np.datetime64("2018-01-01T12:00")
         assert expected == to_nanoseconds(dt64)
 
 
 class TestToNsDelta(object):
-
     def test_ns_delta(self):
         """
         Assert ns_delta converts inputs properly
         """
-        val = ns_delta(1,2,1,3,1,23,1)
+        val = ns_delta(1, 2, 1, 3, 1, 23, 1)
         assert val == 93663001023001
 
     def test_ns_delta_precision(self):
@@ -200,7 +200,8 @@ class TestToNsDelta(object):
         """
         Assert ns_delta returns int if floats used for arguments
         """
-        val = ns_delta(1.0,1.0,1.0,1.0,1.0,1.0,1)
-        assert val == int(1 + 1e3 + 1e6 + 1e9 + (1e9 * 60)  + (1e9 * 60 * 60) + \
-            (1e9 * 60 * 60 * 24) )
+        val = ns_delta(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1)
+        assert val == int(
+            1 + 1e3 + 1e6 + 1e9 + (1e9 * 60) + (1e9 * 60 * 60) + (1e9 * 60 * 60 * 24)
+        )
         assert isinstance(val, int)

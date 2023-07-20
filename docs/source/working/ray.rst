@@ -18,7 +18,7 @@ Setting up the ray serializer
     ray.init()
 
     conn_params = {"profile": "profile_name"}
-    
+
     # register serializer with the connection parameters
     register_serializer(**conn_params)
 

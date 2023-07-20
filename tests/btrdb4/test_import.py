@@ -21,11 +21,11 @@ import pytest
 ## Import Tests
 ##########################################################################
 
-class TestPackage(object):
 
+class TestPackage(object):
     def test_import(self):
         """
         Assert that `import brdb4` issues warning exception
         """
-        with pytest.raises(ImportWarning, match='not available'):
+        with pytest.raises(ImportWarning, match="not available"):
             import btrdb4

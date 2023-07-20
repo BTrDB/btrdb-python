@@ -41,5 +41,3 @@ like to install the version 4 bindings you will need to use `pip` as shown above
 .. code-block:: bash
 
     $ conda install -c pingthings btrdb
-
-

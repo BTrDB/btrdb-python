@@ -24,15 +24,24 @@
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+import io
+import typing
+import uuid
 
-from btrdb.grpcinterface import btrdb_pb2
-from btrdb.grpcinterface import btrdb_pb2_grpc
+from btrdb.exceptions import BTrDBError, check_proto_stat, error_handler
+from btrdb.grpcinterface import btrdb_pb2, btrdb_pb2_grpc
 from btrdb.point import RawPoint
-from btrdb.exceptions import BTrDBError, error_handler, check_proto_stat
 from btrdb.utils.general import unpack_stream_descriptor
+
+try:
+    import pyarrow as pa
+except ImportError:
+    pa = None
 
 
 class Endpoint(object):
+    """Server endpoint where we make specific requests."""
+
     def __init__(self, channel):
         self.stub = btrdb_pb2_grpc.BTrDBStub(channel)
 
@@ -46,6 +55,52 @@ class Endpoint(object):
             yield result.values, result.versionMajor
 
     @error_handler
+    def arrowRawValues(self, uu, start, end, version=0):
+        params = btrdb_pb2.RawValuesParams(
+            uuid=uu.bytes, start=start, end=end, versionMajor=version
+        )
+        for result in self.stub.ArrowRawValues(params):
+            check_proto_stat(result.stat)
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all(), result.versionMajor
+
+    @error_handler
+    def arrowMultiValues(self, uu_list, start, end, version_list, snap_periodNS):
+        params = btrdb_pb2.ArrowMultiValuesParams(
+            uuid=[uu.bytes for uu in uu_list],
+            start=start,
+            end=end,
+            versionMajor=[ver for ver in version_list],
+            snapPeriodNs=int(snap_periodNS),
+        )
+        for result in self.stub.ArrowMultiValues(params):
+            check_proto_stat(result.stat)
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all()
+
+    @error_handler
+    def arrowInsertValues(self, uu: uuid.UUID, values: pa.Table, policy: str):
+        policy_map = {
+            "never": btrdb_pb2.MergePolicy.NEVER,
+            "equal": btrdb_pb2.MergePolicy.EQUAL,
+            "retain": btrdb_pb2.MergePolicy.RETAIN,
+            "replace": btrdb_pb2.MergePolicy.REPLACE,
+        }
+        byte_io = io.BytesIO()
+        with pa.ipc.new_stream(sink=byte_io, schema=values.schema) as writer:
+            writer.write(values)
+        arrow_bytes = byte_io.getvalue()
+        params = btrdb_pb2.ArrowInsertParams(
+            uuid=uu.bytes,
+            sync=False,
+            arrowBytes=arrow_bytes,
+            merge_policy=policy_map[policy],
+        )
+        result = self.stub.ArrowInsert(params)
+        check_proto_stat(result.stat)
+        return result.versionMajor
+
+    @error_handler
     def alignedWindows(self, uu, start, end, pointwidth, version=0):
         params = btrdb_pb2.AlignedWindowsParams(
             uuid=uu.bytes,
@@ -57,6 +112,20 @@ class Endpoint(object):
         for result in self.stub.AlignedWindows(params):
             check_proto_stat(result.stat)
             yield result.values, result.versionMajor
+
+    @error_handler
+    def arrowAlignedWindows(self, uu, start, end, pointwidth, version=0):
+        params = btrdb_pb2.AlignedWindowsParams(
+            uuid=uu.bytes,
+            start=start,
+            end=end,
+            versionMajor=version,
+            pointWidth=int(pointwidth),
+        )
+        for result in self.stub.ArrowAlignedWindows(params):
+            check_proto_stat(result.stat)
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all(), result.versionMajor
 
     @error_handler
     def windows(self, uu, start, end, width, depth, version=0):
@@ -73,6 +142,21 @@ class Endpoint(object):
             yield result.values, result.versionMajor
 
     @error_handler
+    def arrowWindows(self, uu, start, end, width, depth, version=0):
+        params = btrdb_pb2.WindowsParams(
+            uuid=uu.bytes,
+            start=start,
+            end=end,
+            versionMajor=version,
+            width=width,
+            depth=depth,
+        )
+        for result in self.stub.ArrowWindows(params):
+            check_proto_stat(result.stat)
+            with pa.ipc.open_stream(result.arrowBytes) as reader:
+                yield reader.read_all(), result.versionMajor
+
+    @error_handler
     def streamInfo(self, uu, omitDescriptor, omitVersion):
         params = btrdb_pb2.StreamInfoParams(
             uuid=uu.bytes, omitVersion=omitVersion, omitDescriptor=omitDescriptor
@@ -81,7 +165,13 @@ class Endpoint(object):
         desc = result.descriptor
         check_proto_stat(result.stat)
         tagsanns = unpack_stream_descriptor(desc)
-        return desc.collection, desc.propertyVersion, tagsanns[0], tagsanns[1], result.versionMajor
+        return (
+            desc.collection,
+            desc.propertyVersion,
+            tagsanns[0],
+            tagsanns[1],
+            result.versionMajor,
+        )
 
     @error_handler
     def obliterate(self, uu):
@@ -135,11 +225,11 @@ class Endpoint(object):
     def create(self, uu, collection, tags, annotations):
         tagkvlist = []
         for k, v in tags.items():
-            kv = btrdb_pb2.KeyOptValue(key = k, val = btrdb_pb2.OptValue(value=v))
+            kv = btrdb_pb2.KeyOptValue(key=k, val=btrdb_pb2.OptValue(value=v))
             tagkvlist.append(kv)
         annkvlist = []
         for k, v in annotations.items():
-            kv = btrdb_pb2.KeyOptValue(key = k, val = btrdb_pb2.OptValue(value=v))
+            kv = btrdb_pb2.KeyOptValue(key=k, val=btrdb_pb2.OptValue(value=v))
             annkvlist.append(kv)
         params = btrdb_pb2.CreateParams(
             uuid=uu.bytes, collection=collection, tags=tagkvlist, annotations=annkvlist
@@ -201,7 +291,7 @@ class Endpoint(object):
         result = self.stub.Nearest(params)
         check_proto_stat(result.stat)
         return result.value, result.versionMajor
-    
+
     @error_handler
     def changes(self, uu, fromVersion, toVersion, resolution):
         params = btrdb_pb2.ChangesParams(
@@ -268,24 +358,30 @@ class Endpoint(object):
         return result.tags, result.annotations
 
     @error_handler
-    def generateCSV(self, queryType, start, end, width, depth, includeVersions, *streams):
-        protoStreams = [btrdb_pb2.StreamCSVConfig(version = stream[0],
-                        label = stream[1],
-                        uuid = stream[2].bytes)
-                        for stream in streams]
-        params = btrdb_pb2.GenerateCSVParams(queryType = queryType.to_proto(),
-                                            startTime = start,
-                                            endTime = end,
-                                            windowSize = width,
-                                            depth = depth,
-                                            includeVersions = includeVersions,
-                                            streams = protoStreams)
+    def generateCSV(
+        self, queryType, start, end, width, depth, includeVersions, *streams
+    ):
+        protoStreams = [
+            btrdb_pb2.StreamCSVConfig(
+                version=stream[0], label=stream[1], uuid=stream[2].bytes
+            )
+            for stream in streams
+        ]
+        params = btrdb_pb2.GenerateCSVParams(
+            queryType=queryType.to_proto(),
+            startTime=start,
+            endTime=end,
+            windowSize=width,
+            depth=depth,
+            includeVersions=includeVersions,
+            streams=protoStreams,
+        )
         for result in self.stub.GenerateCSV(params):
             check_proto_stat(result.stat)
             yield result.row
 
     @error_handler
-    def sql_query(self, stmt, params=[]):
+    def sql_query(self, stmt, params: typing.List):
         request = btrdb_pb2.SQLQueryParams(query=stmt, params=params)
         for page in self.stub.SQLQuery(request):
             check_proto_stat(page.stat)

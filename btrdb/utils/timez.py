@@ -18,12 +18,10 @@ Time related utilities
 ##########################################################################
 
 from datetime import datetime
-
-from operator import mul
 from decimal import Decimal
+from operator import mul
 
 import pytz
-
 
 ##########################################################################
 ## Module Variables
@@ -31,20 +29,21 @@ import pytz
 
 DATETIME_FORMATS = (
     "%Y-%m-%d %H:%M:%S.%f%z",  # most common RFC3339 nanoseconds
-    "%Y-%m-%d %H:%M:%S.%f",    # expects UTC default timezone
-    "%Y-%m-%dT%H:%M:%S.%fZ",   # JSON encoding, UTC timezone
-    "%Y-%m-%dT%H:%M:%SZ",	   # JSON encoding, UTC timezone
+    "%Y-%m-%d %H:%M:%S.%f",  # expects UTC default timezone
+    "%Y-%m-%dT%H:%M:%S.%fZ",  # JSON encoding, UTC timezone
+    "%Y-%m-%dT%H:%M:%SZ",  # JSON encoding, UTC timezone
     "%Y-%m-%dT%H:%M:%S.%f%z",  # less common JSON-ish encoding
-    "%Y-%m-%dT%H:%M:%S.%f",    # for completeness, UTC default timezone
-    "%Y-%m-%d %H:%M:%S%z",	   # human readable date time with TZ
-    "%Y-%m-%d %H:%M:%S",	   # human readable date time UTC default
-    "%Y-%m-%d",                # helper to get midnight on a particular date
+    "%Y-%m-%dT%H:%M:%S.%f",  # for completeness, UTC default timezone
+    "%Y-%m-%d %H:%M:%S%z",  # human readable date time with TZ
+    "%Y-%m-%d %H:%M:%S",  # human readable date time UTC default
+    "%Y-%m-%d",  # helper to get midnight on a particular date
 )
 
 
 ##########################################################################
 ## Functions
 ##########################################################################
+
 
 def currently_as_ns():
     """
@@ -141,6 +140,7 @@ def to_nanoseconds(val):
 
     try:
         import numpy as np
+
         if isinstance(val, np.datetime64):
             val = val.astype(datetime)
     except ImportError:
@@ -174,8 +174,9 @@ def to_nanoseconds(val):
     raise TypeError("only int, float, str, datetime, and datetime64 are allowed")
 
 
-def ns_delta(days=0, hours=0, minutes=0, seconds=0, milliseconds=0, \
-             microseconds=0, nanoseconds=0):
+def ns_delta(
+    days=0, hours=0, minutes=0, seconds=0, milliseconds=0, microseconds=0, nanoseconds=0
+):
     """
     Similar to `timedelta`, ns_delta represents a span of time but as
     the total number of nanoseconds.

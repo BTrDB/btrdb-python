@@ -15,14 +15,15 @@ Package for the btrdb database library.
 ## Imports
 ##########################################################################
 
-from btrdb.conn import Connection, BTrDB
+from warnings import warn
+
+from btrdb.conn import BTrDB, Connection
 from btrdb.endpoint import Endpoint
 from btrdb.exceptions import ConnectionError
-from btrdb.version import get_version
-from btrdb.utils.credentials import credentials_by_profile, credentials
+from btrdb.stream import MAXIMUM_TIME, MINIMUM_TIME
+from btrdb.utils.credentials import credentials, credentials_by_profile
 from btrdb.utils.ray import register_serializer
-from btrdb.stream import MINIMUM_TIME, MAXIMUM_TIME
-from warnings import warn
+from btrdb.version import get_version
 
 ##########################################################################
 ## Module Variables
@@ -39,8 +40,10 @@ BTRDB_PROFILE = "BTRDB_PROFILE"
 ## Functions
 ##########################################################################
 
+
 def _connect(endpoints=None, apikey=None):
     return BTrDB(Endpoint(Connection(endpoints, apikey=apikey).channel))
+
 
 def connect(conn_str=None, apikey=None, profile=None, shareable=False):
     """
@@ -78,7 +81,9 @@ def connect(conn_str=None, apikey=None, profile=None, shareable=False):
 
     # check shareable flag and register custom serializer if necessary
     if shareable:
-        warn("a shareable connection is potentially insecure; other users of the same cluster may be able to access your API key")
+        warn(
+            "a shareable connection is potentially insecure; other users of the same cluster may be able to access your API key"
+        )
         register_serializer(conn_str=conn_str, apikey=apikey, profile=profile)
 
     # use specific profile if requested
@@ -91,4 +96,3 @@ def connect(conn_str=None, apikey=None, profile=None, shareable=False):
         return _connect(**creds)
 
     raise ConnectionError("Could not determine credentials to use.")
-

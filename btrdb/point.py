@@ -17,10 +17,10 @@ Module for Point classes
 
 from btrdb.grpcinterface import btrdb_pb2
 
-
 ##########################################################################
 ## Point Classes
 ##########################################################################
+
 
 class RawPoint(object):
     """
@@ -75,7 +75,7 @@ class RawPoint(object):
 
     @staticmethod
     def to_proto(point):
-        return btrdb_pb2.RawPoint(time = point[0], value = point[1])
+        return btrdb_pb2.RawPoint(time=point[0], value=point[1])
 
     @staticmethod
     def to_proto_list(points):
@@ -148,7 +148,9 @@ class StatPoint(object):
 
     @classmethod
     def from_proto(cls, proto):
-        return cls(proto.time, proto.min, proto.mean, proto.max, proto.count, proto.stddev)
+        return cls(
+            proto.time, proto.min, proto.mean, proto.max, proto.count, proto.stddev
+        )
 
     @classmethod
     def from_proto_list(cls, proto_list):
@@ -214,12 +216,7 @@ class StatPoint(object):
 
     def __repr__(self):
         return "StatPoint({}, {}, {}, {}, {}, {})".format(
-            self.time,
-            self.min,
-            self.mean,
-            self.max,
-            self.count,
-            self.stddev
+            self.time, self.min, self.mean, self.max, self.count, self.stddev
         )
 
     def __str__(self):
@@ -230,9 +227,11 @@ class StatPoint(object):
             if not hasattr(other, attr):
                 return False
 
-        return self.time == other.time and \
-            self.min == other.min and \
-            self.mean == other.mean and \
-            self.max == other.max and \
-            self.count == other.count and \
-            self.stddev == other.stddev
+        return (
+            self.time == other.time
+            and self.min == other.min
+            and self.mean == other.mean
+            and self.max == other.max
+            and self.count == other.count
+            and self.stddev == other.stddev
+        )
