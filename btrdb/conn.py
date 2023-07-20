@@ -179,7 +179,7 @@ def _is_arrow_enabled(info):
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug(f"major version: {major}")
         logger.debug(f"minor version: {minor}")
-    if major >= 5 and minor >= 29:
+    if major >= 5 and minor >= 30:
         return True
     else:
         return False
