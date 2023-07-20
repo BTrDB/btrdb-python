@@ -100,7 +100,7 @@ class Stream(object):
 
     def refresh_metadata(self):
         """
-        Refreshes the locally cached meta data for a stream
+        Refreshes the locally cached metadata for a stream from the server.
 
         Queries the BTrDB server for all stream metadata including collection,
         annotation, and tags. This method requires a round trip to the server.
@@ -576,7 +576,6 @@ class Stream(object):
         -------
         int
             The version of the stream after inserting new points.
-
         """
         version = 0
         i = 0
@@ -615,7 +614,7 @@ class Stream(object):
 
         Notes
         -----
-        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+        This method is available for commercial customers with arrow-enabled servers.
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_insert"))
@@ -758,7 +757,6 @@ class Stream(object):
         int
             The version of the metadata (separate from the version of the data)
             also known as the "property version".
-
         """
         if tags is None and annotations is None and collection is None:
             raise BTRDBValueError(
@@ -826,7 +824,6 @@ class Stream(object):
         -------
         int
             The version of the new stream created
-
         """
         return self._btrdb.ep.deleteRange(
             self._uuid, to_nanoseconds(start), to_nanoseconds(end)
@@ -948,7 +945,7 @@ class Stream(object):
         granularity. In the tree data structure of BTrDB, this data is stored in
         the vector nodes.
 
-        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+        This method is available for commercial customers with arrow-enabled servers.
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_values"))
@@ -1108,7 +1105,7 @@ class Stream(object):
         As the window-width is a power-of-two, it aligns with BTrDB internal
         tree data structure and is faster to execute than `windows()`.
 
-        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+        This method is available for commercial customers with arrow-enabled servers.
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(
@@ -1202,7 +1199,7 @@ class Stream(object):
         parameter previously available has been deprecated. The only valid value
         for depth is now 0.
 
-        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+        This method is available for commercial customers with arrow-enabled servers.
         """
         materialized = []
         start = to_nanoseconds(start)
@@ -1270,7 +1267,7 @@ class Stream(object):
         end = start + width * floordiv(end - start, width). The `depth`
         parameter previously available has been deprecated. The only valid value
         for depth is now 0.
-        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+        This method is available for commercial customers with arrow-enabled servers.
         """
         if not self._btrdb._ARROW_ENABLED:
             raise NotImplementedError(_arrow_not_impl_str.format("arrow_windows"))
@@ -1827,12 +1824,12 @@ class StreamSetBase(Sequence):
         Windows returns arbitrary precision windows from BTrDB. It is slower
         than aligned_windows, but still significantly faster than values. Each
         returned window will be width nanoseconds long. start is inclusive, but
-        end is exclusive (e.g if end < start+width you will get no results).
+        end is exclusive (e.g. if end < start+width you will get no results).
         That is, results will be returned for all windows that start at a time
         less than the end timestamp. If (end - start) is not a multiple of
         width, then end will be decreased to the greatest value less than end
         such that (end - start) is a multiple of width (i.e., we set end = start
-        + width * floordiv(end - start, width).  The `depth` parameter previously
+        + width * floordiv(end - start, width)).  The `depth` parameter previously
         available has been deprecated. The only valid value for depth is now 0.
 
         """
@@ -2046,7 +2043,8 @@ class StreamSetBase(Sequence):
         Notes
         -----
         BTrDB expects datetimes to be in UTC+0.
-        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+
+        This method is available for commercial customers with arrow-enabled servers.
 
         Returns
         -------
@@ -2098,7 +2096,7 @@ class StreamSetBase(Sequence):
 
         Notes
         -----
-        ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+        This method is available for commercial customers with arrow-enabled servers.
         """
         params = self._params_from_filters()
         versions = self._pinned_versions

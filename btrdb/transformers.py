@@ -120,7 +120,7 @@ def arrow_to_series(streamset, agg="mean", name_callable=None):
 
     Notes
     -----
-    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+    This method is available for commercial customers with arrow-enabled servers.
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -161,7 +161,7 @@ def arrow_to_dataframe(
 
     Notes
     -----
-    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+    This method is available for commercial customers with arrow-enabled servers.
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -314,7 +314,7 @@ def arrow_to_polars(streamset, agg=None, name_callable=None):
 
     Notes
     -----
-    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+    This method is available for commercial customers with arrow-enabled servers.
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -341,7 +341,7 @@ def arrow_to_arrow_table(streamset):
 
     Notes
     -----
-    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+    This method is available for commercial customers with arrow-enabled servers.
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -457,7 +457,7 @@ def arrow_to_numpy(streamset, agg=None):
     -----
     This method first converts to a pandas data frame then to a numpy array.
 
-    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+    This method is available for commercial customers with arrow-enabled servers.
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
@@ -529,7 +529,7 @@ def arrow_to_dict(streamset, agg=None, name_callable=None):
 
     Notes
     -----
-    ARROW ENABLED SERVERS REQUIRED - CHANGE ME FOR FINAL
+    This method is available for commercial customers with arrow-enabled servers.
     """
     if not streamset._btrdb._ARROW_ENABLED:
         raise NotImplementedError(
