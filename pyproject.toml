@@ -33,6 +33,10 @@ dependencies = [
     "pytz",
     "pyyaml",
     "certifi",
+    "pyarrow",
+    "polars",
+    "numpy",
+    "pandas>=2.0",
 ]
 
 [project.optional-dependencies]
