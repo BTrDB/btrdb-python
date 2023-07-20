@@ -72,7 +72,7 @@ jobs:
       run: |
           pip wheel . -w dist
     - name: Publish package
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: __token__
         password: ${{ secrets.PYPI_DEPLOYMENT_TOKEN }}
