@@ -70,7 +70,7 @@ jobs:
         pip install setuptools wheel
     - name: Build and publish
       run: |
-          pip wheel .
+          pip wheel . -w dist
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@master
       with:
