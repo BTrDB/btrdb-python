@@ -1,3 +1,5 @@
 alabaster>=0.7.12
 Sphinx>=1.7
 sphinx-rtd-theme
+numpydoc
+pydata-sphinx-theme
