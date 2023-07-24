@@ -224,10 +224,7 @@ def arrow_to_dataframe(
         tmp = tmp_table.select(["time", *usable_cols])
     else:
         tmp = tmp_table
-    df = tmp.to_pandas(date_as_object=False, types_mapper=pd.ArrowDtype)
-    df = df.set_index("time")
-    df.index = pd.DatetimeIndex(df.index, tz="UTC")
-    return df
+    return tmp.to_pandas(date_as_object=False, types_mapper=pd.ArrowDtype)
 
 
 def to_dataframe(streamset, columns=None, agg="mean", name_callable=None):
@@ -667,6 +664,8 @@ class StreamSetTransformer(object):
 
     to_polars = to_polars
     arrow_to_polars = arrow_to_polars
+
+    arrow_to_arrow_table = arrow_to_arrow_table
 
     to_csv = to_csv
     to_table = to_table
